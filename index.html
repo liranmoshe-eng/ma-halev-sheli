@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>מה הלב שלי אומר לי 💭</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0f0e1a;color:#f0eeff;}
+
+@keyframes cfFall{from{transform:translateY(-10px) rotate(0);opacity:1}to{transform:translateY(110vh) rotate(600deg);opacity:0}}
+@keyframes popIn{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
+
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* ══ SETUP ══ */
+#setupScreen{
+  align-items:center;justify-content:center;padding:24px 16px;overflow-y:auto;
+  background:radial-gradient(ellipse at 60% 30%,#2d1b7a 0%,#0f0e1a 70%);
+}
+.sc{
+  background:#1a1928;border:1px solid rgba(108,99,255,.25);
+  border-radius:24px;padding:36px 32px;max-width:520px;width:100%;
+  box-shadow:0 20px 60px rgba(108,99,255,.22);
+}
+.s-logo{font-size:3em;text-align:center;margin-bottom:6px;}
+.s-title{
+  font-size:1.9em;font-weight:900;text-align:center;margin-bottom:5px;
+  background:linear-gradient(135deg,#a89fff,#ff8fab);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.s-sub{text-align:center;color:#9b99bb;font-size:.95em;margin-bottom:28px;}
+.s-lbl{font-size:.85em;font-weight:700;color:#9b99bb;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+.plist{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.prow{display:flex;align-items:center;gap:8px;background:#252438;border:1px solid rgba(108,99,255,.2);border-radius:12px;padding:11px 13px;}
+.pname{flex:1;background:transparent;border:none;outline:none;color:#f0eeff;font-family:'Heebo',sans-serif;font-size:1.05em;font-weight:600;min-width:0;}
+.pname::placeholder{color:#9b99bb;}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;}
+.sw{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .15s;flex-shrink:0;}
+.sw.on{border-color:#fff;transform:scale(1.3);box-shadow:0 0 10px rgba(255,255,255,.5);}
+.rmbtn{background:none;border:none;color:#9b99bb;cursor:pointer;font-size:1.15em;flex-shrink:0;}
+.rmbtn:hover{color:#FF6B6B;}
+.add-p-btn{width:100%;padding:11px;background:none;border:1.5px dashed rgba(108,99,255,.28);color:#9b99bb;border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.95em;transition:all .2s;margin-bottom:24px;}
+.add-p-btn:hover{border-color:#a89fff;color:#a89fff;}
+.go-btn{width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,#6C63FF,#9b59f5);color:#fff;font-family:'Heebo',sans-serif;font-size:1.2em;font-weight:900;cursor:pointer;box-shadow:0 8px 28px rgba(108,99,255,.4);transition:all .3s;}
+.go-btn:hover{transform:translateY(-2px);}
+
+/* ══ HEADER ══ */
+#gameScreen{background:#0f0e1a;}
+.ghead{background:#1a1928;border-bottom:1px solid rgba(108,99,255,.2);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;}
+.gtitle{font-size:1em;font-weight:900;white-space:nowrap;}
+.pbar{display:flex;gap:7px;flex-wrap:wrap;flex:1;justify-content:center;}
+.chip{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:2px solid transparent;font-size:.88em;font-weight:700;background:#252438;transition:all .3s;}
+.chip .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.chip .pts{background:#0f0e1a;border-radius:6px;padding:2px 8px;font-size:.82em;}
+.hbtns{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;}
+.hbtn{padding:8px 14px;border-radius:9px;border:1.5px solid rgba(108,99,255,.22);background:none;color:#9b99bb;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.88em;font-weight:700;transition:all .2s;white-space:nowrap;}
+.hbtn:hover{background:#252438;color:#f0eeff;}
+.hbtn.pri{background:#6C63FF;color:#fff;border-color:#6C63FF;}
+.hbtn.pri:hover{background:#5a52e0;}
+.hbtn:disabled{opacity:.32;cursor:default;pointer-events:none;}
+
+/* turn banner */
+.tbanner{padding:9px 16px;font-size:.95em;font-weight:700;text-align:center;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
+
+/* progress hint bar */
+
+
+/* continue choice */
+.choice-bar{display:none;background:#1a1928;border-bottom:1px solid rgba(108,99,255,.2);padding:10px 16px;text-align:center;flex-shrink:0;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;}
+.choice-bar.show{display:flex;}
+.choice-lbl{font-size:.92em;font-weight:700;}
+.cbtn{padding:9px 20px;border-radius:9px;border:1.5px solid rgba(108,99,255,.3);background:#252438;color:#f0eeff;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.92em;font-weight:700;transition:all .2s;}
+.cbtn:hover{background:#6C63FF;border-color:#6C63FF;}
+
+/* ══ BOARD ══ */
+.board-wrap{flex:1;overflow-y:auto;padding:10px 10px 14px;}
+.col-hdrs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px;}
+.col-hdr{padding:10px 8px;border-radius:10px;font-size:.95em;font-weight:900;text-align:center;color:#fff;line-height:1.3;}
+.board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:start;}
+.col{display:flex;flex-direction:column;gap:7px;}
+
+/* ══ CARD ══ */
+.card{background:#252438;border:2px solid rgba(108,99,255,.22);border-radius:11px;cursor:pointer;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:10px 9px;text-align:center;gap:6px;user-select:none;transition:transform .15s,box-shadow .15s,border-color .2s,background .3s;}
+.card:hover:not(.locked){transform:translateY(-2px);box-shadow:0 5px 18px rgba(108,99,255,.3);border-color:rgba(108,99,255,.55);}
+.c-num{font-size:2.2em;font-weight:900;color:rgba(255,255,255,.42);line-height:1;}
+.c-lbl{display:none;}
+.c-img{display:none;}
+.c-name{display:none;}
+.c-text{display:none;}
+
+/* open-img: cat0 click1 */
+.card.open-img .c-num{display:none;}
+.card.open-img .c-lbl{display:block;font-size:.72em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;}
+.card.open-img .c-img{display:block;width:100%;border-radius:8px;object-fit:cover;aspect-ratio:1;}
+
+/* open-full: cat0 click2 OR cats1-3 click1 */
+.card.open-full .c-num{display:none;}
+.card.open-full .c-lbl{display:block;font-size:.72em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;}
+.card.open-full .c-img{display:block;width:100%;border-radius:8px;object-fit:cover;aspect-ratio:1;}
+.card.open-full .c-name{display:block;font-size:1.1em;font-weight:900;margin-top:4px;}
+.card.open-full .c-text{display:block;font-size:1em;font-weight:700;line-height:1.5;color:rgba(240,238,255,.95);}
+
+/* locked */
+.card.locked{cursor:default;pointer-events:none;}
+/* locked cat0 at img-only state: still allow click to reveal name */
+.card.open-img.locked{pointer-events:all;cursor:pointer;}
+
+/* ══ SHARE ══ */
+.share-empty{border:2px dashed rgba(108,99,255,.2);border-radius:11px;padding:18px 10px;text-align:center;color:#9b99bb;font-size:.9em;font-weight:600;line-height:1.6;min-height:80px;display:flex;align-items:center;justify-content:center;}
+.share-item{background:#0d2b1e;border:2px solid #43D08A;border-radius:11px;padding:16px 12px;text-align:center;animation:popIn .35s cubic-bezier(.2,1.4,.5,1);}
+.share-item .si-em{font-size:1.9em;margin-bottom:6px;}
+.share-item .si-lbl{font-size:.75em;font-weight:700;color:#43D08A;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
+.share-item .si-txt{font-size:.95em;font-weight:700;line-height:1.55;}
+
+/* ══ FOOTER ══ */
+.gfoot{padding:7px 16px;background:#1a1928;border-top:1px solid rgba(108,99,255,.18);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:.82em;color:#9b99bb;font-weight:600;}
+
+/* ══ TOAST (success only) ══ */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:13px 26px;border-radius:12px;font-weight:700;font-size:1em;z-index:999;pointer-events:none;white-space:nowrap;animation:popIn .25s ease;}
+.toast.ok{background:#0d2b1e;border:2px solid #43D08A;color:#6ee7b7;}
+.toast.info{background:#1a1035;border:2px solid #6C63FF;color:#a89fff;}
+
+/* ══ WIN ══ */
+#winScreen{align-items:center;justify-content:center;padding:28px 20px;background:radial-gradient(ellipse at 50% 40%,#1a2a5e 0%,#0f0e1a 70%);}
+.w-card{background:#1a1928;border:1px solid rgba(108,99,255,.22);border-radius:22px;padding:36px 32px;max-width:480px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(108,99,255,.22);}
+.w-title{font-size:2.4em;font-weight:900;margin-bottom:6px;}
+.w-sub{color:#9b99bb;margin-bottom:24px;font-size:1.05em;}
+.wscores{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;}
+.wrow{display:flex;align-items:center;gap:12px;background:#252438;border-radius:12px;padding:14px 16px;border:2px solid rgba(108,99,255,.2);}
+.wrow.gold{border-color:#FFD166;background:rgba(255,209,102,.07);}
+.wrank{font-size:1.4em;}
+.wname{flex:1;font-weight:700;text-align:right;font-size:1.1em;}
+.wpts{font-size:1.1em;font-weight:900;color:#FFD166;}
+.wagain{padding:15px 36px;border-radius:14px;border:none;background:linear-gradient(135deg,#6C63FF,#9b59f5);color:#fff;font-family:'Heebo',sans-serif;font-size:1.05em;font-weight:900;cursor:pointer;box-shadow:0 7px 25px rgba(108,99,255,.4);transition:all .3s;}
+.wagain:hover{transform:translateY(-2px);}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div class="screen active" id="setupScreen">
+  <div class="sc">
+    <div class="s-logo">💭</div>
+    <div class="s-title">מה הלב שלי אומר לי</div>
+    <div class="s-sub">משחק לימודי-חווייתי של רגשות</div>
+    <div class="s-lbl">שחקנים</div>
+    <div class="plist" id="plist"></div>
+    <button class="add-p-btn" id="addBtn" onclick="addRow()">+ הוסף שחקן</button>
+    <button class="go-btn" onclick="startGame()">▶ התחל משחק</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="screen" id="gameScreen">
+  <div class="ghead">
+    <div class="gtitle">מה הלב שלי אומר לי 💭</div>
+    <div class="pbar" id="pbar"></div>
+    <div class="hbtns">
+      <button class="hbtn pri" onclick="endTurn()">✓ סיימתי תור</button>
+      <button class="hbtn" id="undoBtn" onclick="doUndo()" disabled>↩ חזור</button>
+      <button class="hbtn" onclick="restart()">🔄 מחדש</button>
+      <button class="hbtn" onclick="goSetup()">⚙</button>
+    </div>
+  </div>
+  <div class="tbanner" id="tbanner"><span id="turnTxt"></span></div>
+
+
+  <!-- Choice after successful category -->
+  <div class="choice-bar" id="choiceBar">
+    <span class="choice-lbl" id="choiceLbl"></span>
+    <button class="cbtn" onclick="chooseAction('continue')">המשך לקטגוריה הבאה ➜</button>
+    <button class="cbtn" onclick="chooseAction('restart-series')">התחל מחדש מקטגוריה 1 🔄</button>
+  </div>
+
+  <div class="board-wrap">
+    <div class="col-hdrs">
+      <div class="col-hdr" style="background:#92400e">שם הרגש</div>
+      <div class="col-hdr" style="background:#5b21b6">מה הרגש אומר לי</div>
+      <div class="col-hdr" style="background:#9f1239">איך הגוף מרגיש</div>
+      <div class="col-hdr" style="background:#1e3a8a">מה יכול לעזור</div>
+      <div class="col-hdr" style="background:#065f46">שיתוף בחוויה</div>
+    </div>
+    <div class="board-grid">
+      <div class="col" id="col0"></div>
+      <div class="col" id="col1"></div>
+      <div class="col" id="col2"></div>
+      <div class="col" id="col3"></div>
+      <div class="col" id="col4"><div class="share-empty">💬<br>יופיע כאן לאחר סדרה</div></div>
+    </div>
+  </div>
+  <div class="gfoot">
+    <span id="progTxt">0 / 12 סדרות</span>
+  </div>
+</div>
+
+<!-- WIN -->
+<div class="screen" id="winScreen">
+  <div class="w-card">
+    <div class="w-title">🏆 המשחק הסתיים!</div>
+    <div class="w-sub">כל הכבוד לכולם!</div>
+    <div class="wscores" id="wscores"></div>
+    <button class="wagain" onclick="goSetup()">🔄 משחק חדש</button>
+  </div>
+</div>
+
+<script>
+const IMGS={"כעס":"assets/כעס.png","פחד":"assets/פחד.png","עצב":"assets/עצב.png","עלבון":"assets/עלבון.png","בושה":"assets/בושה.png","אשמה":"assets/אשמה.png","בלבול":"assets/בלבול.png","שמחה":"assets/שמחה.png","גאווה":"assets/גאווה.png","רוגע":"assets/רוגע.png","תסכול":"assets/תסכול.png","קנאה":"assets/קנאה.png"};
+
+
+/* ══ DATA ══ */
+const EDATA = {
+  כעס:   {signal:"מישהו לא היה הוגן אתי, פגע בי, או לא קיבלתי מה שרציתי", body:"לב דופק מהר, הגוף מתוח וחזק, חום בפנים",   help:"לעצור רגע לפני שאני פועל, להגיד מה מפריע לי"},
+  פחד:   {signal:"יכול להיות שיש סכנה",                             body:"לב דופק מהר, נשימה מהירה, בטן מתכווצת",  help:"לבדוק כמה הסכנה גדולה, להחליט אם אני יכול להתמודד לבד"},
+  עצב:   {signal:"משהו שהיה חשוב לי חסר עכשיו או נגמר",           body:"דמעות, כבד בלב, אין כוח לזוז",             help:"לספר למישהו איך אני מרגיש, לבקש חיבוק"},
+  עלבון: {signal:"מישהו אמר או עשה משהו שפגע בי",                 body:"מרגיש כמו עצב — גרון נחנק, קשה לבלוע, עיניים דומעות",         help:"לספר איך הרגשתי, לבקש יחס מכבד"},
+  בושה:  {signal:"אני דואג איך אחרים יסתכלו עליי",                body:"רצון להתחבא, הראש למטה, חום בפנים",         help:"לזכור שלכולם קורות טעויות, לדבר עם מישהו שסומכים עליו"},
+  אשמה:  {signal:"עשיתי משהו שפגע במישהו או לא היה נכון",         body:"כאב בלב, תחושת אי נוחות, דאגה על מה שעשינו והתחרטנו עליו",        help:"לקחת אחריות, להתנצל או לנסות לתקן"},
+  בלבול: {signal:"אני לא מבין מה קורה כאן",                       body:"הראש מלא מחשבות שלא מסתדרות, מסתכל סביב ולא מצליח להבין מה קורה",               help:"לשאול שאלה, לבקש הסבר"},
+  שמחה:  {signal:"קרה משהו טוב או כיף",                           body:"חיוך, קלילות בגוף, הרבה אנרגיה",           help:"ליהנות מהרגע, לשתף אחרים בשמחה"},
+  גאווה: {signal:"התאמצתי והצלחתי",                               body:"חום בחזה, גב זקוף, כוח",                    help:"להכיר במאמץ שלי, להגיד לעצמי: כל הכבוד"},
+  רוגע:  {signal:"אני מרגיש בטוח ושקט",                          body:"נשימה עמוקה, גוף רפוי",                     help:"לשים לב מה עוזר לי להירגע, להשתמש בזה כשקשה"},
+  תסכול: {signal:"אני מנסה אבל זה עדיין לא מצליח",               body:"חוזר שוב ושוב על אותה פעולה, הגוף נעשה מתוח ואפילו כואב הראש, תחושה שהמוח תקוע",               help:"לבקש פסק זמן, לנסות שוב בדרך אחרת"},
+  קנאה:  {signal:"למישהו אחר יש משהו שאני רוצה",                 body:"תחושה חזקה בגוף ובראש לרצות משהו שלא שלי, העיניים לא מפסיקות להסתכל על מה שאני רוצה, תחושת אי שקט בגוף",                      help:"לזהות מה אני רוצה, להעריך את מה שכבר יש לי"},
+};
+const CAT_KEYS   = [null,"signal","body","help"];
+const CAT_LABELS = ["שם הרגש","מה הרגש אומר לי","איך הגוף מרגיש","מה יכול לעזור"];
+const CAT_HINT   = ["👉 בחר קלף שם הרגש","👉 עכשיו בחר מה הרגש אומר לך","👉 עכשיו בחר איך הגוף מרגיש","👉 עכשיו בחר מה יכול לעזור"];
+const TOTAL = Object.keys(EDATA).length;
+const PAL = ["#6C63FF","#FF6B6B","#43D08A","#FFD166","#38BDF8","#F472B6","#FB923C","#A3E635"];
+
+/* ══ STATE ══ */
+let players  = [];
+let curIdx   = 0;
+let totalDone = 0;
+
+// Per-player progress (persists across turns)
+// { emotion: string|null, nextCat: 0-4 }
+let pProgress = [];
+
+// Per-turn state
+// openCards: Map<col, el> — one open card per column this turn
+let openCards = new Map();
+// undoStack: [{el, col, prevState, prevClass, prevStyle}]
+let undoStack = [];
+
+// Flag: waiting for player's choice after success
+let awaitingChoice = false;
+let toastTim = null;
+
+/* ══ SETUP ══ */
+function init(){ addRow(); addRow(); }
+
+function addRow(name, color){
+  const list = document.getElementById('plist');
+  const idx  = list.children.length;
+  if(idx >= 6) return;
+  const col  = color || PAL[idx % PAL.length];
+  const row  = document.createElement('div');
+  row.className = 'prow'; row.dataset.col = col;
+
+  const inp = document.createElement('input');
+  inp.className='pname'; inp.type='text';
+  inp.placeholder=`שחקן ${idx+1}`; inp.maxLength=14;
+  row.appendChild(inp);
+
+  const sw = document.createElement('div'); sw.className='swatches';
+  PAL.forEach(c=>{
+    const s=document.createElement('div');
+    s.className='sw'+(c===col?' on':''); s.style.background=c;
+    s.onclick=()=>{row.dataset.col=c;row.querySelectorAll('.sw').forEach(x=>x.classList.remove('on'));s.classList.add('on');};
+    sw.appendChild(s);
+  });
+  row.appendChild(sw);
+
+  if(idx>0){
+    const rm=document.createElement('button'); rm.className='rmbtn'; rm.textContent='✕';
+    rm.onclick=()=>{row.remove();document.getElementById('addBtn').style.display='';};
+    row.appendChild(rm);
+  }
+  list.appendChild(row);
+  if(list.children.length>=6) document.getElementById('addBtn').style.display='none';
+}
+
+function startGame(){
+  players=[];
+  document.querySelectorAll('#plist .prow').forEach((r,i)=>{
+    const n=r.querySelector('.pname').value.trim();
+    players.push({disp:n||`שחקן ${i+1}`,color:r.dataset.col,score:0});
+  });
+  curIdx=0; totalDone=0;
+  pProgress=players.map(()=>({emotion:null,nextCat:0}));
+  resetTurn();
+  buildBoard();
+  showScreen('gameScreen');
+}
+
+function goSetup(){
+  const list=document.getElementById('plist');
+  list.innerHTML=''; document.getElementById('addBtn').style.display='';
+  players.forEach(p=>addRow(p.disp,p.color));
+  showScreen('setupScreen');
+}
+
+/* ══ BUILD BOARD ══ */
+function shuf(a){return [...a].sort(()=>Math.random()-.5);}
+
+function buildBoard(){
+  const eNames=Object.keys(EDATA);
+  for(let c=0;c<4;c++){
+    const col=document.getElementById('col'+c);
+    col.innerHTML='';
+    shuf(eNames).forEach((ename,i)=>col.appendChild(makeCard(ename,c,i+1)));
+  }
+  document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
+  renderHeader();
+  updateHint();
+}
+
+function resetShareCol(){
+  document.getElementById('col4').innerHTML='<div class="share-empty">💬<br>יופיע כאן לאחר סדרה</div>';
+}
+
+function makeCard(ename,col,num){
+  const el=document.createElement('div');
+  el.className='card';
+  el.dataset.ename=ename;
+  el.dataset.col=String(col);
+  el.dataset.state='0';
+  if(col===0){
+    el.innerHTML=`
+      <div class="c-num">${num}</div>
+      <div class="c-lbl">${CAT_LABELS[0]}</div>
+      <img class="c-img" src="${IMGS[ename]}" alt="${ename}">
+      <div class="c-name">${ename}</div>`;
+  } else {
+    el.innerHTML=`
+      <div class="c-num">${num}</div>
+      <div class="c-lbl">${CAT_LABELS[col]}</div>
+      <div class="c-text">${EDATA[ename][CAT_KEYS[col]]}</div>`;
+  }
+  el.addEventListener('click',()=>onCardClick(el));
+  return el;
+}
+
+/* ══ CARD CLICK ══ */
+function onCardClick(el){
+  const col   = parseInt(el.dataset.col);
+  const ename = el.dataset.ename;
+  const state = parseInt(el.dataset.state);
+
+  // Locked cat0 at state=1: allow click to reveal name (state1→2)
+  if(el.classList.contains('locked')){
+    if(col===0 && state===1){
+      el.dataset.state='2';
+      el.className='card open-full locked';
+    }
+    return;
+  }
+
+  if(awaitingChoice) return;
+
+  const pp = pProgress[curIdx];
+
+  /* ── Cat 0: 3-state ── */
+  if(col===0){
+    if(state===0){
+      saveUndo(el);
+      el.dataset.state='1';
+      el.className='card open-img';
+      openCards.set(0,el);
+      updateUndoBtn();
+      tryLock(el,col,ename);
+    } else if(state===1){
+      el.dataset.state='2';
+      el.className='card open-full';
+    } else if(state===2){
+      closeCard(el);
+    }
+    return;
+  }
+
+  /* ── Cats 1-3: toggle ── */
+  if(state===0){
+    saveUndo(el);
+    el.dataset.state='2';
+    el.className='card open-full';
+    openCards.set(col,el);
+    updateUndoBtn();
+    tryLock(el,col,ename);
+  } else {
+    closeCard(el);
+  }
+}
+
+function tryLock(el, col, ename){
+  const pp     = pProgress[curIdx];
+  const player = players[curIdx];
+
+  // Cat 0: just record the emotion, don't lock yet
+  if(col === 0){
+    pp.emotion  = ename;
+    pp.nextCat  = 1;
+    updateHint();
+    return;
+  }
+
+  // Cats 1-3: need a matching cat0 (or previous) already open
+  if(pp.emotion === null) return;           // no cat0 open yet
+  if(ename !== pp.emotion) return;          // wrong emotion
+  if(col !== pp.nextCat) return;            // wrong category order
+
+  // ✅ Match! Lock all open cards of this emotion
+  document.querySelectorAll('.card').forEach(c => {
+    if(c.dataset.ename === ename && parseInt(c.dataset.state) > 0 && !c.dataset.perm){
+      c.classList.add('locked');
+      c.dataset.perm = '1';
+      c.style.background  = player.color + '50';
+      c.style.borderColor = player.color;
+      c.style.boxShadow   = `0 0 16px ${player.color}90`;
+      c.style.color       = '#fff';
+      // Move matched card to top of its column
+      const colEl = c.parentElement;
+      if(colEl) colEl.prepend(c);
+    }
+  });
+
+  pp.nextCat++;
+  undoStack = []; updateUndoBtn();
+
+  if(pp.nextCat === 4){
+    // Full series done
+    pp.emotion = null; pp.nextCat = 0;
+    totalDone++;
+    players[curIdx].score += 10;
+    addShareItem(ename, player);
+    renderHeader();
+    document.getElementById('progTxt').textContent = `${totalDone} / ${TOTAL} סדרות`;
+    confetti(player.color);
+    showToast(`🎉 סדרת "${ename}" הושלמה! +10 ל${player.disp}`, 'ok');
+    if(totalDone === TOTAL){ setTimeout(showWin, 2600); return; }
+  } else {
+    showToast(`✓ "${CAT_LABELS[col]}" הותאם!`, 'ok');
+  }
+  updateHint();
+}
+
+/* ══ CHOICE BAR ══ */
+function showChoiceBar(){
+  const pp=pProgress[curIdx];
+  const p=players[curIdx];
+  const lbl=document.getElementById('choiceLbl');
+  const catName = ['שם הרגש','מה הרגש אומר','איך הגוף מרגיש','מה יכול לעזור'][pp.nextCat] || '';
+  lbl.innerHTML=`<span style="color:${p.color}">● ${p.disp}</span> — יש לך סדרה פתוחה של "<strong>${pp.emotion}</strong>" (${pp.nextCat}/4 קטגוריות) — מה לעשות?`;
+  document.querySelectorAll('.cbtn')[0].textContent=`המשך לקטגוריה הבאה: ${catName} ➜`;
+  document.querySelectorAll('.cbtn')[1].textContent=`התחל סדרה חדשה מקטגוריה 1 🔄`;
+  document.getElementById('choiceBar').classList.add('show');
+}
+
+function chooseAction(action){
+  document.getElementById('choiceBar').classList.remove('show');
+  awaitingChoice=false;
+  resetTurn();
+
+  if(action==='continue'){
+    // Same player continues
+    renderHeader(); updateHint();
+  } else {
+    // restart-series: abandon current series progress, start from cat0
+    pProgress[curIdx]={emotion:null,nextCat:0};
+    renderHeader(); updateHint();
+    // Do NOT pass turn — player stays and picks a new cat0
+  }
+}
+
+/* ══ CLOSE HELPERS ══ */
+function closeCard(el){
+  el.dataset.state='0';
+  el.className='card';
+  openCards.delete(parseInt(el.dataset.col));
+  undoStack=undoStack.filter(u=>u.el!==el);
+  updateUndoBtn();
+}
+
+function closeCardSilently(el){
+  if(el.classList.contains('locked')) return;
+  el.dataset.state='0';
+  el.className='card';
+  openCards.delete(parseInt(el.dataset.col));
+}
+
+function closeAllOpenCards(){
+  document.querySelectorAll('.card').forEach(el => {
+    if(!el.dataset.perm && parseInt(el.dataset.state) > 0){
+      el.dataset.state = '0';
+      el.className = 'card';
+      el.classList.remove('locked');
+      el.style.background = '';
+      el.style.borderColor = '';
+      el.style.boxShadow = '';
+      el.style.color = '';
+    }
+  });
+  openCards.clear();
+}
+
+/* ══ END TURN ══ */
+function endTurn(){
+  document.getElementById('choiceBar').classList.remove('show');
+  awaitingChoice=false;
+  closeAllOpenCards();
+  resetTurn();
+  curIdx=(curIdx+1)%players.length;
+  renderHeader();
+  updateHint();
+  // Show choice bar if next player has a partial series
+  const pp=pProgress[curIdx];
+  if(pp.emotion !== null){
+    awaitingChoice=true;
+    showChoiceBar();
+  }
+}
+
+/* ══ UNDO ══ */
+function saveUndo(el){
+  undoStack.push({
+    el,
+    col: parseInt(el.dataset.col),
+    prevState: el.dataset.state,
+    prevClass: el.className
+  });
+}
+
+function doUndo(){
+  if(undoStack.length===0) return;
+  const u=undoStack.pop();
+  const el=u.el;
+  if(el.classList.contains('locked')) { updateUndoBtn(); return; }
+  el.dataset.state=u.prevState;
+  el.className=u.prevClass;
+  openCards.delete(u.col);
+  updateUndoBtn();
+}
+
+function resetTurn(){
+  closeAllOpenCards();
+  undoStack=[];
+  updateUndoBtn();
+}
+
+/* ══ RESTART ══ */
+function restart(){
+  totalDone=0;
+  players.forEach(p=>p.score=0);
+  curIdx=0;
+  pProgress=players.map(()=>({emotion:null,nextCat:0}));
+  awaitingChoice=false;
+  document.getElementById('choiceBar').classList.remove('show');
+  resetTurn();
+  resetShareCol();
+  buildBoard();
+}
+
+/* ══ SHARE ══ */
+function addShareItem(ename,player){
+  const col4=document.getElementById('col4');
+  const ph=col4.querySelector('.share-empty');
+  if(ph) ph.remove();
+  const div=document.createElement('div'); div.className='share-item';
+  div.innerHTML=`<div class="si-em">💬</div>
+    <div class="si-lbl">שיתוף בחוויה</div>
+    <div class="si-txt">ספר על פעם שבה הרגשת<br><strong style="color:${player.color}">${ename}</strong></div>`;
+  col4.appendChild(div);
+}
+
+/* ══ RENDER ══ */
+function renderHeader(){
+  const p=players[curIdx];
+  document.getElementById('pbar').innerHTML=players.map((pl,i)=>{
+    const a=i===curIdx;
+    return `<div class="chip" style="${a?`border-color:${pl.color};background:${pl.color}22`:''}">
+      <div class="dot" style="background:${pl.color}"></div>${pl.disp}
+      <span class="pts">${pl.score}</span></div>`;
+  }).join('');
+  document.getElementById('turnTxt').innerHTML=`<span style="color:${p.color}">● ${p.disp}</span> — התור שלך`;
+  const tb=document.getElementById('tbanner');
+  tb.style.background=p.color+'14';
+  tb.style.borderBottom=`1px solid ${p.color}33`;
+}
+
+function updateHint(){}
+
+function updateUndoBtn(){
+  document.getElementById('undoBtn').disabled=undoStack.length===0;
+}
+
+/* ══ TOAST ══ */
+function showToast(msg,type){
+  if(toastTim){clearTimeout(toastTim);document.querySelectorAll('.toast').forEach(t=>t.remove());}
+  const t=document.createElement('div');
+  t.className=`toast ${type}`; t.textContent=msg;
+  document.body.appendChild(t);
+  toastTim=setTimeout(()=>t.remove(),2400);
+}
+
+/* ══ WIN ══ */
+function showWin(){
+  const s=[...players].sort((a,b)=>b.score-a.score);
+  const m=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣'];
+  document.getElementById('wscores').innerHTML=s.map((p,i)=>`
+    <div class="wrow ${i===0?'gold':''}">
+      <span class="wrank">${m[i]||'🏅'}</span>
+      <div style="width:10px;height:10px;border-radius:50%;background:${p.color};flex-shrink:0"></div>
+      <span class="wname" style="color:${p.color}">${p.disp}</span>
+      <span class="wpts">${p.score} נק'</span>
+    </div>`).join('');
+  showScreen('winScreen'); confetti('#FFD166',120);
+}
+
+/* ══ CONFETTI ══ */
+function confetti(base,count=65){
+  const pal=[base,'#fff','#FFD166','#ff8fab','#a89fff'];
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div');
+    const sz=(7+Math.random()*9).toFixed(1);
+    const dur=(1.8+Math.random()*1.4).toFixed(2);
+    const del=(Math.random()*.5).toFixed(2);
+    el.style.cssText=`position:fixed;top:-14px;left:${(Math.random()*100).toFixed(1)}%;width:${sz}px;height:${sz}px;background:${pal[Math.floor(Math.random()*pal.length)]};border-radius:${Math.random()>.5?'50%':'3px'};pointer-events:none;z-index:9999;animation:cfFall ${dur}s ${del}s linear forwards;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),(parseFloat(dur)+parseFloat(del)+.2)*1000);
+  }
+}
+
+/* ══ UTIL ══ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+init();
+</script>
+</body>
+</html>
