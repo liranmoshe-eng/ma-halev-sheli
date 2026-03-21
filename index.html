@@ -11,9 +11,13 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 
 @keyframes cfFall{from{transform:translateY(-10px) rotate(0);opacity:1}to{transform:translateY(110vh) rotate(600deg);opacity:0}}
 @keyframes popIn{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
 
-.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen{display:none;flex-direction:column;height:100vh;}
 .screen.active{display:flex;}
+#setupScreen{height:auto;min-height:100vh;}
+#winScreen{height:auto;min-height:100vh;}
 
 /* ══ SETUP ══ */
 #setupScreen{
@@ -49,7 +53,7 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 
 /* ══ HEADER ══ */
 #gameScreen{background:#0f0e1a;}
-.ghead{background:#1a1928;border-bottom:1px solid rgba(108,99,255,.2);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;}
+.ghead{background:#1a1928;border-bottom:1px solid rgba(108,99,255,.2);padding:6px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
 .gtitle{font-size:1em;font-weight:900;white-space:nowrap;}
 .pbar{display:flex;gap:7px;flex-wrap:wrap;flex:1;justify-content:center;}
 .chip{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:2px solid transparent;font-size:.88em;font-weight:700;background:#252438;transition:all .3s;}
@@ -60,13 +64,21 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 .hbtn:hover{background:#252438;color:#f0eeff;}
 .hbtn.pri{background:#6C63FF;color:#fff;border-color:#6C63FF;}
 .hbtn.pri:hover{background:#5a52e0;}
+.hbtn.match-btn{background:#065f46;color:#6ee7b7;border-color:#43D08A;}
+.hbtn.match-btn:hover{background:#0d7a5f;}
+.hbtn.match-btn.no-match{animation:shake .4s ease;}
 .hbtn:disabled{opacity:.32;cursor:default;pointer-events:none;}
 
 /* turn banner */
-.tbanner{padding:9px 16px;font-size:.95em;font-weight:700;text-align:center;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
+.tbanner{padding:5px 12px;font-size:.88em;font-weight:700;text-align:center;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06);}
 
-/* progress hint bar */
-
+/* ══ CATEGORY TOGGLES ══ */
+.cat-toggles{display:flex;gap:6px;padding:5px 12px;flex-wrap:wrap;align-items:center;background:#1a1928;border-bottom:1px solid rgba(108,99,255,.12);flex-shrink:0;}
+.ct-label{font-size:.82em;font-weight:700;color:#9b99bb;margin-left:6px;}
+.cat-tog{padding:7px 14px;border-radius:20px;border:2px solid;font-family:'Heebo',sans-serif;font-size:.82em;font-weight:700;cursor:pointer;transition:all .2s;color:#fff;}
+.cat-tog.off{opacity:.3;background:transparent !important;}
+.ct-mode{padding:7px 14px;border-radius:20px;border:2px solid #43D08A;background:transparent;color:#9b99bb;font-family:'Heebo',sans-serif;font-size:.82em;font-weight:700;cursor:pointer;transition:all .2s;margin-right:auto;}
+.ct-mode.on{background:#065f46;color:#6ee7b7;}
 
 /* continue choice */
 .choice-bar{display:none;background:#1a1928;border-bottom:1px solid rgba(108,99,255,.2);padding:10px 16px;text-align:center;flex-shrink:0;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;}
@@ -76,52 +88,69 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 .cbtn:hover{background:#6C63FF;border-color:#6C63FF;}
 
 /* ══ BOARD ══ */
-.board-wrap{flex:1;overflow-y:auto;padding:10px 10px 14px;}
-.col-hdrs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:8px;}
-.col-hdr{padding:10px 8px;border-radius:10px;font-size:.95em;font-weight:900;text-align:center;color:#fff;line-height:1.3;}
-.board-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:start;}
-.col{display:flex;flex-direction:column;gap:7px;}
+.board-wrap{flex:1;overflow-y:auto;padding:6px 10px;display:flex;flex-direction:column;}
+.board-blocks{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;flex:1;align-content:start;}
+.cat-block{flex:1 1 0;min-width:180px;}
+.cat-block.hidden{display:none;}
+.cat-block-hdr{padding:6px 10px;border-radius:10px 10px 0 0;font-size:.85em;font-weight:900;text-align:center;color:#fff;line-height:1.2;}
+.cat-block-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;padding:6px;background:#1a1928;border:1px solid rgba(108,99,255,.15);border-top:none;border-radius:0 0 10px 10px;}
 
 /* ══ CARD ══ */
-.card{background:#252438;border:2px solid rgba(108,99,255,.22);border-radius:11px;cursor:pointer;min-height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:10px 9px;text-align:center;gap:6px;user-select:none;transition:transform .15s,box-shadow .15s,border-color .2s,background .3s;}
-.card:hover:not(.locked){transform:translateY(-2px);box-shadow:0 5px 18px rgba(108,99,255,.3);border-color:rgba(108,99,255,.55);}
-.c-num{font-size:2.2em;font-weight:900;color:rgba(255,255,255,.42);line-height:1;}
+.card{background:#252438;border:2px solid rgba(108,99,255,.22);border-radius:9px;cursor:pointer;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:6px 5px;text-align:center;gap:2px;user-select:none;transition:transform .15s,box-shadow .15s,border-color .2s,background .3s;}
+.card:hover:not(.locked):not(.completed){transform:translateY(-2px);box-shadow:0 5px 18px rgba(108,99,255,.3);border-color:rgba(108,99,255,.55);}
+.c-num{font-size:1.5em;font-weight:900;color:rgba(255,255,255,.42);line-height:1;padding:4px 0;}
 .c-lbl{display:none;}
 .c-img{display:none;}
 .c-name{display:none;}
 .c-text{display:none;}
 
-/* open-img: cat0 click1 */
 .card.open-img .c-num{display:none;}
-.card.open-img .c-lbl{display:block;font-size:.72em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;}
-.card.open-img .c-img{display:block;width:100%;border-radius:8px;object-fit:cover;aspect-ratio:1;}
+.card.open-img .c-lbl{display:block;font-size:.7em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px;}
+.card.open-img .c-img{display:block;width:80%;max-width:90px;border-radius:8px;object-fit:cover;aspect-ratio:1;}
 
-/* open-full: cat0 click2 OR cats1-3 click1 */
 .card.open-full .c-num{display:none;}
-.card.open-full .c-lbl{display:block;font-size:.72em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:3px;}
-.card.open-full .c-img{display:block;width:100%;border-radius:8px;object-fit:cover;aspect-ratio:1;}
-.card.open-full .c-name{display:block;font-size:1.1em;font-weight:900;margin-top:4px;}
-.card.open-full .c-text{display:block;font-size:1em;font-weight:700;line-height:1.5;color:rgba(240,238,255,.95);}
+.card.open-full .c-lbl{display:block;font-size:.7em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px;}
+.card.open-full .c-img{display:block;width:70%;max-width:80px;border-radius:8px;object-fit:cover;aspect-ratio:1;}
+.card.open-full .c-name{display:block;font-size:1em;font-weight:900;margin-top:3px;}
+.card.open-full .c-text{display:block;font-size:.78em;font-weight:700;line-height:1.35;color:rgba(240,238,255,.95);}
 
-/* locked */
 .card.locked{cursor:default;pointer-events:none;}
-/* locked cat0 at img-only state: still allow click to reveal name */
 .card.open-img.locked{pointer-events:all;cursor:pointer;}
 
-/* ══ SHARE ══ */
-.share-empty{border:2px dashed rgba(108,99,255,.2);border-radius:11px;padding:18px 10px;text-align:center;color:#9b99bb;font-size:.9em;font-weight:600;line-height:1.6;min-height:80px;display:flex;align-items:center;justify-content:center;}
-.share-item{background:#0d2b1e;border:2px solid #43D08A;border-radius:11px;padding:16px 12px;text-align:center;animation:popIn .35s cubic-bezier(.2,1.4,.5,1);}
-.share-item .si-em{font-size:1.9em;margin-bottom:6px;}
-.share-item .si-lbl{font-size:.75em;font-weight:700;color:#43D08A;letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
-.share-item .si-txt{font-size:.95em;font-weight:700;line-height:1.55;}
+/* selected emotion card (always-open mode) */
+.card.selected{border-color:#43D08A !important;box-shadow:0 0 18px rgba(67,208,138,.5) !important;background:#0d2b1e !important;}
+
+/* completed emotion card */
+.card.completed{opacity:.35;pointer-events:none;position:relative;}
+.card.completed::after{content:'✓';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2em;color:#43D08A;text-shadow:0 0 10px rgba(67,208,138,.8);}
+
+/* empty slot */
+.card-empty{border:2px dashed rgba(108,99,255,.12);border-radius:9px;background:rgba(37,36,56,.25);display:flex;align-items:center;justify-content:center;padding:6px 5px;}
+.card-empty::after{content:'·';font-size:1.5em;color:rgba(255,255,255,.08);}
+
+/* ══ MATCHED AREA (table) ══ */
+.matched-area{border-top:1px solid rgba(108,99,255,.15);padding:4px 8px;background:#111020;flex-shrink:0;max-height:22vh;overflow-y:auto;}
+.matched-area-title{font-size:.7em;font-weight:700;color:#9b99bb;text-align:center;margin-bottom:3px;}
+.matched-table{width:100%;border-collapse:separate;border-spacing:3px;}
+.matched-table th{padding:4px 8px;font-size:.72em;font-weight:900;border-radius:6px;text-align:center;white-space:nowrap;}
+.matched-table td{vertical-align:top;padding:1px 2px;}
+.mt-series{display:flex;align-items:center;gap:4px;padding:2px 5px;border-radius:5px;background:#252438;border:1px solid rgba(108,99,255,.15);margin-bottom:2px;font-size:.65em;font-weight:700;animation:slideDown .35s ease;}
+.mt-series img{width:16px;height:16px;border-radius:3px;object-fit:cover;flex-shrink:0;}
 
 /* ══ FOOTER ══ */
-.gfoot{padding:7px 16px;background:#1a1928;border-top:1px solid rgba(108,99,255,.18);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:.82em;color:#9b99bb;font-weight:600;}
+.gfoot{padding:4px 12px;background:#1a1928;border-top:1px solid rgba(108,99,255,.18);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-size:.78em;color:#9b99bb;font-weight:600;}
 
-/* ══ TOAST (success only) ══ */
+/* ══ TOAST ══ */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:13px 26px;border-radius:12px;font-weight:700;font-size:1em;z-index:999;pointer-events:none;white-space:nowrap;animation:popIn .25s ease;}
 .toast.ok{background:#0d2b1e;border:2px solid #43D08A;color:#6ee7b7;}
 .toast.info{background:#1a1035;border:2px solid #6C63FF;color:#a89fff;}
+.toast.wrong{background:#2b1020;border:2px solid #F472B6;color:#fbb6ce;}
+
+/* ══ FEEDBACK BANNER ══ */
+.feedback-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);padding:24px 40px;border-radius:20px;font-weight:900;font-size:1.4em;z-index:1000;pointer-events:none;text-align:center;line-height:1.6;transition:transform .3s cubic-bezier(.2,1.4,.5,1),opacity .3s;}
+.feedback-banner.show{transform:translate(-50%,-50%) scale(1);}
+.feedback-banner.ok{background:#0d2b1e;border:3px solid #43D08A;color:#6ee7b7;box-shadow:0 12px 40px rgba(67,208,138,.35);}
+.feedback-banner.wrong{background:#2b1020;border:3px solid #F472B6;color:#fbb6ce;box-shadow:0 12px 40px rgba(244,114,182,.3);}
 
 /* ══ WIN ══ */
 #winScreen{align-items:center;justify-content:center;padding:28px 20px;background:radial-gradient(ellipse at 50% 40%,#1a2a5e 0%,#0f0e1a 70%);}
@@ -159,6 +188,7 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
     <div class="gtitle">מה הלב שלי אומר לי 💭</div>
     <div class="pbar" id="pbar"></div>
     <div class="hbtns">
+      <button class="hbtn match-btn" onclick="checkMatch()">🔍 בדוק התאמה</button>
       <button class="hbtn pri" onclick="endTurn()">✓ סיימתי תור</button>
       <button class="hbtn" id="undoBtn" onclick="doUndo()" disabled>↩ חזור</button>
       <button class="hbtn" onclick="restart()">🔄 מחדש</button>
@@ -167,6 +197,8 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
   </div>
   <div class="tbanner" id="tbanner"><span id="turnTxt"></span></div>
 
+  <!-- Category Toggles -->
+  <div class="cat-toggles" id="catToggles"></div>
 
   <!-- Choice after successful category -->
   <div class="choice-bar" id="choiceBar">
@@ -176,21 +208,15 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
   </div>
 
   <div class="board-wrap">
-    <div class="col-hdrs">
-      <div class="col-hdr" style="background:#92400e">שם הרגש</div>
-      <div class="col-hdr" style="background:#5b21b6">מה הרגש אומר לי</div>
-      <div class="col-hdr" style="background:#9f1239">איך הגוף מרגיש</div>
-      <div class="col-hdr" style="background:#1e3a8a">מה יכול לעזור</div>
-      <div class="col-hdr" style="background:#065f46">שיתוף בחוויה</div>
-    </div>
-    <div class="board-grid">
-      <div class="col" id="col0"></div>
-      <div class="col" id="col1"></div>
-      <div class="col" id="col2"></div>
-      <div class="col" id="col3"></div>
-      <div class="col" id="col4"><div class="share-empty">💬<br>יופיע כאן לאחר סדרה</div></div>
+    <div class="board-blocks" id="boardBlocks"></div>
+
+    <!-- Matched Area (table) -->
+    <div class="matched-area" id="matchedArea" style="display:none">
+      <div class="matched-area-title">🎴 קלפים שהותאמו</div>
+      <div id="matchedList"></div>
     </div>
   </div>
+
   <div class="gfoot">
     <span id="progTxt">0 / 12 סדרות</span>
   </div>
@@ -209,46 +235,48 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 <script>
 const IMGS={"כעס":"assets/כעס.png","פחד":"assets/פחד.png","עצב":"assets/עצב.png","עלבון":"assets/עלבון.png","בושה":"assets/בושה.png","אשמה":"assets/אשמה.png","בלבול":"assets/בלבול.png","שמחה":"assets/שמחה.png","גאווה":"assets/גאווה.png","רוגע":"assets/רוגע.png","תסכול":"assets/תסכול.png","קנאה":"assets/קנאה.png"};
 
-
-/* ══ DATA ══ */
 const EDATA = {
-  כעס:   {signal:"מישהו לא היה הוגן אתי, פגע בי, או לא קיבלתי מה שרציתי", body:"לב דופק מהר, הגוף מתוח וחזק, חום בפנים",   help:"לעצור רגע לפני שאני פועל, להגיד מה מפריע לי"},
-  פחד:   {signal:"יכול להיות שיש סכנה",                             body:"לב דופק מהר, נשימה מהירה, בטן מתכווצת",  help:"לבדוק כמה הסכנה גדולה, להחליט אם אני יכול להתמודד לבד"},
-  עצב:   {signal:"משהו שהיה חשוב לי חסר עכשיו או נגמר",           body:"דמעות, כבד בלב, אין כוח לזוז",             help:"לספר למישהו איך אני מרגיש, לבקש חיבוק"},
-  עלבון: {signal:"מישהו אמר או עשה משהו שפגע בי",                 body:"מרגיש כמו עצב — גרון נחנק, קשה לבלוע, עיניים דומעות",         help:"לספר איך הרגשתי, לבקש יחס מכבד"},
-  בושה:  {signal:"אני דואג איך אחרים יסתכלו עליי",                body:"רצון להתחבא, הראש למטה, חום בפנים",         help:"לזכור שלכולם קורות טעויות, לדבר עם מישהו שסומכים עליו"},
-  אשמה:  {signal:"עשיתי משהו שפגע במישהו או לא היה נכון",         body:"כאב בלב, תחושת אי נוחות, דאגה על מה שעשינו והתחרטנו עליו",        help:"לקחת אחריות, להתנצל או לנסות לתקן"},
-  בלבול: {signal:"אני לא מבין מה קורה כאן",                       body:"הראש מלא מחשבות שלא מסתדרות, מסתכל סביב ולא מצליח להבין מה קורה",               help:"לשאול שאלה, לבקש הסבר"},
-  שמחה:  {signal:"קרה משהו טוב או כיף",                           body:"חיוך, קלילות בגוף, הרבה אנרגיה",           help:"ליהנות מהרגע, לשתף אחרים בשמחה"},
-  גאווה: {signal:"התאמצתי והצלחתי",                               body:"חום בחזה, גב זקוף, כוח",                    help:"להכיר במאמץ שלי, להגיד לעצמי: כל הכבוד"},
-  רוגע:  {signal:"אני מרגיש בטוח ושקט",                          body:"נשימה עמוקה, גוף רפוי",                     help:"לשים לב מה עוזר לי להירגע, להשתמש בזה כשקשה"},
-  תסכול: {signal:"אני מנסה אבל זה עדיין לא מצליח",               body:"חוזר שוב ושוב על אותה פעולה, הגוף נעשה מתוח ואפילו כואב הראש, תחושה שהמוח תקוע",               help:"לבקש פסק זמן, לנסות שוב בדרך אחרת"},
-  קנאה:  {signal:"למישהו אחר יש משהו שאני רוצה",                 body:"תחושה חזקה בגוף ובראש לרצות משהו שלא שלי, העיניים לא מפסיקות להסתכל על מה שאני רוצה, תחושת אי שקט בגוף",                      help:"לזהות מה אני רוצה, להעריך את מה שכבר יש לי"},
+  כעס:   {signal:"מישהו לא היה הוגן אתי, פגע בי, או לא קיבלתי מה שרציתי", body:"לב דופק מהר, הגוף מתוח וחזק, חום בפנים", help:"לעצור רגע לפני שאני פועל, להגיד מה מפריע לי"},
+  פחד:   {signal:"יכול להיות שיש סכנה", body:"לב דופק מהר, נשימה מהירה, בטן מתכווצת", help:"לבדוק כמה הסכנה גדולה, להחליט אם אני יכול להתמודד לבד"},
+  עצב:   {signal:"משהו שהיה חשוב לי חסר עכשיו או נגמר", body:"דמעות, כבד בלב, אין כוח לזוז", help:"לספר למישהו איך אני מרגיש, לבקש חיבוק"},
+  עלבון: {signal:"מישהו אמר או עשה משהו שפגע בי", body:"מרגיש כמו עצב — גרון נחנק, קשה לבלוע, עיניים דומעות", help:"לספר איך הרגשתי, לבקש יחס מכבד"},
+  בושה:  {signal:"אני דואג איך אחרים יסתכלו עליי", body:"רצון להתחבא, הראש למטה, חום בפנים", help:"לזכור שלכולם קורות טעויות, לדבר עם מישהו שסומכים עליו"},
+  אשמה:  {signal:"עשיתי משהו שפגע במישהו או לא היה נכון", body:"כאב בלב, תחושת אי נוחות, דאגה על מה שעשינו והתחרטנו עליו", help:"לקחת אחריות, להתנצל או לנסות לתקן"},
+  בלבול: {signal:"אני לא מבין מה קורה כאן", body:"הראש מלא מחשבות שלא מסתדרות, מסתכל סביב ולא מצליח להבין מה קורה", help:"לשאול שאלה, לבקש הסבר"},
+  שמחה:  {signal:"קרה משהו טוב או כיף", body:"חיוך, קלילות בגוף, הרבה אנרגיה", help:"ליהנות מהרגע, לשתף אחרים בשמחה"},
+  גאווה: {signal:"התאמצתי והצלחתי", body:"חום בחזה, גב זקוף, כוח", help:"להכיר במאמץ שלי, להגיד לעצמי: כל הכבוד"},
+  רוגע:  {signal:"אני מרגיש בטוח ושקט", body:"נשימה עמוקה, גוף רפוי", help:"לשים לב מה עוזר לי להירגע, להשתמש בזה כשקשה"},
+  תסכול: {signal:"אני כבר מנסה הרבה פעמים וזה לא מצליח", body:"חוזר שוב ושוב על אותה פעולה, הגוף נעשה מתוח ואפילו כואב הראש, תחושה שהמוח תקוע", help:"לבקש פסק זמן, לנסות שוב בדרך אחרת"},
+  קנאה:  {signal:"למישהו אחר יש משהו שאני רוצה", body:"תחושה חזקה בגוף ובראש לרצות משהו שלא שלי, העיניים לא מפסיקות להסתכל על מה שאני רוצה, תחושת אי שקט בגוף", help:"לזהות מה אני רוצה, להעריך את מה שכבר יש לי"},
 };
-const CAT_KEYS   = [null,"signal","body","help"];
-const CAT_LABELS = ["שם הרגש","מה הרגש אומר לי","איך הגוף מרגיש","מה יכול לעזור"];
-const CAT_HINT   = ["👉 בחר קלף שם הרגש","👉 עכשיו בחר מה הרגש אומר לך","👉 עכשיו בחר איך הגוף מרגיש","👉 עכשיו בחר מה יכול לעזור"];
-const TOTAL = Object.keys(EDATA).length;
-const PAL = ["#6C63FF","#FF6B6B","#43D08A","#FFD166","#38BDF8","#F472B6","#FB923C","#A3E635"];
+
+const ENAMES = Object.keys(EDATA);
+const TOTAL  = ENAMES.length;
+const PAL    = ["#6C63FF","#FF6B6B","#43D08A","#FFD166","#38BDF8","#F472B6","#FB923C","#A3E635"];
+
+/* ══ CATEGORIES ══ */
+let categories = [
+  {name:"שם הרגש",         key:null,     color:"#92400e", type:"image"},
+  {name:"מה הרגש אומר לי", key:"signal", color:"#5b21b6", type:"text"},
+  {name:"איך הגוף מרגיש",  key:"body",   color:"#9f1239", type:"text"},
+  {name:"מה יכול לעזור",   key:"help",   color:"#1e3a8a", type:"text"},
+];
+let catVisible = [];
 
 /* ══ STATE ══ */
-let players  = [];
-let curIdx   = 0;
+let players   = [];
+let curIdx    = 0;
 let totalDone = 0;
+let alwaysOpenMode = false;
 
-// Per-player progress (persists across turns)
-// { emotion: string|null, nextCat: 0-4 }
-let pProgress = [];
-
-// Per-turn state
-// openCards: Map<col, el> — one open card per column this turn
+let pProgress = []; // {emotion, matchedCats: Set of category indices}
 let openCards = new Map();
-// undoStack: [{el, col, prevState, prevClass, prevStyle}]
 let undoStack = [];
-
-// Flag: waiting for player's choice after success
 let awaitingChoice = false;
-let toastTim = null;
+let toastTim  = null;
+
+// matchedSets[emotion] = {playerIdx, player, cats:{col: {catName,catColor,content,isImage}}}
+let matchedSets = {};
 
 /* ══ SETUP ══ */
 function init(){ addRow(); addRow(); }
@@ -259,24 +287,20 @@ function addRow(name, color){
   if(idx >= 6) return;
   const col  = color || PAL[idx % PAL.length];
   const row  = document.createElement('div');
-  row.className = 'prow'; row.dataset.col = col;
-
-  const inp = document.createElement('input');
-  inp.className='pname'; inp.type='text';
-  inp.placeholder=`שחקן ${idx+1}`; inp.maxLength=14;
+  row.className='prow'; row.dataset.col=col;
+  const inp=document.createElement('input');
+  inp.className='pname';inp.type='text';inp.placeholder=`שחקן ${idx+1}`;inp.maxLength=14;
   row.appendChild(inp);
-
-  const sw = document.createElement('div'); sw.className='swatches';
+  const sw=document.createElement('div');sw.className='swatches';
   PAL.forEach(c=>{
     const s=document.createElement('div');
-    s.className='sw'+(c===col?' on':''); s.style.background=c;
+    s.className='sw'+(c===col?' on':'');s.style.background=c;
     s.onclick=()=>{row.dataset.col=c;row.querySelectorAll('.sw').forEach(x=>x.classList.remove('on'));s.classList.add('on');};
     sw.appendChild(s);
   });
   row.appendChild(sw);
-
   if(idx>0){
-    const rm=document.createElement('button'); rm.className='rmbtn'; rm.textContent='✕';
+    const rm=document.createElement('button');rm.className='rmbtn';rm.textContent='✕';
     rm.onclick=()=>{row.remove();document.getElementById('addBtn').style.display='';};
     row.appendChild(rm);
   }
@@ -291,7 +315,10 @@ function startGame(){
     players.push({disp:n||`שחקן ${i+1}`,color:r.dataset.col,score:0});
   });
   curIdx=0; totalDone=0;
-  pProgress=players.map(()=>({emotion:null,nextCat:0}));
+  pProgress=players.map(()=>({emotion:null,matchedCats:new Set()}));
+  matchedSets={};
+  catVisible=categories.map(()=>true);
+  alwaysOpenMode=false;
   resetTurn();
   buildBoard();
   showScreen('gameScreen');
@@ -299,28 +326,43 @@ function startGame(){
 
 function goSetup(){
   const list=document.getElementById('plist');
-  list.innerHTML=''; document.getElementById('addBtn').style.display='';
+  list.innerHTML='';document.getElementById('addBtn').style.display='';
   players.forEach(p=>addRow(p.disp,p.color));
   showScreen('setupScreen');
 }
 
-/* ══ BUILD BOARD ══ */
-function shuf(a){return [...a].sort(()=>Math.random()-.5);}
+/* ══ BUILD BOARD (only on new game / restart) ══ */
+function shuf(a){return[...a].sort(()=>Math.random()-.5);}
 
 function buildBoard(){
-  const eNames=Object.keys(EDATA);
-  for(let c=0;c<4;c++){
-    const col=document.getElementById('col'+c);
-    col.innerHTML='';
-    shuf(eNames).forEach((ename,i)=>col.appendChild(makeCard(ename,c,i+1)));
-  }
-  document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
-  renderHeader();
-  updateHint();
-}
+  const container=document.getElementById('boardBlocks');
+  container.innerHTML='';
+  categories.forEach((cat,ci)=>{
+    const block=document.createElement('div');
+    block.className='cat-block'+(catVisible[ci]?'':' hidden');
+    block.id='catBlock'+ci;
 
-function resetShareCol(){
-  document.getElementById('col4').innerHTML='<div class="share-empty">💬<br>יופיע כאן לאחר סדרה</div>';
+    const hdr=document.createElement('div');
+    hdr.className='cat-block-hdr';
+    hdr.style.background=cat.color;
+    hdr.textContent=cat.name;
+    block.appendChild(hdr);
+
+    const grid=document.createElement('div');
+    grid.className='cat-block-grid';
+    grid.id='catGrid'+ci;
+    shuf(ENAMES).forEach((ename,i)=>grid.appendChild(makeCard(ename,ci,i+1)));
+    block.appendChild(grid);
+    container.appendChild(block);
+  });
+
+  // If always-open mode, reveal cat0 cards
+  if(alwaysOpenMode) applyAlwaysOpen();
+
+  renderToggles();
+  renderHeader();
+  renderMatchedArea();
+  document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
 }
 
 function makeCard(ename,col,num){
@@ -329,20 +371,98 @@ function makeCard(ename,col,num){
   el.dataset.ename=ename;
   el.dataset.col=String(col);
   el.dataset.state='0';
-  if(col===0){
-    el.innerHTML=`
-      <div class="c-num">${num}</div>
-      <div class="c-lbl">${CAT_LABELS[0]}</div>
+  const cat=categories[col];
+  if(cat.type==='image'){
+    el.innerHTML=`<div class="c-num">${num}</div>
+      <div class="c-lbl">${cat.name}</div>
       <img class="c-img" src="${IMGS[ename]}" alt="${ename}">
       <div class="c-name">${ename}</div>`;
+  } else if(cat.custom){
+    el.innerHTML=`<div class="c-num">${num}</div>
+      <div class="c-lbl">${cat.name}</div>
+      <div class="c-text">${cat.custom[ename]||''}</div>`;
   } else {
-    el.innerHTML=`
-      <div class="c-num">${num}</div>
-      <div class="c-lbl">${CAT_LABELS[col]}</div>
-      <div class="c-text">${EDATA[ename][CAT_KEYS[col]]}</div>`;
+    el.innerHTML=`<div class="c-num">${num}</div>
+      <div class="c-lbl">${cat.name}</div>
+      <div class="c-text">${EDATA[ename][cat.key]}</div>`;
   }
   el.addEventListener('click',()=>onCardClick(el));
   return el;
+}
+
+/* ══ CATEGORY TOGGLES ══ */
+function renderToggles(){
+  const bar=document.getElementById('catToggles');
+  bar.innerHTML='<span class="ct-label">קטגוריות:</span>';
+  categories.forEach((cat,ci)=>{
+    const btn=document.createElement('button');
+    btn.className='cat-tog'+(catVisible[ci]?'':' off');
+    btn.style.background=catVisible[ci]?cat.color:'transparent';
+    btn.style.borderColor=cat.color;
+    btn.textContent=cat.name;
+    btn.onclick=()=>toggleCat(ci);
+    bar.appendChild(btn);
+  });
+  // Always-open mode toggle
+  const modeBtn=document.createElement('button');
+  modeBtn.className='ct-mode'+(alwaysOpenMode?' on':'');
+  modeBtn.textContent=alwaysOpenMode?'👁 רגשות גלויים':'👁 הצג רגשות';
+  modeBtn.onclick=toggleAlwaysOpen;
+  bar.appendChild(modeBtn);
+}
+
+function toggleCat(ci){
+  if(alwaysOpenMode && ci===0) return; // Can't hide cat0 in always-open mode
+  catVisible[ci]=!catVisible[ci];
+  const block=document.getElementById('catBlock'+ci);
+  if(block) block.classList.toggle('hidden',!catVisible[ci]);
+  renderToggles();
+}
+
+/* ══ ALWAYS-OPEN MODE ══ */
+function toggleAlwaysOpen(){
+  alwaysOpenMode=!alwaysOpenMode;
+  if(alwaysOpenMode){
+    catVisible[0]=true;
+    const block=document.getElementById('catBlock0');
+    if(block) block.classList.remove('hidden');
+    // First move any previously matched cards to bottom
+    moveMatchedCardsDown();
+    // Then close all open non-perm cards
+    closeAllOpenCards();
+    // Reset current player progress
+    pProgress[curIdx].emotion=null;
+    pProgress[curIdx].matchedCats=new Set();
+    undoStack=[]; updateUndoBtn();
+    // Now reveal cat0 cards
+    applyAlwaysOpen();
+  } else {
+    // First move any matched cards to bottom
+    moveMatchedCardsDown();
+    // Close ALL open non-perm cards (all categories, not just cat0)
+    document.querySelectorAll('.card').forEach(c=>{
+      if(!c.dataset.perm && parseInt(c.dataset.state)>0){
+        c.dataset.state='0';
+        c.className='card';
+        c.classList.remove('selected');
+      }
+    });
+    openCards.clear();
+    // Reset current player progress
+    pProgress[curIdx].emotion=null;
+    pProgress[curIdx].matchedCats=new Set();
+    undoStack=[]; updateUndoBtn();
+  }
+  renderToggles();
+}
+
+function applyAlwaysOpen(){
+  document.querySelectorAll('.card[data-col="0"]').forEach(c=>{
+    if(!c.dataset.perm && !c.classList.contains('completed')){
+      c.dataset.state='2';
+      c.className='card open-full';
+    }
+  });
 }
 
 /* ══ CARD CLICK ══ */
@@ -351,100 +471,216 @@ function onCardClick(el){
   const ename = el.dataset.ename;
   const state = parseInt(el.dataset.state);
 
-  // Locked cat0 at state=1: allow click to reveal name (state1→2)
-  if(el.classList.contains('locked')){
+  if(el.classList.contains('locked') || el.classList.contains('completed')){
+    // Allow revealing name on locked cat0 img-only
     if(col===0 && state===1){
       el.dataset.state='2';
       el.className='card open-full locked';
     }
     return;
   }
-
   if(awaitingChoice) return;
 
   const pp = pProgress[curIdx];
 
-  /* ── Cat 0: 3-state ── */
-  if(col===0){
+  /* Always-open mode: cat0 is for selection only */
+  if(alwaysOpenMode && col===0){
+    // Deselect all cat0 cards
+    document.querySelectorAll('.card[data-col="0"]').forEach(c=>c.classList.remove('selected'));
+    if(pp.emotion===ename){
+      // Deselect
+      pp.emotion=null;
+      pp.matchedCats=new Set();
+    } else {
+      // Select this emotion
+      el.classList.add('selected');
+      pp.emotion=ename;
+      pp.matchedCats=new Set([0]);
+    }
+    return;
+  }
+
+  /* Cat0 (image type): 3-state */
+  if(categories[col].type==='image' && col===0){
     if(state===0){
+      // Auto-close any other open cat0 card first
+      document.querySelectorAll('.card[data-col="0"]').forEach(c=>{
+        if(c!==el && !c.dataset.perm && parseInt(c.dataset.state)>0){
+          c.dataset.state='0';
+          c.className='card';
+        }
+      });
       saveUndo(el);
       el.dataset.state='1';
       el.className='card open-img';
-      openCards.set(0,el);
+      openCards.set(col,el);
       updateUndoBtn();
-      tryLock(el,col,ename);
+      // Set emotion
+      pp.emotion=ename;
+      pp.matchedCats=new Set([0]);
     } else if(state===1){
       el.dataset.state='2';
       el.className='card open-full';
     } else if(state===2){
       closeCard(el);
+      if(pp.emotion===ename){pp.emotion=null;pp.matchedCats=new Set();}
     }
     return;
   }
 
-  /* ── Cats 1-3: toggle ── */
+  /* Other categories: toggle open/close */
   if(state===0){
     saveUndo(el);
     el.dataset.state='2';
     el.className='card open-full';
     openCards.set(col,el);
     updateUndoBtn();
-    tryLock(el,col,ename);
   } else {
     closeCard(el);
   }
 }
 
-function tryLock(el, col, ename){
+/* ══ CHECK MATCH (manual button) ══ */
+function checkMatch(){
   const pp     = pProgress[curIdx];
   const player = players[curIdx];
 
-  // Cat 0: just record the emotion, don't lock yet
-  if(col === 0){
-    pp.emotion  = ename;
-    pp.nextCat  = 1;
-    updateHint();
+  // Step 1: Find the active emotion
+  let activeEmotion = null;
+  if(alwaysOpenMode){
+    const sel = document.querySelector('.card[data-col="0"].selected');
+    if(sel) activeEmotion = sel.dataset.ename;
+  } else {
+    document.querySelectorAll('.card[data-col="0"]').forEach(c=>{
+      if(parseInt(c.dataset.state)>0 && !c.dataset.perm) activeEmotion = c.dataset.ename;
+    });
+  }
+  // Fallback: if cat0 is already locked but series continues, use pp.emotion
+  if(!activeEmotion && pp.emotion) activeEmotion = pp.emotion;
+
+  if(!activeEmotion){
+    showFeedback('😊 קודם בחר קלף רגש!','wrong');
     return;
   }
 
-  // Cats 1-3: need a matching cat0 (or previous) already open
-  if(pp.emotion === null) return;           // no cat0 open yet
-  if(ename !== pp.emotion) return;          // wrong emotion
-  if(col !== pp.nextCat) return;            // wrong category order
+  // Sync pp with actual open card
+  if(pp.emotion !== activeEmotion){
+    pp.emotion = activeEmotion;
+    pp.matchedCats = new Set([0]);
+  }
+  if(!pp.matchedCats.has(0)) pp.matchedCats.add(0);
 
-  // ✅ Match! Lock all open cards of this emotion
-  document.querySelectorAll('.card').forEach(c => {
-    if(c.dataset.ename === ename && parseInt(c.dataset.state) > 0 && !c.dataset.perm){
+  // Step 2: Find all open non-perm cards in categories NOT yet matched
+  let matchingCards = []; // cards matching the emotion in unmatched categories
+  let wrongCards    = []; // cards NOT matching in unmatched categories
+
+  for(let ci=1; ci<categories.length; ci++){
+    if(pp.matchedCats.has(ci)) continue; // already matched
+    document.querySelectorAll(`.card[data-col="${ci}"]`).forEach(c=>{
+      if(parseInt(c.dataset.state)>0 && !c.dataset.perm){
+        if(c.dataset.ename === activeEmotion){
+          matchingCards.push({card:c, col:ci});
+        } else {
+          wrongCards.push({card:c, col:ci});
+        }
+      }
+    });
+  }
+
+  if(matchingCards.length===0 && wrongCards.length===0){
+    showFeedback('😊 פתח קלף בקטגוריה אחרת!','wrong');
+    return;
+  }
+
+  if(matchingCards.length===0){
+    showFeedback('😊 טעות! לא נורא,\nלמדנו משהו חדש!','wrong');
+    return;
+  }
+
+  // ✅ Match found! Lock ALL matching cards in unmatched categories
+  showFeedback('🎉 כל הכבוד!\nהצלחת להתאים!','ok');
+  const ename = activeEmotion;
+
+  // Lock the matching cards + cat0 if not yet locked
+  document.querySelectorAll('.card').forEach(c=>{
+    if(c.dataset.ename===ename && parseInt(c.dataset.state)>0 && !c.dataset.perm){
+      const cCol=parseInt(c.dataset.col);
+
       c.classList.add('locked');
-      c.dataset.perm = '1';
-      c.style.background  = player.color + '50';
-      c.style.borderColor = player.color;
-      c.style.boxShadow   = `0 0 16px ${player.color}90`;
-      c.style.color       = '#fff';
-      // Move matched card to top of its column
-      const colEl = c.parentElement;
-      if(colEl) colEl.prepend(c);
+      c.classList.remove('selected');
+      c.dataset.perm='1';
+      c.style.background=player.color+'50';
+      c.style.borderColor=player.color;
+      c.style.boxShadow=`0 0 16px ${player.color}90`;
+      c.style.color='#fff';
+      openCards.delete(cCol);
+
+      pp.matchedCats.add(cCol);
+
+      const cat=categories[cCol];
+      let content='';
+      if(cat.type==='image') content=ename;
+      else if(cat.custom) content=cat.custom[ename]||'';
+      else content=EDATA[ename][cat.key];
+
+      if(!matchedSets[ename]) matchedSets[ename]={playerIdx:curIdx,player,cats:{}};
+      matchedSets[ename].cats[cCol]={catName:cat.name,catColor:cat.color,content,isImage:cat.type==='image'};
     }
   });
 
-  pp.nextCat++;
-  undoStack = []; updateUndoBtn();
+  undoStack=[]; updateUndoBtn();
 
-  if(pp.nextCat === 4){
-    // Full series done
-    pp.emotion = null; pp.nextCat = 0;
+  // Check if ALL categories matched → series complete
+  if(pp.matchedCats.size>=categories.length){
+    pp.emotion=null; pp.matchedCats=new Set();
     totalDone++;
-    players[curIdx].score += 10;
-    addShareItem(ename, player);
+    players[curIdx].score+=10;
     renderHeader();
-    document.getElementById('progTxt').textContent = `${totalDone} / ${TOTAL} סדרות`;
+    document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
     confetti(player.color);
-    showToast(`🎉 סדרת "${ename}" הושלמה! +10 ל${player.disp}`, 'ok');
-    if(totalDone === TOTAL){ setTimeout(showWin, 2600); return; }
-  } else {
-    showToast(`✓ "${CAT_LABELS[col]}" הותאם!`, 'ok');
+    if(totalDone===TOTAL){ setTimeout(showWin,2600); return; }
   }
-  updateHint();
+}
+
+/* ══ MATCHED AREA (table by player) ══ */
+function renderMatchedArea(){
+  const emotions=Object.keys(matchedSets);
+  const area=document.getElementById('matchedArea');
+  const list=document.getElementById('matchedList');
+  if(emotions.length===0){area.style.display='none';return;}
+  area.style.display='';
+
+  // Group by player
+  const byPlayer={};
+  players.forEach((_,i)=>{byPlayer[i]=[];});
+  emotions.forEach(ename=>{
+    const ms=matchedSets[ename];
+    if(!byPlayer[ms.playerIdx]) byPlayer[ms.playerIdx]=[];
+    byPlayer[ms.playerIdx].push(ename);
+  });
+
+  const maxRows=Math.max(...Object.values(byPlayer).map(a=>a.length),1);
+
+  let html='<table class="matched-table"><thead><tr>';
+  players.forEach((p,i)=>{
+    html+=`<th style="background:${p.color}33;color:${p.color}">● ${p.disp} (${p.score})</th>`;
+  });
+  html+='</tr></thead><tbody>';
+
+  for(let r=0;r<maxRows;r++){
+    html+='<tr>';
+    players.forEach((_,i)=>{
+      const ename=byPlayer[i][r];
+      if(ename){
+        html+=`<td><div class="mt-series"><img src="${IMGS[ename]}" alt="${ename}">${ename}</div></td>`;
+      } else {
+        html+='<td></td>';
+      }
+    });
+    html+='</tr>';
+  }
+  html+='</tbody></table>';
+  list.innerHTML=html;
 }
 
 /* ══ CHOICE BAR ══ */
@@ -452,9 +688,9 @@ function showChoiceBar(){
   const pp=pProgress[curIdx];
   const p=players[curIdx];
   const lbl=document.getElementById('choiceLbl');
-  const catName = ['שם הרגש','מה הרגש אומר','איך הגוף מרגיש','מה יכול לעזור'][pp.nextCat] || '';
-  lbl.innerHTML=`<span style="color:${p.color}">● ${p.disp}</span> — יש לך סדרה פתוחה של "<strong>${pp.emotion}</strong>" (${pp.nextCat}/4 קטגוריות) — מה לעשות?`;
-  document.querySelectorAll('.cbtn')[0].textContent=`המשך לקטגוריה הבאה: ${catName} ➜`;
+  const matched = pp.matchedCats ? pp.matchedCats.size : 0;
+  lbl.innerHTML=`<span style="color:${p.color}">● ${p.disp}</span> — יש לך סדרה פתוחה של "<strong>${pp.emotion}</strong>" (${matched}/${categories.length} קטגוריות)`;
+  document.querySelectorAll('.cbtn')[0].textContent=`המשך לסדרה ➜`;
   document.querySelectorAll('.cbtn')[1].textContent=`התחל סדרה חדשה מקטגוריה 1 🔄`;
   document.getElementById('choiceBar').classList.add('show');
 }
@@ -463,15 +699,11 @@ function chooseAction(action){
   document.getElementById('choiceBar').classList.remove('show');
   awaitingChoice=false;
   resetTurn();
-
   if(action==='continue'){
-    // Same player continues
-    renderHeader(); updateHint();
+    renderHeader();
   } else {
-    // restart-series: abandon current series progress, start from cat0
-    pProgress[curIdx]={emotion:null,nextCat:0};
-    renderHeader(); updateHint();
-    // Do NOT pass turn — player stays and picks a new cat0
+    pProgress[curIdx]={emotion:null,matchedCats:new Set()};
+    renderHeader();
   }
 }
 
@@ -484,26 +716,32 @@ function closeCard(el){
   updateUndoBtn();
 }
 
-function closeCardSilently(el){
-  if(el.classList.contains('locked')) return;
-  el.dataset.state='0';
-  el.className='card';
-  openCards.delete(parseInt(el.dataset.col));
-}
-
 function closeAllOpenCards(){
-  document.querySelectorAll('.card').forEach(el => {
-    if(!el.dataset.perm && parseInt(el.dataset.state) > 0){
-      el.dataset.state = '0';
-      el.className = 'card';
-      el.classList.remove('locked');
-      el.style.background = '';
-      el.style.borderColor = '';
-      el.style.boxShadow = '';
-      el.style.color = '';
+  document.querySelectorAll('.card').forEach(el=>{
+    if(!el.dataset.perm && parseInt(el.dataset.state)>0){
+      // In always-open mode, keep cat0 cards open but deselect
+      if(alwaysOpenMode && parseInt(el.dataset.col)===0){
+        el.classList.remove('selected');
+        el.dataset.state='2';
+        el.className='card open-full';
+        return;
+      }
+      el.dataset.state='0';
+      el.className='card';
+      el.classList.remove('selected');
     }
   });
   openCards.clear();
+}
+
+/* ══ MOVE MATCHED CARDS TO BOTTOM ══ */
+function moveMatchedCardsDown(){
+  document.querySelectorAll('.card[data-perm="1"]').forEach(c=>{
+    const empty=document.createElement('div');
+    empty.className='card-empty';
+    c.replaceWith(empty);
+  });
+  renderMatchedArea();
 }
 
 /* ══ END TURN ══ */
@@ -511,13 +749,12 @@ function endTurn(){
   document.getElementById('choiceBar').classList.remove('show');
   awaitingChoice=false;
   closeAllOpenCards();
+  moveMatchedCardsDown();
   resetTurn();
   curIdx=(curIdx+1)%players.length;
   renderHeader();
-  updateHint();
-  // Show choice bar if next player has a partial series
   const pp=pProgress[curIdx];
-  if(pp.emotion !== null){
+  if(pp.emotion!==null){
     awaitingChoice=true;
     showChoiceBar();
   }
@@ -525,22 +762,20 @@ function endTurn(){
 
 /* ══ UNDO ══ */
 function saveUndo(el){
-  undoStack.push({
-    el,
-    col: parseInt(el.dataset.col),
-    prevState: el.dataset.state,
-    prevClass: el.className
-  });
+  undoStack.push({el,col:parseInt(el.dataset.col),prevState:el.dataset.state,prevClass:el.className});
 }
-
 function doUndo(){
   if(undoStack.length===0) return;
   const u=undoStack.pop();
   const el=u.el;
-  if(el.classList.contains('locked')) { updateUndoBtn(); return; }
+  if(el.dataset.perm){updateUndoBtn();return;}
   el.dataset.state=u.prevState;
   el.className=u.prevClass;
   openCards.delete(u.col);
+  if(u.col===0){
+    pProgress[curIdx].emotion=null;
+    pProgress[curIdx].matchedCats=new Set();
+  }
   updateUndoBtn();
 }
 
@@ -555,24 +790,13 @@ function restart(){
   totalDone=0;
   players.forEach(p=>p.score=0);
   curIdx=0;
-  pProgress=players.map(()=>({emotion:null,nextCat:0}));
+  pProgress=players.map(()=>({emotion:null,matchedCats:new Set()}));
   awaitingChoice=false;
+  matchedSets={};
+  catVisible=categories.map(()=>true);
   document.getElementById('choiceBar').classList.remove('show');
   resetTurn();
-  resetShareCol();
   buildBoard();
-}
-
-/* ══ SHARE ══ */
-function addShareItem(ename,player){
-  const col4=document.getElementById('col4');
-  const ph=col4.querySelector('.share-empty');
-  if(ph) ph.remove();
-  const div=document.createElement('div'); div.className='share-item';
-  div.innerHTML=`<div class="si-em">💬</div>
-    <div class="si-lbl">שיתוף בחוויה</div>
-    <div class="si-txt">ספר על פעם שבה הרגשת<br><strong style="color:${player.color}">${ename}</strong></div>`;
-  col4.appendChild(div);
 }
 
 /* ══ RENDER ══ */
@@ -590,17 +814,31 @@ function renderHeader(){
   tb.style.borderBottom=`1px solid ${p.color}33`;
 }
 
-function updateHint(){}
-
 function updateUndoBtn(){
   document.getElementById('undoBtn').disabled=undoStack.length===0;
+}
+
+/* ══ FEEDBACK BANNER ══ */
+function showFeedback(msg,type){
+  // Remove any existing banner
+  document.querySelectorAll('.feedback-banner').forEach(b=>b.remove());
+  const banner=document.createElement('div');
+  banner.className=`feedback-banner ${type}`;
+  banner.textContent=msg;
+  banner.style.whiteSpace='pre-line';
+  document.body.appendChild(banner);
+  requestAnimationFrame(()=>banner.classList.add('show'));
+  setTimeout(()=>{
+    banner.classList.remove('show');
+    setTimeout(()=>banner.remove(),350);
+  },1800);
 }
 
 /* ══ TOAST ══ */
 function showToast(msg,type){
   if(toastTim){clearTimeout(toastTim);document.querySelectorAll('.toast').forEach(t=>t.remove());}
   const t=document.createElement('div');
-  t.className=`toast ${type}`; t.textContent=msg;
+  t.className=`toast ${type}`;t.textContent=msg;
   document.body.appendChild(t);
   toastTim=setTimeout(()=>t.remove(),2400);
 }
@@ -616,7 +854,7 @@ function showWin(){
       <span class="wname" style="color:${p.color}">${p.disp}</span>
       <span class="wpts">${p.score} נק'</span>
     </div>`).join('');
-  showScreen('winScreen'); confetti('#FFD166',120);
+  showScreen('winScreen');confetti('#FFD166',120);
 }
 
 /* ══ CONFETTI ══ */
