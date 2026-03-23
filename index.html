@@ -267,6 +267,10 @@ let toastTim  = null;
 // matchedSets[emotion] = {playerIdx, player, cats:{col: {catName,catColor,content,isImage}}}
 let matchedSets = {};
 
+// cardStore[ename+'-'+col] = {card, placeholder} — keeps matched cards so we can restore them to board
+let cardStore = {};
+let restoredSeries = null; // ename of series currently shown on board (or null)
+
 /* ══ SETUP ══ */
 function init(){ addRow(); addRow(); }
 
@@ -306,6 +310,8 @@ function startGame(){
   curIdx=0; totalDone=0;
   pProgress=players.map(()=>({emotion:null,matchedCats:new Set()}));
   matchedSets={};
+  cardStore={};
+  restoredSeries=null;
   catVisible=categories.map(()=>true);
   alwaysOpenMode=false;
   resetTurn();
@@ -410,6 +416,7 @@ function toggleCat(ci){
 
 /* ══ ALWAYS-OPEN MODE ══ */
 function toggleAlwaysOpen(){
+  hideSeriesToMatched();
   alwaysOpenMode=!alwaysOpenMode;
   if(alwaysOpenMode){
     catVisible[0]=true;
@@ -697,6 +704,9 @@ function selectSeries(ename){
   pp.emotion=ename;
   pp.matchedCats=new Set(Object.keys(ms.cats).map(Number));
 
+  // Restore matched cards to the board so player can see them
+  restoreSeriesToBoard(ename);
+
   // Update turn banner to show selected series
   const p=players[curIdx];
   document.getElementById('turnTxt').innerHTML=`<span style="color:${p.color}">● ${p.disp}</span> — סדרה: <strong>${ename}</strong> (${pp.matchedCats.size}/${categories.length})`;
@@ -734,16 +744,58 @@ function closeAllOpenCards(){
 /* ══ MOVE MATCHED CARDS TO BOTTOM ══ */
 function moveMatchedCardsDown(){
   document.querySelectorAll('.card[data-perm="1"]').forEach(c=>{
+    const ename=c.dataset.ename;
+    const col=c.dataset.col;
+    const key=ename+'-'+col;
     const empty=document.createElement('div');
     empty.className='card-empty';
+    empty.dataset.key=key; // mark placeholder so we can find it
+    cardStore[key]={card:c,placeholder:empty};
     c.replaceWith(empty);
   });
+  restoredSeries=null;
   renderMatchedArea();
+}
+
+/* ══ RESTORE / HIDE SERIES ON BOARD ══ */
+function restoreSeriesToBoard(ename){
+  // First hide any currently restored series
+  if(restoredSeries && restoredSeries!==ename) hideSeriesToMatched();
+  if(restoredSeries===ename) return; // already showing
+
+  const ms=matchedSets[ename];
+  if(!ms) return;
+
+  Object.keys(ms.cats).forEach(col=>{
+    const key=ename+'-'+col;
+    const stored=cardStore[key];
+    if(stored && stored.placeholder.parentNode){
+      stored.placeholder.replaceWith(stored.card);
+    }
+  });
+  restoredSeries=ename;
+}
+
+function hideSeriesToMatched(){
+  if(!restoredSeries) return;
+  const ename=restoredSeries;
+  const ms=matchedSets[ename];
+  if(!ms) {restoredSeries=null;return;}
+
+  Object.keys(ms.cats).forEach(col=>{
+    const key=ename+'-'+col;
+    const stored=cardStore[key];
+    if(stored && stored.card.parentNode){
+      stored.card.replaceWith(stored.placeholder);
+    }
+  });
+  restoredSeries=null;
 }
 
 /* ══ END TURN ══ */
 function endTurn(){
   closeAllOpenCards();
+  hideSeriesToMatched();
   moveMatchedCardsDown();
   resetTurn();
   curIdx=(curIdx+1)%players.length;
@@ -787,6 +839,8 @@ function restart(){
   curIdx=0;
   pProgress=players.map(()=>({emotion:null,matchedCats:new Set()}));
   matchedSets={};
+  cardStore={};
+  restoredSeries=null;
   catVisible=categories.map(()=>true);
   resetTurn();
   buildBoard();
