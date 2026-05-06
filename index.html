@@ -101,10 +101,14 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 .card.open-img .c-lbl{display:block;font-size:.7em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px;}
 .card.open-img .c-img{display:block;width:100%;max-width:none;border-radius:8px;object-fit:cover;aspect-ratio:1;}
 
+/* Emotion card (col0) expands to span both columns and 3 rows */
+.card.open-img[data-col="0"]{grid-column:1/-1;grid-row:span 3;padding:10px;}
+.card.open-full[data-col="0"]{grid-column:1/-1;grid-row:span 3;padding:10px;}
+
 .card.open-full .c-num{display:none;}
 .card.open-full .c-lbl{display:block;font-size:.7em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px;}
 .card.open-full .c-img{display:block;width:100%;max-width:none;border-radius:8px;object-fit:cover;aspect-ratio:1;}
-.card.open-full .c-name{display:block;font-size:1em;font-weight:900;margin-top:3px;}
+.card.open-full .c-name{display:block;font-size:1.2em;font-weight:900;margin-top:5px;}
 .card.open-full .c-text{display:block;font-size:.78em;font-weight:700;line-height:1.35;color:rgba(240,238,255,.95);}
 
 .card.locked{cursor:default;pointer-events:none;}
@@ -121,11 +125,6 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 .card-empty{border:2px dashed rgba(108,99,255,.12);border-radius:9px;background:rgba(37,36,56,.25);display:flex;align-items:center;justify-content:center;padding:6px 5px;}
 .card-empty::after{content:'·';font-size:1.5em;color:rgba(255,255,255,.08);}
 
-/* ══ IMAGE POPUP ══ */
-.img-popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(0,0,0,.75);z-index:2000;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:popIn .2s ease;direction:ltr;}
-.img-popup{background:#1a1928;border:3px solid rgba(108,99,255,.4);border-radius:18px;padding:20px;text-align:center;width:40vw;max-height:80vh;box-shadow:0 20px 60px rgba(0,0,0,.6);direction:rtl;}
-.img-popup img{width:100%;border-radius:12px;object-fit:cover;}
-.img-popup .popup-name{font-size:1.6em;font-weight:900;margin-top:12px;color:#f0eeff;}
 
 /* ══ MATCHED AREA (table) ══ */
 .matched-area{border-top:1px solid rgba(108,99,255,.15);padding:4px 8px;background:#111020;flex-shrink:0;max-height:22vh;overflow-y:auto;}
@@ -519,12 +518,9 @@ function onCardClick(el){
       // Set emotion
       pp.emotion=ename;
       pp.matchedCats=new Set([0]);
-      // Show big image popup
-      showImagePopup(ename);
     } else if(state===1){
       el.dataset.state='2';
       el.className='card open-full';
-      showImagePopup(ename);
     } else if(state===2){
       closeCard(el);
       if(pp.emotion===ename){pp.emotion=null;pp.matchedCats=new Set();}
@@ -875,25 +871,6 @@ function updateUndoBtn(){
 }
 
 /* ══ FEEDBACK BANNER ══ */
-function showImagePopup(ename){
-  // Remove any existing popup
-  document.querySelectorAll('.img-popup-overlay').forEach(o=>o.remove());
-  const overlay=document.createElement('div');
-  overlay.className='img-popup-overlay';
-  const popup=document.createElement('div');
-  popup.className='img-popup';
-  const img=document.createElement('img');
-  img.src='assets/'+ename+'.png';
-  img.alt=ename;
-  popup.appendChild(img);
-  const nameEl=document.createElement('div');
-  nameEl.className='popup-name';
-  nameEl.textContent=ename;
-  popup.appendChild(nameEl);
-  overlay.appendChild(popup);
-  overlay.addEventListener('click',()=>overlay.remove());
-  document.body.appendChild(overlay);
-}
 
 function showFeedback(msg,type){
   // Remove any existing banner
