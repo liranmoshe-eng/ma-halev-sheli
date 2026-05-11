@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מה הקטע?</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'SystemHebrew';
+  src: local('Segoe UI'), local('Arial'), local('Helvetica');
+}
+
+body {
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: #e0e0e0;
+  min-height: 100vh;
+  direction: rtl;
+  overflow-x: hidden;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Intro Screen */
+#intro-screen {
+  text-align: center;
+  gap: 30px;
+}
+
+.intro-title {
+  font-size: 4.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.4));
+  animation: titlePulse 3s ease-in-out infinite;
+}
+
+@keyframes titlePulse {
+  0%, 100% { filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.4)); }
+  50% { filter: drop-shadow(0 0 50px rgba(102, 126, 234, 0.7)); }
+}
+
+.intro-subtitle {
+  font-size: 1.5rem;
+  color: #b8b8d4;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.intro-text {
+  font-size: 1.15rem;
+  color: #9999b8;
+  max-width: 650px;
+  line-height: 2;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 25px 30px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.btn {
+  padding: 16px 48px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: #c0c0d8;
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 10px 24px;
+  font-size: 1rem;
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+
+/* Board Screen */
+#board-screen {
+  justify-content: flex-start;
+  padding-top: 20px;
+}
+
+.board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1400px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.board-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.board-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.categories-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1400px;
+  flex: 1;
+}
+
+.category-block {
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.category-block:hover {
+  border-color: rgba(255,255,255,0.18);
+}
+
+.category-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 12px;
+  border-radius: 12px;
+  line-height: 1.6;
+}
+
+.cat-1 .category-title { background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25)); color: #a8b8ff; }
+.cat-2 .category-title { background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(236, 72, 153, 0.25)); color: #d8a8ff; }
+.cat-3 .category-title { background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(59, 130, 246, 0.25)); color: #a8ffc8; }
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.card-btn {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  font-family: inherit;
+}
+
+.cat-1 .card-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.cat-2 .card-btn {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: white;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+}
+
+.cat-3 .card-btn {
+  background: linear-gradient(135deg, #22c55e, #3b82f6);
+  color: white;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.card-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.card-btn.done {
+  opacity: 0.35;
+  background: rgba(255,255,255,0.1) !important;
+  box-shadow: none !important;
+  cursor: default;
+}
+
+.card-btn.done:hover {
+  transform: none;
+}
+
+/* Question Screen */
+#question-screen {
+  gap: 24px;
+  padding: 30px;
+}
+
+.question-category {
+  font-size: 1.1rem;
+  color: #9999b8;
+  font-weight: 600;
+}
+
+.question-statement {
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  max-width: 800px;
+  line-height: 1.6;
+  background: linear-gradient(135deg, #e0e0ff, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.answers-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+.answer-block {
+  background: rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: 200px;
+  flex: 1;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.answer-label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.answer-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.answer-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.count-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+
+.count-btn:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.4);
+  transform: scale(1.1);
+}
+
+.answer-count {
+  font-size: 2rem;
+  font-weight: 800;
+  min-width: 40px;
+  text-align: center;
+}
+
+.question-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Result Screen */
+#result-screen {
+  gap: 30px;
+  padding: 30px;
+}
+
+.result-chart-container {
+  position: relative;
+  width: 280px;
+  height: 280px;
+}
+
+.result-chart-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.result-legend {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.regulation-message {
+  font-size: 1.4rem;
+  text-align: center;
+  max-width: 700px;
+  line-height: 1.8;
+  padding: 24px 32px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #d0d0e8;
+}
+
+/* Summary Screen */
+#summary-screen {
+  gap: 30px;
+  padding: 30px;
+  justify-content: flex-start;
+  padding-top: 40px;
+}
+
+.summary-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  max-width: 800px;
+}
+
+.word-bubble {
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  animation: bubbleFloat 4s ease-in-out infinite;
+}
+
+.word-bubble:nth-child(odd) { animation-delay: 0s; }
+.word-bubble:nth-child(even) { animation-delay: 2s; }
+
+@keyframes bubbleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.summary-categories {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.summary-cat {
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.summary-cat h3 {
+  font-size: 1rem;
+  margin-bottom: 14px;
+  color: #b8b8d4;
+}
+
+.summary-cat canvas {
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  display: block;
+}
+
+.summary-closing {
+  font-size: 1.2rem;
+  text-align: center;
+  max-width: 650px;
+  line-height: 2;
+  padding: 24px 32px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #d0d0e8;
+}
+
+/* Side Panel */
+.panel-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+}
+
+.panel-overlay.open {
+  display: block;
+}
+
+.side-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 420px;
+  height: 100%;
+  background: linear-gradient(180deg, #1a1a3e, #24243e);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  z-index: 101;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+  overflow-y: auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.side-panel.open {
+  transform: translateX(0);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.panel-close {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.8rem;
+  cursor: pointer;
+  padding: 4px 10px;
+}
+
+.panel-close:hover {
+  color: white;
+}
+
+.panel-category {
+  margin-bottom: 16px;
+}
+
+.panel-cat-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+}
+
+.panel-question {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.panel-question-text {
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  color: #c0c0d8;
+}
+
+.btn-add {
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-add:disabled {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .categories-container {
+    grid-template-columns: 1fr;
+  }
+  .cards-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .summary-categories {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .intro-title { font-size: 2.8rem; }
+  .question-statement { font-size: 1.6rem; }
+  .answers-container { flex-direction: column; }
+  .side-panel { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- Intro Screen -->
+<div id="intro-screen" class="screen active">
+  <div class="intro-title">מה הקטע?</div>
+  <div class="intro-subtitle">משחק בחירה על גיל ההתבגרות, פרטיות ומה עוזר להרגיש בטוח</div>
+  <div class="intro-text">
+    היום נדבר על גיל ההתבגרות, אבל לא נדבר על דברים פרטיים של אף אחד.<br><br>
+    אפשר לענות, אפשר להגיד "גם וגם" או "תלוי", ואפשר גם רק להקשיב.<br><br>
+    המטרה היא להבין שגיל ההתבגרות יכול לעורר רגשות שונים — וזה בסדר.
+  </div>
+  <button class="btn btn-primary" onclick="showScreen('board-screen')">מתחילים</button>
+</div>
+
+<!-- Board Screen -->
+<div id="board-screen" class="screen">
+  <div class="board-header">
+    <div class="board-title">מה הקטע?</div>
+    <div class="board-actions">
+      <button class="btn btn-secondary" onclick="openPanel()">מאגר שאלות נוסף</button>
+      <button class="btn btn-secondary" onclick="showSummary()">סיכום המשחק</button>
+      <button class="btn btn-secondary" onclick="resetGame()">איפוס</button>
+    </div>
+  </div>
+  <div class="categories-container" id="categories-container"></div>
+</div>
+
+<!-- Question Screen -->
+<div id="question-screen" class="screen">
+  <div class="question-category" id="q-category"></div>
+  <div class="question-statement" id="q-statement"></div>
+  <div class="answers-container" id="q-answers"></div>
+  <div class="question-actions">
+    <button class="btn btn-primary" onclick="showResult()">הצג תוצאה</button>
+    <button class="btn btn-secondary" onclick="showScreen('board-screen')">חזרה ללוח</button>
+  </div>
+</div>
+
+<!-- Result Screen -->
+<div id="result-screen" class="screen">
+  <div class="question-category" id="r-category"></div>
+  <div class="question-statement" id="r-statement" style="font-size:1.6rem;"></div>
+  <div class="result-chart-container">
+    <canvas id="result-canvas"></canvas>
+  </div>
+  <div class="result-legend" id="r-legend"></div>
+  <div class="regulation-message" id="r-regulation"></div>
+  <button class="btn btn-primary" onclick="backToBoard()">חזרה ללוח</button>
+</div>
+
+<!-- Summary Screen -->
+<div id="summary-screen" class="screen">
+  <div class="summary-title">סיכום המשחק</div>
+  <div class="word-cloud" id="word-cloud"></div>
+  <div class="summary-categories" id="summary-categories"></div>
+  <div class="summary-closing">
+    גיל ההתבגרות נראה אחרת אצל כל ילד.<br>
+    יש ילדים שמתרגשים, יש שחוששים, ויש שמרגישים גם וגם.<br>
+    לא חייבים לחשוף דברים אישיים כדי ללמוד.<br>
+    אפשר לשמור על פרטיות, לבחור עם מי משתפים, ולגדול בקצב שמתאים לנו.
+  </div>
+  <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+    <button class="btn btn-primary" onclick="showScreen('board-screen')">חזרה ללוח</button>
+    <button class="btn btn-secondary" onclick="resetGame(); showScreen('intro-screen')">סיום המשחק</button>
+  </div>
+</div>
+
+<!-- Side Panel -->
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
+<div class="side-panel" id="side-panel">
+  <div class="panel-header">
+    <div class="panel-title">מאגר שאלות נוסף</div>
+    <button class="panel-close" onclick="closePanel()">&times;</button>
+  </div>
+  <div id="panel-content"></div>
+</div>
+
+<script>
+const CATEGORIES = [
+  {
+    id: 1,
+    name: 'מי חושב ככה על גיל ההתבגרות?',
+    answers: [
+      { label: 'כן', color: '#22c55e' },
+      { label: 'לא', color: '#ef4444' },
+      { label: 'גם וגם', color: '#3b82f6' }
+    ],
+    questions: [
+      { statement: 'מי חושב שלהתבגר זה גם מרגש וגם קצת מלחיץ?', regulation: 'לפעמים דברים חדשים יכולים להיות גם מסקרנים וגם מפחידים ביחד.' },
+      { statement: 'מי לפעמים היה רוצה להישאר עוד קצת ילד?', regulation: 'גם הרצון לגדול וגם הרצון להישאר קטן הם רגשות נורמליים.' },
+      { statement: 'מי חושב שלא כולם מתבגרים באותו קצב?', regulation: 'כל אחד גדל ומשתנה בדרך ובקצב שלו.' },
+      { statement: 'מי חושב שלפעמים ילדים רוצים יותר פרטיות כשהם גדלים?', regulation: 'כשגדלים לפעמים רוצים יותר מרחב אישי ושליטה על מה משתפים.' },
+      { statement: 'מי חושב שילדים לפעמים מפחדים שיצחקו עליהם?', regulation: 'הרבה ילדים חוששים איך אחרים יראו אותם כשהם גדלים.' }
+    ]
+  },
+  {
+    id: 2,
+    name: 'מעגלי פרטיות',
+    answers: [
+      { label: 'לשמור לעצמי', color: '#a855f7' },
+      { label: 'לשתף מבוגר', color: '#22c55e' },
+      { label: 'לשתף חבר קרוב', color: '#3b82f6' }
+    ],
+    questions: [
+      { statement: 'פחד או דאגה שיש לי', regulation: 'לא חייבים להתמודד לבד עם דברים שמרגישים כבדים.' },
+      { statement: 'משהו אישי שמביך אותי', regulation: 'כל אחד בוחר עם מי נכון לו לשתף דברים אישיים.' },
+      { statement: 'ריב או פגיעה מחבר', regulation: 'לפעמים שיחה עם אדם בטוח יכולה לעזור להבין מה לעשות.' },
+      { statement: 'משהו שקרה לי ואני לא מפסיק לחשוב עליו', regulation: 'יש מחשבות שיותר קל להחזיק כשלא נשארים איתן לבד.' },
+      { statement: 'משהו שאני לא רוצה שיצחקו עליו', regulation: 'לכל אחד יש דברים רגישים שהוא רוצה לשמור עליהם.' }
+    ]
+  },
+  {
+    id: 3,
+    name: 'מה יעזור לי להרגיש בטוח במצגת?',
+    answers: [
+      { label: 'כן', color: '#22c55e' },
+      { label: 'לא', color: '#ef4444' },
+      { label: 'תלוי', color: '#3b82f6' }
+    ],
+    questions: [
+      { statement: 'שיהיה מותר לא לענות', regulation: 'בחירה נותנת תחושת ביטחון ושליטה.' },
+      { statement: 'שאפשר רק להקשיב בלי לדבר', regulation: 'אפשר להשתתף גם בדרכים שקטות.' },
+      { statement: 'שידברו באופן כללי ולא אישי', regulation: 'אפשר ללמוד על גיל ההתבגרות בלי לחשוף דברים פרטיים.' },
+      { statement: 'שלא יצחקו על תשובות של אחרים', regulation: 'כשמרגישים בטוחים יותר קל לחשוב ולהשתתף.' },
+      { statement: 'לדעת מראש על מה נדבר', regulation: 'כשיודעים למה לצפות הרבה פעמים מרגישים יותר רגועים.' }
+    ]
+  }
+];
+
+const EXTRA_QUESTIONS = [
+  {
+    catId: 1,
+    questions: [
+      { statement: 'מי חושב שלהיות גדול זה לפעמים מעייף?', regulation: 'גם כשגדלים מותר להתעייף ולרצות הפסקה.' },
+      { statement: 'מי חושב שלפעמים קשה להבין מה מרגישים?', regulation: 'לא תמיד מבינים מיד מה מרגישים, וזה חלק מהלמידה.' },
+      { statement: 'מי חושב שמתבגרים רוצים יותר שקט?', regulation: 'לפעמים שקט עוזר לנו להרגיש יותר מסודרים מבפנים.' }
+    ]
+  },
+  {
+    catId: 2,
+    questions: [
+      { statement: 'משהו שאני מתבייש בו', regulation: 'בושה היא רגש מוכר, ואפשר לבחור בזהירות עם מי לשתף.' },
+      { statement: 'משהו שמישהו ביקש ממני לשמור בסוד', regulation: 'יש סודות ששומרים, ויש סודות שכדאי לשתף עם מבוגר בטוח.' },
+      { statement: 'משהו שאני לא רוצה שכולם ידעו', regulation: 'מותר לשמור דברים אישיים במקום בטוח.' }
+    ]
+  },
+  {
+    catId: 3,
+    questions: [
+      { statement: 'שיהיה אפשר לצחוק קצת בלי לצחוק על מישהו', regulation: 'הומור יכול לעזור כששומרים על כבוד של כולם.' },
+      { statement: 'שלא יכריחו לדבר', regulation: 'כשאין לחץ, לפעמים קל יותר להשתתף.' },
+      { statement: 'שיהיה ברור מה מותר ומה לא', regulation: 'כללים ברורים עוזרים להרגיש בטוח.' }
+    ]
+  }
+];
+
+let gameState = {
+  completed: {},
+  results: {},
+  addedExtras: {}
+};
+
+let currentQuestion = null;
+let currentCounts = [];
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'board-screen') renderBoard();
+}
+
+function renderBoard() {
+  const container = document.getElementById('categories-container');
+  container.innerHTML = '';
+  CATEGORIES.forEach((cat, ci) => {
+    const block = document.createElement('div');
+    block.className = `category-block cat-${cat.id}`;
+    const title = document.createElement('div');
+    title.className = 'category-title';
+    title.textContent = cat.name;
+    block.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'cards-grid';
+    cat.questions.forEach((q, qi) => {
+      const btn = document.createElement('button');
+      btn.className = 'card-btn';
+      btn.textContent = qi + 1;
+      const key = `${cat.id}-${qi}`;
+      if (gameState.completed[key]) btn.classList.add('done');
+      btn.onclick = () => {
+        if (!gameState.completed[key]) openQuestion(cat, qi);
+      };
+      grid.appendChild(btn);
+    });
+    block.appendChild(grid);
+    container.appendChild(block);
+  });
+}
+
+function openQuestion(cat, qi) {
+  currentQuestion = { cat, qi };
+  currentCounts = cat.answers.map(() => 0);
+
+  document.getElementById('q-category').textContent = cat.name;
+  document.getElementById('q-statement').textContent = cat.questions[qi].statement;
+
+  const answersDiv = document.getElementById('q-answers');
+  answersDiv.innerHTML = '';
+  cat.answers.forEach((ans, ai) => {
+    const block = document.createElement('div');
+    block.className = 'answer-block';
+    block.style.borderColor = ans.color + '40';
+
+    block.innerHTML = `
+      <div class="answer-label">
+        <span class="answer-dot" style="background:${ans.color}"></span>
+        ${ans.label}
+      </div>
+      <div class="answer-controls">
+        <button class="count-btn" onclick="changeCount(${ai}, 1)">+</button>
+        <span class="answer-count" id="count-${ai}">0</span>
+        <button class="count-btn" onclick="changeCount(${ai}, -1)">&minus;</button>
+      </div>
+    `;
+    answersDiv.appendChild(block);
+  });
+
+  showScreen('question-screen');
+}
+
+function changeCount(ai, delta) {
+  currentCounts[ai] = Math.max(0, currentCounts[ai] + delta);
+  document.getElementById(`count-${ai}`).textContent = currentCounts[ai];
+}
+
+function showResult() {
+  const { cat, qi } = currentQuestion;
+  const key = `${cat.id}-${qi}`;
+  gameState.completed[key] = true;
+  gameState.results[key] = [...currentCounts];
+
+  document.getElementById('r-category').textContent = cat.name;
+  document.getElementById('r-statement').textContent = cat.questions[qi].statement;
+  document.getElementById('r-regulation').textContent = cat.questions[qi].regulation;
+
+  drawDonut(document.getElementById('result-canvas'), cat.answers, currentCounts, 280);
+
+  const legend = document.getElementById('r-legend');
+  legend.innerHTML = '';
+  const total = currentCounts.reduce((a, b) => a + b, 0);
+  cat.answers.forEach((ans, ai) => {
+    if (currentCounts[ai] > 0) {
+      const pct = total > 0 ? Math.round(currentCounts[ai] / total * 100) : 0;
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<span class="legend-dot" style="background:${ans.color}"></span>${ans.label}: ${currentCounts[ai]} (${pct}%)`;
+      legend.appendChild(item);
+    }
+  });
+
+  showScreen('result-screen');
+}
+
+function drawDonut(canvas, answers, counts, size) {
+  canvas.width = size * 2;
+  canvas.height = size * 2;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, size * 2, size * 2);
+
+  const total = counts.reduce((a, b) => a + b, 0);
+  if (total === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.beginPath();
+    ctx.arc(size, size, size * 0.85, 0, Math.PI * 2);
+    ctx.arc(size, size, size * 0.5, 0, Math.PI * 2, true);
+    ctx.fill();
+    ctx.fillStyle = '#666';
+    ctx.font = '28px Segoe UI, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('אין נתונים', size, size + 10);
+    return;
+  }
+
+  let startAngle = -Math.PI / 2;
+  const cx = size, cy = size;
+  const outerR = size * 0.88;
+  const innerR = size * 0.52;
+
+  counts.forEach((count, i) => {
+    if (count === 0) return;
+    const sliceAngle = (count / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
+    ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = answers[i].color;
+    ctx.fill();
+
+    ctx.shadowColor = answers[i].color;
+    ctx.shadowBlur = 15;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    startAngle += sliceAngle;
+  });
+
+  ctx.fillStyle = '#e0e0e0';
+  ctx.font = 'bold 52px Segoe UI, Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy);
+}
+
+function backToBoard() {
+  showScreen('board-screen');
+}
+
+function showSummary() {
+  const cloud = document.getElementById('word-cloud');
+  const words = ['פרטיות', 'גם וגם', 'ביטחון', 'לדעת מראש', 'לא חייבים לענות', 'אפשר להקשיב', 'לשתף מבוגר', 'לשתף חבר קרוב', 'קצב אישי'];
+  const colors = ['#667eea', '#a855f7', '#22c55e', '#3b82f6', '#ec4899', '#f59e0b', '#06b6d4', '#8b5cf6', '#ef4444'];
+  const sizes = [1.3, 1.1, 1.4, 1.0, 1.2, 1.1, 1.15, 1.05, 1.25];
+  cloud.innerHTML = '';
+  words.forEach((w, i) => {
+    const bubble = document.createElement('span');
+    bubble.className = 'word-bubble';
+    bubble.textContent = w;
+    bubble.style.background = colors[i % colors.length] + '30';
+    bubble.style.color = colors[i % colors.length];
+    bubble.style.fontSize = sizes[i] + 'rem';
+    bubble.style.border = `1px solid ${colors[i % colors.length]}50`;
+    cloud.appendChild(bubble);
+  });
+
+  const sumCats = document.getElementById('summary-categories');
+  sumCats.innerHTML = '';
+  CATEGORIES.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'summary-cat';
+    const h3 = document.createElement('h3');
+    h3.textContent = cat.name;
+    div.appendChild(h3);
+
+    const canvas = document.createElement('canvas');
+    div.appendChild(canvas);
+    sumCats.appendChild(div);
+
+    const totals = cat.answers.map(() => 0);
+    cat.questions.forEach((q, qi) => {
+      const key = `${cat.id}-${qi}`;
+      if (gameState.results[key]) {
+        gameState.results[key].forEach((v, ai) => { totals[ai] += v; });
+      }
+    });
+
+    setTimeout(() => drawDonut(canvas, cat.answers, totals, 200), 50);
+  });
+
+  showScreen('summary-screen');
+}
+
+function openPanel() {
+  document.getElementById('panel-overlay').classList.add('open');
+  document.getElementById('side-panel').classList.add('open');
+  renderPanel();
+}
+
+function closePanel() {
+  document.getElementById('panel-overlay').classList.remove('open');
+  document.getElementById('side-panel').classList.remove('open');
+}
+
+function renderPanel() {
+  const content = document.getElementById('panel-content');
+  content.innerHTML = '';
+  EXTRA_QUESTIONS.forEach(eg => {
+    const cat = CATEGORIES.find(c => c.id === eg.catId);
+    const catDiv = document.createElement('div');
+    catDiv.className = 'panel-category';
+    const catTitle = document.createElement('div');
+    catTitle.className = 'panel-cat-title';
+    catTitle.textContent = cat.name;
+    catDiv.appendChild(catTitle);
+
+    eg.questions.forEach((q, qi) => {
+      const extraKey = `extra-${eg.catId}-${qi}`;
+      const added = gameState.addedExtras[extraKey];
+      const qDiv = document.createElement('div');
+      qDiv.className = 'panel-question';
+      qDiv.innerHTML = `
+        <div class="panel-question-text">${q.statement}</div>
+        <button class="btn-add" ${added ? 'disabled' : ''} onclick="addExtraQuestion(${eg.catId}, ${qi})">${added ? 'נוסף' : 'הוסף ללוח'}</button>
+      `;
+      catDiv.appendChild(qDiv);
+    });
+    content.appendChild(catDiv);
+  });
+}
+
+function addExtraQuestion(catId, qi) {
+  const extraKey = `extra-${catId}-${qi}`;
+  if (gameState.addedExtras[extraKey]) return;
+  gameState.addedExtras[extraKey] = true;
+
+  const eg = EXTRA_QUESTIONS.find(e => e.catId === catId);
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const q = eg.questions[qi];
+  cat.questions.push({ ...q });
+
+  renderPanel();
+  renderBoard();
+}
+
+function resetGame() {
+  gameState = { completed: {}, results: {}, addedExtras: {} };
+  CATEGORIES.forEach(cat => {
+    if (cat.id === 1) cat.questions.length = 5;
+    if (cat.id === 2) cat.questions.length = 5;
+    if (cat.id === 3) cat.questions.length = 5;
+  });
+  renderBoard();
+}
+
+renderBoard();
+</script>
+</body>
+</html>
