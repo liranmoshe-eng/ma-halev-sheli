@@ -11,11 +11,6 @@
   box-sizing: border-box;
 }
 
-@font-face {
-  font-family: 'SystemHebrew';
-  src: local('Segoe UI'), local('Arial'), local('Helvetica');
-}
-
 body {
   font-family: 'Segoe UI', 'Arial', sans-serif;
   background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
@@ -41,7 +36,7 @@ body {
 /* Intro Screen */
 #intro-screen {
   text-align: center;
-  gap: 30px;
+  gap: 24px;
 }
 
 .intro-title {
@@ -51,7 +46,6 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: none;
   filter: drop-shadow(0 0 30px rgba(102, 126, 234, 0.4));
   animation: titlePulse 3s ease-in-out infinite;
 }
@@ -64,19 +58,91 @@ body {
 .intro-subtitle {
   font-size: 1.5rem;
   color: #b8b8d4;
-  max-width: 700px;
   line-height: 1.6;
 }
 
-.intro-text {
-  font-size: 1.15rem;
-  color: #9999b8;
-  max-width: 650px;
-  line-height: 2;
-  background: rgba(255,255,255,0.05);
-  border-radius: 16px;
-  padding: 25px 30px;
-  border: 1px solid rgba(255,255,255,0.08);
+.players-setup {
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px 28px;
+  border: 1px solid rgba(255,255,255,0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: right;
+}
+
+.players-setup-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #b8b8d4;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.player-input:focus {
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.player-input::placeholder {
+  color: #7777a0;
+}
+
+.remove-player {
+  background: none;
+  border: none;
+  color: #9b99bb;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.remove-player:hover {
+  color: #ef4444;
+}
+
+.add-player-btn {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: 1.5px dashed rgba(102, 126, 234, 0.3);
+  color: #9b99bb;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.add-player-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
 }
 
 .btn {
@@ -126,7 +192,7 @@ body {
   justify-content: space-between;
   width: 100%;
   max-width: 1400px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -144,6 +210,23 @@ body {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.turn-banner {
+  width: 100%;
+  max-width: 1400px;
+  text-align: center;
+  padding: 12px 20px;
+  margin-bottom: 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.turn-name {
+  color: #f093fb;
 }
 
 .categories-container {
@@ -171,10 +254,10 @@ body {
 }
 
 .category-title {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   text-align: center;
-  padding: 12px;
+  padding: 10px;
   border-radius: 12px;
   line-height: 1.6;
 }
@@ -199,6 +282,7 @@ body {
   transition: all 0.3s ease;
   position: relative;
   font-family: inherit;
+  overflow: hidden;
 }
 
 .cat-1 .card-btn {
@@ -224,14 +308,37 @@ body {
 }
 
 .card-btn.done {
-  opacity: 0.35;
-  background: rgba(255,255,255,0.1) !important;
+  background: rgba(255,255,255,0.08) !important;
   box-shadow: none !important;
   cursor: default;
+  padding: 4px;
+  font-size: 0;
+  color: transparent;
+  aspect-ratio: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
 .card-btn.done:hover {
   transform: none;
+}
+
+.card-btn.done canvas {
+  width: 52px;
+  height: 52px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.card-topic {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #c0c0d8;
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 /* Question Screen */
@@ -347,8 +454,8 @@ body {
 
 .result-chart-container {
   position: relative;
-  width: 280px;
-  height: 280px;
+  width: 240px;
+  height: 240px;
 }
 
 .result-chart-container canvas {
@@ -406,58 +513,56 @@ body {
   background-clip: text;
 }
 
-.word-cloud {
+.summary-topics {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  max-width: 800px;
-}
-
-.word-bubble {
-  padding: 10px 22px;
-  border-radius: 30px;
-  font-size: 1rem;
-  font-weight: 700;
-  transition: all 0.3s ease;
-  animation: bubbleFloat 4s ease-in-out infinite;
-}
-
-.word-bubble:nth-child(odd) { animation-delay: 0s; }
-.word-bubble:nth-child(even) { animation-delay: 2s; }
-
-@keyframes bubbleFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-.summary-categories {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  flex-direction: column;
   gap: 20px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 700px;
 }
 
-.summary-cat {
+.summary-topic-card {
   background: rgba(255,255,255,0.06);
-  border-radius: 16px;
-  padding: 20px;
-  text-align: center;
+  border-radius: 18px;
+  padding: 22px 26px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s ease;
 }
 
-.summary-cat h3 {
-  font-size: 1rem;
-  margin-bottom: 14px;
-  color: #b8b8d4;
+.summary-topic-card:hover {
+  border-color: rgba(255,255,255,0.2);
 }
 
-.summary-cat canvas {
-  width: 100%;
-  max-width: 200px;
-  height: 200px;
-  margin: 0 auto;
+.summary-topic-chart {
+  flex-shrink: 0;
+}
+
+.summary-topic-chart canvas {
+  width: 80px;
+  height: 80px;
   display: block;
+}
+
+.summary-topic-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-topic-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #e0e0ff;
+}
+
+.summary-topic-insight {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #b8b8d4;
 }
 
 .summary-closing {
@@ -587,17 +692,232 @@ body {
   box-shadow: none;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .categories-container {
-    grid-template-columns: 1fr;
-  }
-  .cards-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .summary-categories {
-    grid-template-columns: 1fr;
-  }
+/* Admin Screen */
+#admin-screen {
+  justify-content: flex-start;
+  padding-top: 30px;
+  gap: 20px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-title {
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.admin-content {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-cat {
+  background: rgba(255,255,255,0.06);
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.admin-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.admin-cat-name {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.admin-cat-name:focus {
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.admin-cat-answers {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-cat-answers span {
+  font-size: 0.85rem;
+  color: #9b99bb;
+  font-weight: 600;
+}
+
+.admin-answer-chip {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  color: #c0c0d8;
+}
+
+.admin-q-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-q-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-q-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.admin-q-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-q-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.admin-q-input:focus {
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.admin-q-input::placeholder {
+  color: #666688;
+}
+
+.admin-q-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9b99bb;
+  letter-spacing: 0.03em;
+}
+
+.admin-q-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+
+.admin-btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.admin-btn-delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.admin-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.admin-add-q {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  background: none;
+  border: 1.5px dashed rgba(102, 126, 234, 0.3);
+  color: #9b99bb;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.admin-add-q:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.admin-add-cat {
+  width: 100%;
+  max-width: 800px;
+  padding: 14px;
+  background: none;
+  border: 1.5px dashed rgba(168, 85, 247, 0.3);
+  color: #9b99bb;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.admin-add-cat:hover {
+  border-color: #a855f7;
+  color: #a855f7;
+}
+
+.admin-remove-cat {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.admin-remove-cat:hover {
+  background: rgba(239, 68, 68, 0.25);
 }
 
 @media (max-width: 600px) {
@@ -605,6 +925,7 @@ body {
   .question-statement { font-size: 1.6rem; }
   .answers-container { flex-direction: column; }
   .side-panel { width: 100%; }
+  .categories-container { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -613,13 +934,24 @@ body {
 <!-- Intro Screen -->
 <div id="intro-screen" class="screen active">
   <div class="intro-title">מה הקטע?</div>
-  <div class="intro-subtitle">משחק בחירה על גיל ההתבגרות, פרטיות ומה עוזר להרגיש בטוח</div>
-  <div class="intro-text">
-    היום נדבר על גיל ההתבגרות, אבל לא נדבר על דברים פרטיים של אף אחד.<br><br>
-    אפשר לענות, אפשר להגיד "גם וגם" או "תלוי", ואפשר גם רק להקשיב.<br><br>
-    המטרה היא להבין שגיל ההתבגרות יכול לעורר רגשות שונים — וזה בסדר.
+  <div class="intro-subtitle">משחק שיתופי</div>
+  <div class="players-setup">
+    <div class="players-setup-title">שמות התלמידים</div>
+    <div class="players-list" id="players-list"></div>
+    <button class="add-player-btn" onclick="addPlayerRow()">+ הוסף תלמיד</button>
   </div>
-  <button class="btn btn-primary" onclick="showScreen('board-screen')">מתחילים</button>
+  <button class="btn btn-primary" onclick="startGame()">מתחילים</button>
+  <button class="btn btn-secondary" onclick="openAdmin()">מנהל המשחק</button>
+</div>
+
+<!-- Admin Screen -->
+<div id="admin-screen" class="screen">
+  <div class="admin-header">
+    <div class="admin-title">מנהל המשחק</div>
+    <button class="btn btn-secondary" onclick="closeAdmin()">חזרה</button>
+  </div>
+  <div class="admin-content" id="admin-content"></div>
+  <button class="admin-add-cat" onclick="addCategory()">+ הוסף קטגוריה</button>
 </div>
 
 <!-- Board Screen -->
@@ -632,6 +964,7 @@ body {
       <button class="btn btn-secondary" onclick="resetGame()">איפוס</button>
     </div>
   </div>
+  <div class="turn-banner" id="turn-banner"></div>
   <div class="categories-container" id="categories-container"></div>
 </div>
 
@@ -655,14 +988,13 @@ body {
   </div>
   <div class="result-legend" id="r-legend"></div>
   <div class="regulation-message" id="r-regulation"></div>
-  <button class="btn btn-primary" onclick="backToBoard()">חזרה ללוח</button>
+  <button class="btn btn-primary" onclick="nextTurn()">הבא בתור</button>
 </div>
 
 <!-- Summary Screen -->
 <div id="summary-screen" class="screen">
-  <div class="summary-title">סיכום המשחק</div>
-  <div class="word-cloud" id="word-cloud"></div>
-  <div class="summary-categories" id="summary-categories"></div>
+  <div class="summary-title">מה עלה בקבוצה</div>
+  <div class="summary-topics" id="summary-topics"></div>
   <div class="summary-closing">
     גיל ההתבגרות נראה אחרת אצל כל ילד.<br>
     יש ילדים שמתרגשים, יש שחוששים, ויש שמרגישים גם וגם.<br>
@@ -696,11 +1028,11 @@ const CATEGORIES = [
       { label: 'גם וגם', color: '#3b82f6' }
     ],
     questions: [
-      { statement: 'מי חושב שלהתבגר זה גם מרגש וגם קצת מלחיץ?', regulation: 'לפעמים דברים חדשים יכולים להיות גם מסקרנים וגם מפחידים ביחד.' },
-      { statement: 'מי לפעמים היה רוצה להישאר עוד קצת ילד?', regulation: 'גם הרצון לגדול וגם הרצון להישאר קטן הם רגשות נורמליים.' },
-      { statement: 'מי חושב שלא כולם מתבגרים באותו קצב?', regulation: 'כל אחד גדל ומשתנה בדרך ובקצב שלו.' },
-      { statement: 'מי חושב שלפעמים ילדים רוצים יותר פרטיות כשהם גדלים?', regulation: 'כשגדלים לפעמים רוצים יותר מרחב אישי ושליטה על מה משתפים.' },
-      { statement: 'מי חושב שילדים לפעמים מפחדים שיצחקו עליהם?', regulation: 'הרבה ילדים חוששים איך אחרים יראו אותם כשהם גדלים.' }
+      { topic: 'התרגשות ולחץ', statement: 'מי חושב שלהתבגר זה גם מרגש וגם קצת מלחיץ?', regulation: 'לפעמים דברים חדשים יכולים להיות גם מסקרנים וגם מפחידים ביחד.', insight: 'עלה שלהתבגר יכול להרגיש גם מסקרן וגם קצת מלחיץ.' },
+      { topic: 'רצון להישאר ילד', statement: 'מי לפעמים היה רוצה להישאר עוד קצת ילד?', regulation: 'גם הרצון לגדול וגם הרצון להישאר קטן הם רגשות נורמליים.', insight: 'נראה שלפעמים יש רצון להישאר עוד קצת ילד — וזה בסדר גמור.' },
+      { topic: 'קצב אישי', statement: 'מי חושב שלא כולם מתבגרים באותו קצב?', regulation: 'כל אחד גדל ומשתנה בדרך ובקצב שלו.', insight: 'הקבוצה מבינה שכל אחד גדל בקצב שלו.' },
+      { topic: 'פרטיות', statement: 'מי חושב שלפעמים ילדים רוצים יותר פרטיות כשהם גדלים?', regulation: 'כשגדלים לפעמים רוצים יותר מרחב אישי ושליטה על מה משתפים.', insight: 'נראה שחשוב לקבוצה להרגיש שיש בחירה על מה משתפים.' },
+      { topic: 'פחד מלעג', statement: 'מי חושב שילדים לפעמים מפחדים שיצחקו עליהם?', regulation: 'הרבה ילדים חוששים איך אחרים יראו אותם כשהם גדלים.', insight: 'עלה שהחשש מלעג הוא משהו שמכירים — וחשוב לשמור על כבוד.' }
     ]
   },
   {
@@ -712,11 +1044,11 @@ const CATEGORIES = [
       { label: 'לשתף חבר קרוב', color: '#3b82f6' }
     ],
     questions: [
-      { statement: 'פחד או דאגה שיש לי', regulation: 'לא חייבים להתמודד לבד עם דברים שמרגישים כבדים.' },
-      { statement: 'משהו אישי שמביך אותי', regulation: 'כל אחד בוחר עם מי נכון לו לשתף דברים אישיים.' },
-      { statement: 'ריב או פגיעה מחבר', regulation: 'לפעמים שיחה עם אדם בטוח יכולה לעזור להבין מה לעשות.' },
-      { statement: 'משהו שקרה לי ואני לא מפסיק לחשוב עליו', regulation: 'יש מחשבות שיותר קל להחזיק כשלא נשארים איתן לבד.' },
-      { statement: 'משהו שאני לא רוצה שיצחקו עליו', regulation: 'לכל אחד יש דברים רגישים שהוא רוצה לשמור עליהם.' }
+      { topic: 'פחד ודאגה', statement: 'פחד או דאגה שיש לי', regulation: 'לא חייבים להתמודד לבד עם דברים שמרגישים כבדים.', insight: 'עלה שפחדות ודאגות הם דברים שאפשר לבחור עם מי לשתף.' },
+      { topic: 'מבוכה', statement: 'משהו אישי שמביך אותי', regulation: 'כל אחד בוחר עם מי נכון לו לשתף דברים אישיים.', insight: 'נראה שמבוכה היא רגש מוכר — וחשוב לבחור עם מי משתפים.' },
+      { topic: 'ריב עם חבר', statement: 'ריב או פגיעה מחבר', regulation: 'לפעמים שיחה עם אדם בטוח יכולה לעזור להבין מה לעשות.', insight: 'עלה שכשיש ריב או פגיעה, לפעמים עוזר לדבר עם מישהו בטוח.' },
+      { topic: 'מחשבות חוזרות', statement: 'משהו שקרה לי ואני לא מפסיק לחשוב עליו', regulation: 'יש מחשבות שיותר קל להחזיק כשלא נשארים איתן לבד.', insight: 'עלה שיש מחשבות שחוזרות — ושלא חייבים להישאר איתן לבד.' },
+      { topic: 'רגישות', statement: 'משהו שאני לא רוצה שיצחקו עליו', regulation: 'לכל אחד יש דברים רגישים שהוא רוצה לשמור עליהם.', insight: 'נראה שלכולם יש דברים רגישים שחשוב לשמור עליהם.' }
     ]
   },
   {
@@ -728,11 +1060,11 @@ const CATEGORIES = [
       { label: 'תלוי', color: '#3b82f6' }
     ],
     questions: [
-      { statement: 'שיהיה מותר לא לענות', regulation: 'בחירה נותנת תחושת ביטחון ושליטה.' },
-      { statement: 'שאפשר רק להקשיב בלי לדבר', regulation: 'אפשר להשתתף גם בדרכים שקטות.' },
-      { statement: 'שידברו באופן כללי ולא אישי', regulation: 'אפשר ללמוד על גיל ההתבגרות בלי לחשוף דברים פרטיים.' },
-      { statement: 'שלא יצחקו על תשובות של אחרים', regulation: 'כשמרגישים בטוחים יותר קל לחשוב ולהשתתף.' },
-      { statement: 'לדעת מראש על מה נדבר', regulation: 'כשיודעים למה לצפות הרבה פעמים מרגישים יותר רגועים.' }
+      { topic: 'בחירה', statement: 'שיהיה מותר לא לענות', regulation: 'בחירה נותנת תחושת ביטחון ושליטה.', insight: 'עלה שלילדים חשוב לדעת שלא חייבים לענות.' },
+      { topic: 'הקשבה', statement: 'שאפשר רק להקשיב בלי לדבר', regulation: 'אפשר להשתתף גם בדרכים שקטות.', insight: 'נראה שאפשר להשתתף גם בדרכים שקטות — בלי לחץ לדבר.' },
+      { topic: 'כלליות', statement: 'שידברו באופן כללי ולא אישי', regulation: 'אפשר ללמוד על גיל ההתבגרות בלי לחשוף דברים פרטיים.', insight: 'עלה שחשוב לדבר באופן כללי ולא לחשוף דברים אישיים.' },
+      { topic: 'כבוד', statement: 'שלא יצחקו על תשובות של אחרים', regulation: 'כשמרגישים בטוחים יותר קל לחשוב ולהשתתף.', insight: 'עלה שכשמרגישים בטוחים ולא צוחקים — קל יותר להשתתף.' },
+      { topic: 'הכנה מראש', statement: 'לדעת מראש על מה נדבר', regulation: 'כשיודעים למה לצפות הרבה פעמים מרגישים יותר רגועים.', insight: 'נראה שלדעת מראש על מה מדברים עוזר להרגיש יותר רגוע.' }
     ]
   }
 ];
@@ -741,29 +1073,31 @@ const EXTRA_QUESTIONS = [
   {
     catId: 1,
     questions: [
-      { statement: 'מי חושב שלהיות גדול זה לפעמים מעייף?', regulation: 'גם כשגדלים מותר להתעייף ולרצות הפסקה.' },
-      { statement: 'מי חושב שלפעמים קשה להבין מה מרגישים?', regulation: 'לא תמיד מבינים מיד מה מרגישים, וזה חלק מהלמידה.' },
-      { statement: 'מי חושב שמתבגרים רוצים יותר שקט?', regulation: 'לפעמים שקט עוזר לנו להרגיש יותר מסודרים מבפנים.' }
+      { topic: 'עייפות', statement: 'מי חושב שלהיות גדול זה לפעמים מעייף?', regulation: 'גם כשגדלים מותר להתעייף ולרצות הפסקה.', insight: 'עלה שלגדול זה לפעמים מעייף — ומותר לרצות הפסקה.' },
+      { topic: 'הבנת רגשות', statement: 'מי חושב שלפעמים קשה להבין מה מרגישים?', regulation: 'לא תמיד מבינים מיד מה מרגישים, וזה חלק מהלמידה.', insight: 'נראה שלפעמים קשה להבין מה מרגישים — וזה חלק מהגדילה.' },
+      { topic: 'צורך בשקט', statement: 'מי חושב שמתבגרים רוצים יותר שקט?', regulation: 'לפעמים שקט עוזר לנו להרגיש יותר מסודרים מבפנים.', insight: 'עלה שלפעמים צריך שקט כדי להרגיש מסודרים מבפנים.' }
     ]
   },
   {
     catId: 2,
     questions: [
-      { statement: 'משהו שאני מתבייש בו', regulation: 'בושה היא רגש מוכר, ואפשר לבחור בזהירות עם מי לשתף.' },
-      { statement: 'משהו שמישהו ביקש ממני לשמור בסוד', regulation: 'יש סודות ששומרים, ויש סודות שכדאי לשתף עם מבוגר בטוח.' },
-      { statement: 'משהו שאני לא רוצה שכולם ידעו', regulation: 'מותר לשמור דברים אישיים במקום בטוח.' }
+      { topic: 'בושה', statement: 'משהו שאני מתבייש בו', regulation: 'בושה היא רגש מוכר, ואפשר לבחור בזהירות עם מי לשתף.', insight: 'עלה שבושה היא רגש מוכר — ואפשר לבחור עם מי לשתף.' },
+      { topic: 'סודות', statement: 'משהו שמישהו ביקש ממני לשמור בסוד', regulation: 'יש סודות ששומרים, ויש סודות שכדאי לשתף עם מבוגר בטוח.', insight: 'עלה שיש סודות שכדאי לשתף עם מבוגר בטוח.' },
+      { topic: 'פרטיות אישית', statement: 'משהו שאני לא רוצה שכולם ידעו', regulation: 'מותר לשמור דברים אישיים במקום בטוח.', insight: 'נראה שמותר לשמור דברים אישיים רק לעצמנו.' }
     ]
   },
   {
     catId: 3,
     questions: [
-      { statement: 'שיהיה אפשר לצחוק קצת בלי לצחוק על מישהו', regulation: 'הומור יכול לעזור כששומרים על כבוד של כולם.' },
-      { statement: 'שלא יכריחו לדבר', regulation: 'כשאין לחץ, לפעמים קל יותר להשתתף.' },
-      { statement: 'שיהיה ברור מה מותר ומה לא', regulation: 'כללים ברורים עוזרים להרגיש בטוח.' }
+      { topic: 'הומור בכבוד', statement: 'שיהיה אפשר לצחוק קצת בלי לצחוק על מישהו', regulation: 'הומור יכול לעזור כששומרים על כבוד של כולם.', insight: 'עלה שאפשר לצחוק — כל עוד שומרים על כבוד של כולם.' },
+      { topic: 'ללא כפייה', statement: 'שלא יכריחו לדבר', regulation: 'כשאין לחץ, לפעמים קל יותר להשתתף.', insight: 'נראה שכשאין לחץ לדבר, קל יותר להשתתף.' },
+      { topic: 'כללים ברורים', statement: 'שיהיה ברור מה מותר ומה לא', regulation: 'כללים ברורים עוזרים להרגיש בטוח.', insight: 'עלה שכללים ברורים עוזרים להרגיש בטוח.' }
     ]
   }
 ];
 
+let players = [];
+let currentTurnIndex = 0;
 let gameState = {
   completed: {},
   results: {},
@@ -773,16 +1107,79 @@ let gameState = {
 let currentQuestion = null;
 let currentCounts = [];
 
+function addPlayerRow(name) {
+  const list = document.getElementById('players-list');
+  const row = document.createElement('div');
+  row.className = 'player-row';
+  const idx = list.children.length;
+  row.innerHTML = `
+    <input class="player-input" type="text" placeholder="שם תלמיד/ה" value="${name || ''}" onchange="updatePlayerName(${idx}, this.value)">
+    <button class="remove-player" onclick="removePlayerRow(this)">&times;</button>
+  `;
+  list.appendChild(row);
+}
+
+function removePlayerRow(btn) {
+  btn.parentElement.remove();
+  refreshPlayerIndices();
+}
+
+function refreshPlayerIndices() {
+  const inputs = document.querySelectorAll('#players-list .player-input');
+  inputs.forEach((inp, i) => {
+    inp.setAttribute('onchange', `updatePlayerName(${i}, this.value)`);
+  });
+}
+
+function updatePlayerName(idx, val) {}
+
+function getPlayerNames() {
+  const inputs = document.querySelectorAll('#players-list .player-input');
+  const names = [];
+  inputs.forEach(inp => {
+    const v = inp.value.trim();
+    if (v) names.push(v);
+  });
+  return names;
+}
+
+function startGame() {
+  players = getPlayerNames();
+  if (players.length === 0) {
+    players = ['כיתה'];
+  }
+  currentTurnIndex = 0;
+  showScreen('board-screen');
+}
+
+function getCurrentPlayer() {
+  return players[currentTurnIndex % players.length];
+}
+
+function nextTurn() {
+  currentTurnIndex++;
+  showScreen('board-screen');
+}
+
+function updateTurnBanner() {
+  const banner = document.getElementById('turn-banner');
+  const name = getCurrentPlayer();
+  banner.innerHTML = `התור של: <span class="turn-name">${name}</span>`;
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'board-screen') renderBoard();
+  if (id === 'board-screen') {
+    updateTurnBanner();
+    renderBoard();
+  }
 }
 
 function renderBoard() {
   const container = document.getElementById('categories-container');
   container.innerHTML = '';
-  CATEGORIES.forEach((cat, ci) => {
+  CATEGORIES.forEach((cat) => {
     const block = document.createElement('div');
     block.className = `category-block cat-${cat.id}`;
     const title = document.createElement('div');
@@ -795,16 +1192,65 @@ function renderBoard() {
     cat.questions.forEach((q, qi) => {
       const btn = document.createElement('button');
       btn.className = 'card-btn';
-      btn.textContent = qi + 1;
       const key = `${cat.id}-${qi}`;
-      if (gameState.completed[key]) btn.classList.add('done');
-      btn.onclick = () => {
-        if (!gameState.completed[key]) openQuestion(cat, qi);
-      };
+      if (gameState.completed[key]) {
+        btn.classList.add('done');
+        const canvas = document.createElement('canvas');
+        btn.appendChild(canvas);
+        const topicEl = document.createElement('div');
+        topicEl.className = 'card-topic';
+        topicEl.textContent = q.topic;
+        btn.appendChild(topicEl);
+        btn.onclick = null;
+        setTimeout(() => {
+          drawMiniDonut(canvas, cat.answers, gameState.results[key], 52);
+        }, 30);
+      } else {
+        btn.textContent = qi + 1;
+        btn.onclick = () => openQuestion(cat, qi);
+      }
       grid.appendChild(btn);
     });
     block.appendChild(grid);
     container.appendChild(block);
+  });
+}
+
+function drawMiniDonut(canvas, answers, counts, size) {
+  const s = Math.max(size, 40);
+  const dpr = 2;
+  canvas.width = s * dpr;
+  canvas.height = s * dpr;
+  canvas.style.width = s + 'px';
+  canvas.style.height = s + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, s * dpr, s * dpr);
+
+  const total = counts.reduce((a, b) => a + b, 0);
+  const cx = s * dpr / 2, cy = s * dpr / 2;
+  const outerR = cx * 0.88;
+  const innerR = cx * 0.45;
+
+  if (total === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+    ctx.arc(cx, cy, innerR, 0, Math.PI * 2, true);
+    ctx.fill();
+    return;
+  }
+
+  let startAngle = -Math.PI / 2;
+  counts.forEach((count, i) => {
+    if (count === 0) return;
+    const sliceAngle = (count / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
+    ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = answers[i].color;
+    ctx.fill();
+    startAngle += sliceAngle;
   });
 }
 
@@ -854,17 +1300,15 @@ function showResult() {
   document.getElementById('r-statement').textContent = cat.questions[qi].statement;
   document.getElementById('r-regulation').textContent = cat.questions[qi].regulation;
 
-  drawDonut(document.getElementById('result-canvas'), cat.answers, currentCounts, 280);
+  drawDonut(document.getElementById('result-canvas'), cat.answers, currentCounts, 240);
 
   const legend = document.getElementById('r-legend');
   legend.innerHTML = '';
-  const total = currentCounts.reduce((a, b) => a + b, 0);
   cat.answers.forEach((ans, ai) => {
     if (currentCounts[ai] > 0) {
-      const pct = total > 0 ? Math.round(currentCounts[ai] / total * 100) : 0;
       const item = document.createElement('div');
       item.className = 'legend-item';
-      item.innerHTML = `<span class="legend-dot" style="background:${ans.color}"></span>${ans.label}: ${currentCounts[ai]} (${pct}%)`;
+      item.innerHTML = `<span class="legend-dot" style="background:${ans.color}"></span>${ans.label}: ${currentCounts[ai]}`;
       legend.appendChild(item);
     }
   });
@@ -918,7 +1362,7 @@ function drawDonut(canvas, answers, counts, size) {
   });
 
   ctx.fillStyle = '#e0e0e0';
-  ctx.font = 'bold 52px Segoe UI, Arial';
+  ctx.font = 'bold 48px Segoe UI, Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(total, cx, cy);
@@ -928,45 +1372,91 @@ function backToBoard() {
   showScreen('board-screen');
 }
 
+function generateInsight(cat, q, counts) {
+  const total = counts.reduce((a, b) => a + b, 0);
+  if (total === 0) return '';
+  const ratios = counts.map(c => c / total);
+  const maxIdx = counts.indexOf(Math.max(...counts));
+  const maxLabel = cat.answers[maxIdx].label;
+  const maxRatio = ratios[maxIdx];
+  const isClose = ratios.filter(r => r > 0.25).length >= 2;
+  const isOverwhelming = maxRatio >= 0.7;
+
+  if (cat.id === 2) {
+    if (isClose) {
+      return `בנושא ${q.topic} — הקבוצה חלוקה: חלק מעדיפים לשמור לעצמם, וחלק מרגישים בנוח לשתף.`;
+    }
+    if (maxIdx === 0) {
+      return isOverwhelming
+        ? `בנושא ${q.topic} — רוב גדול של הקבוצה מעדיף לשמור את זה לעצמו.`
+        : `בנושא ${q.topic} — נראה שרוב הקבוצה מעדיפה לשמור את זה לעצמה.`;
+    }
+    if (maxIdx === 1) {
+      return isOverwhelming
+        ? `בנושא ${q.topic} — רוב גדול של הקבוצה מרגיש בנוח לשתף מבוגר.`
+        : `בנושא ${q.topic} — נראה שרוב הקבוצה מרגישה בנוח לשתף מבוגר בטוח.`;
+    }
+    return isOverwhelming
+      ? `בנושא ${q.topic} — רוב גדול של הקבוצה מעדיף לשתף חבר קרוב.`
+      : `בנושא ${q.topic} — נראה שרוב הקבוצה מעדיפה לשתף חבר קרוב.`;
+  }
+
+  const yesLabel = cat.answers[0].label;
+  const noLabel = cat.answers[1].label;
+  const mixLabel = cat.answers[2].label;
+
+  if (isClose) {
+    return `בנושא ${q.topic} — הדעות בקבוצה מגוונות, יש שחושבים ככה ויש שחושבים אחרת.`;
+  }
+  if (maxIdx === 0) {
+    return isOverwhelming
+      ? `בנושא ${q.topic} — כמעט כל הקבוצה מסכימה.`
+      : `בנושא ${q.topic} — רוב הקבוצה חושבת שכן.`;
+  }
+  if (maxIdx === 1) {
+    return isOverwhelming
+      ? `בנושא ${q.topic} — כמעט כל הקבוצה חושבת שלא.`
+      : `בנושא ${q.topic} — רוב הקבוצה חושבת שלא.`;
+  }
+  return isOverwhelming
+    ? `בנושא ${q.topic} — כמעט כל הקבוצה מרגישה "${mixLabel}".`
+    : `בנושא ${q.topic} — רוב הקבוצה מרגישה "${mixLabel}".`;
+}
+
 function showSummary() {
-  const cloud = document.getElementById('word-cloud');
-  const words = ['פרטיות', 'גם וגם', 'ביטחון', 'לדעת מראש', 'לא חייבים לענות', 'אפשר להקשיב', 'לשתף מבוגר', 'לשתף חבר קרוב', 'קצב אישי'];
-  const colors = ['#667eea', '#a855f7', '#22c55e', '#3b82f6', '#ec4899', '#f59e0b', '#06b6d4', '#8b5cf6', '#ef4444'];
-  const sizes = [1.3, 1.1, 1.4, 1.0, 1.2, 1.1, 1.15, 1.05, 1.25];
-  cloud.innerHTML = '';
-  words.forEach((w, i) => {
-    const bubble = document.createElement('span');
-    bubble.className = 'word-bubble';
-    bubble.textContent = w;
-    bubble.style.background = colors[i % colors.length] + '30';
-    bubble.style.color = colors[i % colors.length];
-    bubble.style.fontSize = sizes[i] + 'rem';
-    bubble.style.border = `1px solid ${colors[i % colors.length]}50`;
-    cloud.appendChild(bubble);
-  });
+  const container = document.getElementById('summary-topics');
+  container.innerHTML = '';
 
-  const sumCats = document.getElementById('summary-categories');
-  sumCats.innerHTML = '';
   CATEGORIES.forEach(cat => {
-    const div = document.createElement('div');
-    div.className = 'summary-cat';
-    const h3 = document.createElement('h3');
-    h3.textContent = cat.name;
-    div.appendChild(h3);
-
-    const canvas = document.createElement('canvas');
-    div.appendChild(canvas);
-    sumCats.appendChild(div);
-
-    const totals = cat.answers.map(() => 0);
     cat.questions.forEach((q, qi) => {
       const key = `${cat.id}-${qi}`;
-      if (gameState.results[key]) {
-        gameState.results[key].forEach((v, ai) => { totals[ai] += v; });
-      }
-    });
+      if (!gameState.completed[key]) return;
+      const counts = gameState.results[key];
 
-    setTimeout(() => drawDonut(canvas, cat.answers, totals, 200), 50);
+      const card = document.createElement('div');
+      card.className = 'summary-topic-card';
+
+      const chartWrap = document.createElement('div');
+      chartWrap.className = 'summary-topic-chart';
+      const canvas = document.createElement('canvas');
+      chartWrap.appendChild(canvas);
+      card.appendChild(chartWrap);
+
+      const info = document.createElement('div');
+      info.className = 'summary-topic-info';
+      const name = document.createElement('div');
+      name.className = 'summary-topic-name';
+      name.textContent = q.topic;
+      info.appendChild(name);
+      const insightEl = document.createElement('div');
+      insightEl.className = 'summary-topic-insight';
+      insightEl.textContent = generateInsight(cat, q, counts);
+      info.appendChild(insightEl);
+      card.appendChild(info);
+
+      container.appendChild(card);
+      setTimeout(() => drawMiniDonut(canvas, cat.answers, counts, 80), 50);
+    });
   });
 
   showScreen('summary-screen');
@@ -1026,6 +1516,7 @@ function addExtraQuestion(catId, qi) {
 
 function resetGame() {
   gameState = { completed: {}, results: {}, addedExtras: {} };
+  currentTurnIndex = 0;
   CATEGORIES.forEach(cat => {
     if (cat.id === 1) cat.questions.length = 5;
     if (cat.id === 2) cat.questions.length = 5;
@@ -1034,7 +1525,154 @@ function resetGame() {
   renderBoard();
 }
 
-renderBoard();
+let nextCatId = 4;
+const CAT_COLORS = [
+  { gradient: ['#667eea', '#764ba2'], answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'גם וגם',color:'#3b82f6'}] },
+  { gradient: ['#a855f7', '#ec4899'], answers: [{label:'לשמור לעצמי',color:'#a855f7'},{label:'לשתף מבוגר',color:'#22c55e'},{label:'לשתף חבר קרוב',color:'#3b82f6'}] },
+  { gradient: ['#22c55e', '#3b82f6'], answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'תלוי',color:'#3b82f6'}] }
+];
+
+function openAdmin() {
+  renderAdmin();
+  showScreen('admin-screen');
+}
+
+function closeAdmin() {
+  showScreen('intro-screen');
+}
+
+function renderAdmin() {
+  const content = document.getElementById('admin-content');
+  content.innerHTML = '';
+
+  CATEGORIES.forEach((cat, ci) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'admin-cat';
+
+    const header = document.createElement('div');
+    header.className = 'admin-cat-header';
+    const nameInput = document.createElement('input');
+    nameInput.className = 'admin-cat-name';
+    nameInput.value = cat.name;
+    nameInput.onchange = () => { cat.name = nameInput.value; };
+    header.appendChild(nameInput);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'admin-remove-cat';
+    removeBtn.textContent = 'הסר קטגוריה';
+    removeBtn.onclick = () => { removeCategory(ci); };
+    header.appendChild(removeBtn);
+    catDiv.appendChild(header);
+
+    const answersDiv = document.createElement('div');
+    answersDiv.className = 'admin-cat-answers';
+    const ansLabel = document.createElement('span');
+    ansLabel.textContent = 'תשובות:';
+    answersDiv.appendChild(ansLabel);
+    cat.answers.forEach(a => {
+      const chip = document.createElement('span');
+      chip.className = 'admin-answer-chip';
+      chip.style.borderRight = `3px solid ${a.color}`;
+      chip.textContent = a.label;
+      answersDiv.appendChild(chip);
+    });
+    catDiv.appendChild(answersDiv);
+
+    const qList = document.createElement('div');
+    qList.className = 'admin-q-list';
+
+    cat.questions.forEach((q, qi) => {
+      const qItem = document.createElement('div');
+      qItem.className = 'admin-q-item';
+
+      const qRow = document.createElement('div');
+      qRow.className = 'admin-q-row';
+
+      const fields = document.createElement('div');
+      fields.className = 'admin-q-fields';
+
+      const topicLabel = document.createElement('div');
+      topicLabel.className = 'admin-q-label';
+      topicLabel.textContent = 'נושא';
+      fields.appendChild(topicLabel);
+      const topicInput = document.createElement('input');
+      topicInput.className = 'admin-q-input';
+      topicInput.placeholder = 'למשל: פרטיות, פחד מלעג...';
+      topicInput.value = q.topic || '';
+      topicInput.onchange = () => { q.topic = topicInput.value; };
+      fields.appendChild(topicInput);
+
+      const stLabel = document.createElement('div');
+      stLabel.className = 'admin-q-label';
+      stLabel.textContent = 'היגד / שאלה';
+      fields.appendChild(stLabel);
+      const stInput = document.createElement('input');
+      stInput.className = 'admin-q-input';
+      stInput.placeholder = 'למשל: מי חושב ש...';
+      stInput.value = q.statement;
+      stInput.onchange = () => { q.statement = stInput.value; };
+      fields.appendChild(stInput);
+
+      const regLabel = document.createElement('div');
+      regLabel.className = 'admin-q-label';
+      regLabel.textContent = 'משפט מרגיע / מווסת';
+      fields.appendChild(regLabel);
+      const regInput = document.createElement('input');
+      regInput.className = 'admin-q-input';
+      regInput.placeholder = 'למשל: לפעמים דברים חדשים...';
+      regInput.value = q.regulation;
+      regInput.onchange = () => { q.regulation = regInput.value; };
+      fields.appendChild(regInput);
+
+      qRow.appendChild(fields);
+
+      const actions = document.createElement('div');
+      actions.className = 'admin-q-actions';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'admin-btn-icon admin-btn-delete';
+      delBtn.textContent = '✕';
+      delBtn.onclick = () => { cat.questions.splice(qi, 1); renderAdmin(); };
+      actions.appendChild(delBtn);
+      qRow.appendChild(actions);
+
+      qItem.appendChild(qRow);
+      qList.appendChild(qItem);
+    });
+
+    catDiv.appendChild(qList);
+
+    const addQBtn = document.createElement('button');
+    addQBtn.className = 'admin-add-q';
+    addQBtn.textContent = '+ הוסף שאלה';
+    addQBtn.onclick = () => {
+      cat.questions.push({ topic: '', statement: '', regulation: '', insight: '' });
+      renderAdmin();
+    };
+    catDiv.appendChild(addQBtn);
+
+    content.appendChild(catDiv);
+  });
+}
+
+function removeCategory(ci) {
+  if (CATEGORIES.length <= 1) return;
+  CATEGORIES.splice(ci, 1);
+  renderAdmin();
+}
+
+function addCategory() {
+  const colorSet = CAT_COLORS[CATEGORIES.length % CAT_COLORS.length];
+  CATEGORIES.push({
+    id: nextCatId++,
+    name: 'קטגוריה חדשה',
+    answers: colorSet.answers.map(a => ({...a})),
+    questions: []
+  });
+  renderAdmin();
+}
+
+addPlayerRow();
+addPlayerRow();
 </script>
 </body>
 </html>
