@@ -692,6 +692,105 @@ body {
   box-shadow: none;
 }
 
+/* Sets Manager */
+.sets-manager {
+  width: 100%;
+  max-width: 800px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 18px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sets-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #b8b8d4;
+  text-align: center;
+}
+
+.sets-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sets-select {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239b99bb' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+}
+
+.sets-select:focus {
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.sets-btn {
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #c0c0d8;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.sets-btn:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.sets-btn.save {
+  background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,197,94,0.1));
+  border-color: rgba(34,197,94,0.3);
+  color: #86efac;
+}
+
+.sets-btn.save:hover {
+  background: linear-gradient(135deg, rgba(34,197,94,0.35), rgba(34,197,94,0.2));
+}
+
+.sets-btn.delete {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.sets-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.sets-current {
+  font-size: 0.85rem;
+  color: #9b99bb;
+  text-align: center;
+}
+
+.sets-current strong {
+  color: #c0c0d8;
+}
+
 /* Admin Screen */
 #admin-screen {
   justify-content: flex-start;
@@ -949,6 +1048,16 @@ body {
   <div class="admin-header">
     <div class="admin-title">מנהל המשחק</div>
     <button class="btn btn-secondary" onclick="closeAdmin()">חזרה</button>
+  </div>
+  <div class="sets-manager">
+    <div class="sets-title">ערכות שאלות שמורות</div>
+    <div class="sets-row">
+      <select class="sets-select" id="sets-select" onchange="loadSet()"></select>
+      <button class="sets-btn save" onclick="saveCurrentSet()">💾 שמור ערכה</button>
+      <button class="sets-btn" onclick="saveAsNewSet()">✨ שמור כערכה חדשה</button>
+      <button class="sets-btn delete" onclick="deleteCurrentSet()">🗑 מחק ערכה</button>
+    </div>
+    <div class="sets-current" id="sets-current"></div>
   </div>
   <div class="admin-content" id="admin-content"></div>
   <button class="admin-add-cat" onclick="addCategory()">+ הוסף קטגוריה</button>
@@ -1525,6 +1634,187 @@ function resetGame() {
   renderBoard();
 }
 
+// ──── Sets Management ────
+const SETS_KEY = 'maNisgar_sets';
+const ACTIVE_SET_KEY = 'maNisgar_activeSet';
+const DEFAULT_SET_NAME = 'ברירת מחדל';
+
+function getDefaultCategories() {
+  return JSON.parse(JSON.stringify([
+    {
+      id: 1, name: 'מי חושב ככה על גיל ההתבגרות?',
+      answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'גם וגם',color:'#3b82f6'}],
+      questions: [
+        {topic:'התרגשות ולחץ',statement:'מי חושב שלהתבגר זה גם מרגש וגם קצת מלחיץ?',regulation:'לפעמים דברים חדשים יכולים להיות גם מסקרנים וגם מפחידים ביחד.',insight:''},
+        {topic:'רצון להישאר ילד',statement:'מי לפעמים היה רוצה להישאר עוד קצת ילד?',regulation:'גם הרצון לגדול וגם הרצון להישאר קטן הם רגשות נורמליים.',insight:''},
+        {topic:'קצב אישי',statement:'מי חושב שלא כולם מתבגרים באותו קצב?',regulation:'כל אחד גדל ומשתנה בדרך ובקצב שלו.',insight:''},
+        {topic:'פרטיות',statement:'מי חושב שלפעמים ילדים רוצים יותר פרטיות כשהם גדלים?',regulation:'כשגדלים לפעמים רוצים יותר מרחב אישי ושליטה על מה משתפים.',insight:''},
+        {topic:'פחד מלעג',statement:'מי חושב שילדים לפעמים מפחדים שיצחקו עליהם?',regulation:'הרבה ילדים חוששים איך אחרים יראו אותם כשהם גדלים.',insight:''}
+      ]
+    },
+    {
+      id: 2, name: 'מעגלי פרטיות',
+      answers: [{label:'לשמור לעצמי',color:'#a855f7'},{label:'לשתף מבוגר',color:'#22c55e'},{label:'לשתף חבר קרוב',color:'#3b82f6'}],
+      questions: [
+        {topic:'פחד ודאגה',statement:'פחד או דאגה שיש לי',regulation:'לא חייבים להתמודד לבד עם דברים שמרגישים כבדים.',insight:''},
+        {topic:'מבוכה',statement:'משהו אישי שמביך אותי',regulation:'כל אחד בוחר עם מי נכון לו לשתף דברים אישיים.',insight:''},
+        {topic:'ריב עם חבר',statement:'ריב או פגיעה מחבר',regulation:'לפעמים שיחה עם אדם בטוח יכולה לעזור להבין מה לעשות.',insight:''},
+        {topic:'מחשבות חוזרות',statement:'משהו שקרה לי ואני לא מפסיק לחשוב עליו',regulation:'יש מחשבות שיותר קל להחזיק כשלא נשארים איתן לבד.',insight:''},
+        {topic:'רגישות',statement:'משהו שאני לא רוצה שיצחקו עליו',regulation:'לכל אחד יש דברים רגישים שהוא רוצה לשמור עליהם.',insight:''}
+      ]
+    },
+    {
+      id: 3, name: 'מה יעזור לי להרגיש בטוח במצגת?',
+      answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'תלוי',color:'#3b82f6'}],
+      questions: [
+        {topic:'בחירה',statement:'שיהיה מותר לא לענות',regulation:'בחירה נותנת תחושת ביטחון ושליטה.',insight:''},
+        {topic:'הקשבה',statement:'שאפשר רק להקשיב בלי לדבר',regulation:'אפשר להשתתף גם בדרכים שקטות.',insight:''},
+        {topic:'כלליות',statement:'שידברו באופן כללי ולא אישי',regulation:'אפשר ללמוד על גיל ההתבגרות בלי לחשוף דברים פרטיים.',insight:''},
+        {topic:'כבוד',statement:'שלא יצחקו על תשובות של אחרים',regulation:'כשמרגישים בטוחים יותר קל לחשוב ולהשתתף.',insight:''},
+        {topic:'הכנה מראש',statement:'לדעת מראש על מה נדבר',regulation:'כשיודעים למה לצפות הרבה פעמים מרגישים יותר רגועים.',insight:''}
+      ]
+    }
+  ]));
+}
+
+function getSavedSets() {
+  try {
+    const raw = localStorage.getItem(SETS_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch(e) { return {}; }
+}
+
+function saveSetsToStorage(sets) {
+  localStorage.setItem(SETS_KEY, JSON.stringify(sets));
+}
+
+function getActiveSetName() {
+  return localStorage.getItem(ACTIVE_SET_KEY) || DEFAULT_SET_NAME;
+}
+
+function setActiveSetName(name) {
+  localStorage.setItem(ACTIVE_SET_KEY, name);
+}
+
+function refreshSetsUI() {
+  const select = document.getElementById('sets-select');
+  const current = document.getElementById('sets-current');
+  const sets = getSavedSets();
+  const activeName = getActiveSetName();
+
+  select.innerHTML = '';
+
+  // Default set option
+  const defOpt = document.createElement('option');
+  defOpt.value = DEFAULT_SET_NAME;
+  defOpt.textContent = '📋 ' + DEFAULT_SET_NAME;
+  if (activeName === DEFAULT_SET_NAME) defOpt.selected = true;
+  select.appendChild(defOpt);
+
+  // Saved sets
+  Object.keys(sets).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = '📁 ' + name;
+    if (name === activeName) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  const catCount = CATEGORIES.length;
+  const qCount = CATEGORIES.reduce((s, c) => s + c.questions.length, 0);
+  current.innerHTML = `ערכה פעילה: <strong>${activeName}</strong> — ${catCount} קטגוריות, ${qCount} שאלות`;
+}
+
+function loadSet() {
+  const select = document.getElementById('sets-select');
+  const name = select.value;
+
+  if (name === DEFAULT_SET_NAME) {
+    const defaultCats = getDefaultCategories();
+    CATEGORIES.length = 0;
+    defaultCats.forEach(c => CATEGORIES.push(c));
+    nextCatId = Math.max(...CATEGORIES.map(c => c.id)) + 1;
+  } else {
+    const sets = getSavedSets();
+    if (sets[name]) {
+      const loaded = JSON.parse(JSON.stringify(sets[name]));
+      CATEGORIES.length = 0;
+      loaded.forEach(c => CATEGORIES.push(c));
+      nextCatId = Math.max(...CATEGORIES.map(c => c.id)) + 1;
+    }
+  }
+
+  setActiveSetName(name);
+  renderAdmin();
+  refreshSetsUI();
+}
+
+function saveCurrentSet() {
+  const activeName = getActiveSetName();
+  if (activeName === DEFAULT_SET_NAME) {
+    saveAsNewSet();
+    return;
+  }
+  const sets = getSavedSets();
+  sets[activeName] = JSON.parse(JSON.stringify(CATEGORIES));
+  saveSetsToStorage(sets);
+  refreshSetsUI();
+  showSetToast('הערכה נשמרה ✓');
+}
+
+function saveAsNewSet() {
+  const name = prompt('שם לערכה החדשה:');
+  if (!name || !name.trim()) return;
+  const trimmed = name.trim();
+  if (trimmed === DEFAULT_SET_NAME) {
+    alert('לא ניתן להשתמש בשם "ברירת מחדל"');
+    return;
+  }
+  const sets = getSavedSets();
+  if (sets[trimmed]) {
+    if (!confirm(`כבר קיימת ערכה בשם "${trimmed}". לדרוס?`)) return;
+  }
+  sets[trimmed] = JSON.parse(JSON.stringify(CATEGORIES));
+  saveSetsToStorage(sets);
+  setActiveSetName(trimmed);
+  refreshSetsUI();
+  showSetToast('ערכה חדשה נשמרה ✓');
+}
+
+function deleteCurrentSet() {
+  const activeName = getActiveSetName();
+  if (activeName === DEFAULT_SET_NAME) {
+    alert('לא ניתן למחוק את ערכת ברירת המחדל');
+    return;
+  }
+  if (!confirm(`למחוק את הערכה "${activeName}"?`)) return;
+  const sets = getSavedSets();
+  delete sets[activeName];
+  saveSetsToStorage(sets);
+
+  // Load default
+  const defaultCats = getDefaultCategories();
+  CATEGORIES.length = 0;
+  defaultCats.forEach(c => CATEGORIES.push(c));
+  nextCatId = Math.max(...CATEGORIES.map(c => c.id)) + 1;
+  setActiveSetName(DEFAULT_SET_NAME);
+  renderAdmin();
+  refreshSetsUI();
+  showSetToast('הערכה נמחקה');
+}
+
+function showSetToast(msg) {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(34,197,94,0.9);color:#fff;padding:12px 28px;border-radius:12px;font-weight:700;font-size:1.05rem;z-index:9999;animation:fadeInOut 2s ease;font-family:inherit;';
+  const style = document.createElement('style');
+  style.textContent = '@keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(20px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}75%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}';
+  document.head.appendChild(style);
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.remove(); style.remove(); }, 2000);
+}
+
 let nextCatId = 4;
 const CAT_COLORS = [
   { gradient: ['#667eea', '#764ba2'], answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'גם וגם',color:'#3b82f6'}] },
@@ -1534,6 +1824,7 @@ const CAT_COLORS = [
 
 function openAdmin() {
   renderAdmin();
+  refreshSetsUI();
   showScreen('admin-screen');
 }
 
