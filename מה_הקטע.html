@@ -265,6 +265,7 @@ body {
 .cat-1 .category-title { background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25)); color: #a8b8ff; }
 .cat-2 .category-title { background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(236, 72, 153, 0.25)); color: #d8a8ff; }
 .cat-3 .category-title { background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(59, 130, 246, 0.25)); color: #a8ffc8; }
+.cat-4 .category-title { background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(239, 68, 68, 0.25)); color: #fcd34d; }
 
 .cards-grid {
   display: grid;
@@ -301,6 +302,12 @@ body {
   background: linear-gradient(135deg, #22c55e, #3b82f6);
   color: white;
   box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.cat-4 .card-btn {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
 }
 
 .card-btn:hover {
@@ -716,7 +723,11 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 600px) {
+  .sets-row { flex-wrap: wrap; }
 }
 
 .sets-select {
@@ -1050,12 +1061,12 @@ body {
     <button class="btn btn-secondary" onclick="closeAdmin()">חזרה</button>
   </div>
   <div class="sets-manager">
-    <div class="sets-title">ערכות שאלות שמורות</div>
+    <div class="sets-title">נושאים</div>
     <div class="sets-row">
       <select class="sets-select" id="sets-select" onchange="loadSet()"></select>
-      <button class="sets-btn save" onclick="saveCurrentSet()">💾 שמור ערכה</button>
-      <button class="sets-btn" onclick="saveAsNewSet()">✨ שמור כערכה חדשה</button>
-      <button class="sets-btn delete" onclick="deleteCurrentSet()">🗑 מחק ערכה</button>
+      <button class="sets-btn save" onclick="saveCurrentSet()">💾 שמור</button>
+      <button class="sets-btn" onclick="saveAsNewSet()">✨ נושא חדש</button>
+      <button class="sets-btn delete" onclick="deleteCurrentSet()">🗑 מחק</button>
     </div>
     <div class="sets-current" id="sets-current"></div>
   </div>
@@ -1070,7 +1081,7 @@ body {
     <div class="board-actions">
       <button class="btn btn-secondary" onclick="openPanel()">מאגר שאלות נוסף</button>
       <button class="btn btn-secondary" onclick="showSummary()">סיכום המשחק</button>
-      <button class="btn btn-secondary" onclick="resetGame()">איפוס</button>
+      <button class="btn btn-secondary" onclick="resetGame(); showScreen('intro-screen')">איפוס</button>
     </div>
   </div>
   <div class="turn-banner" id="turn-banner"></div>
@@ -1637,7 +1648,7 @@ function resetGame() {
 // ──── Sets Management ────
 const SETS_KEY = 'maNisgar_sets';
 const ACTIVE_SET_KEY = 'maNisgar_activeSet';
-const DEFAULT_SET_NAME = 'ברירת מחדל';
+const DEFAULT_SET_NAME = 'פרטיות ובטחון';
 
 function getDefaultCategories() {
   return JSON.parse(JSON.stringify([
@@ -1677,6 +1688,64 @@ function getDefaultCategories() {
   ]));
 }
 
+function getGrowingInsideSet() {
+  return JSON.parse(JSON.stringify([
+    {
+      id: 1, name: '🧠 מוח על האש',
+      answers: [{label:'נכון',color:'#22c55e'},{label:'לא נכון',color:'#ef4444'},{label:'לא בטוח/ת',color:'#3b82f6'}],
+      questions: [
+        {topic:'התפתחות',statement:'המוח מסיים להתפתח בגיל 18 — נכון?',regulation:'המוח ממשיך לגדול עד אחרי גיל 20. אתם עדיין בתהליך וזה בסדר.',insight:''},
+        {topic:'עוצמה',statement:'למה לפעמים אירוע קטן מרגיש ענק?',regulation:'בגיל שלכם הרגשות מגיעים בעוצמה גבוהה — זה לא הגזמה, זה המוח.',insight:''},
+        {topic:'הורמונים',statement:'הורמוני ההתבגרות משנים רק את הגוף — נכון?',regulation:'הם משנים גם את המוח. לכן לפעמים מרגישים אדם אחר — וזה טבעי.',insight:''},
+        {topic:'גז ובלם',statement:'לעשות משהו בלי לחשוב ואז להתחרט',regulation:'הגז דווש והבלם עדיין בפיתוח. זה קורה לכולם — ואפשר ללמוד מזה.',insight:''},
+        {topic:'עוצמות',statement:'חבר לא ענה להודעה שעה. האם יכול להיות שזה ירגיש למישהו כמו אירוע גדול מאוד?',regulation:'אנשים שונים מגיבים בעוצמות שונות לאותו דבר. אין תגובה נכונה או לא נכונה.',insight:''}
+      ]
+    },
+    {
+      id: 2, name: '💛 רגשות שפתאום מרגישים',
+      answers: [{label:'קרה לי',color:'#a855f7'},{label:'לא קרה לי',color:'#ef4444'},{label:'לא בטוח/ת',color:'#3b82f6'}],
+      questions: [
+        {topic:'הערכה',statement:'מישהו שה"כל הכבוד" שלו שווה לי יותר מכל השאר',regulation:'להעריך מישהו זה חלק מהגדילה. זה אומר שיש לכם אנשים חשובים בחיים.',insight:''},
+        {topic:'שייכות',statement:'חבר שכשהוא לא פה — היום מרגיש אחרת',regulation:'להרגיש שמישהו חסר זה סימן לחברות אמיתית.',insight:''},
+        {topic:'התעניינות',statement:'מישהו שאתם מוצאים את עצמכם חושבים עליו יותר מהרגיל',regulation:'לא חייבים להבין הכל כדי שזה יהיה בסדר. רגשות חדשים לוקחים זמן להכיר.',insight:''},
+        {topic:'היקשרות',statement:'מבוגר שבאמת הכיר אותי וכבר לא נמצא באותו מקום',regulation:'גם כשהקשר משתנה, הדברים שלמדנו ממנו נשארים איתנו.',insight:''},
+        {topic:'שונות',statement:'כולם מתלהבים ממשהו ואני לא מבין למה',regulation:'לא חייבים לאהוב את אותם דברים כמו כולם. להיות שונה זה לא להיות לבד.',insight:''},
+        {topic:'גאווה',statement:'לשמוח בשביל חבר שהצליח כאילו גם אני הצלחתי',regulation:'לשמוח בשביל מישהו אחר זה אחד הדברים הכי חזקים שיש בקשר.',insight:''},
+        {topic:'קנאה',statement:'חבר קיבל משהו שאני מאוד רציתי לקבל, או הצליח במשהו שהיה חשוב גם לי',regulation:'קנאה לא אומרת שאנחנו אנשים רעים. לפעמים היא מספרת לנו מה חשוב לנו ומה היינו רוצים לעצמנו.',insight:''}
+      ]
+    },
+    {
+      id: 3, name: '🔍 עובדה, רגש או מחשבה?',
+      answers: [{label:'מכיר/ה את זה',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'קצת',color:'#f59e0b'}],
+      questions: [
+        {topic:'הודעה',statement:'"שלחתי הודעה לחבר והוא לא ענה. אני כועס. הוא בטח לא רוצה להיות חבר שלי." — מה עובדה? מה רגש? מה מחשבה?',regulation:'המחשבה לא תמיד אומרת אמת. כדאי לבדוק לפני שמגיבים.',insight:''},
+        {topic:'סייעת',statement:'"הסייעת עברה לכיתה אחרת. חסר לי. היא בטח מעדיפה אותם." — מה עובדה? מה רגש? מה מחשבה?',regulation:'אנשים זזים מסיבות שלהם. זה לא אומר שלא היה להם אכפת.',insight:''},
+        {topic:'בצד',statement:'"כולם צוחקים ואני בצד. אני לבד. אף אחד לא אוהב אותי." — מה עובדה? מה רגש? מה מחשבה?',regulation:'בדידות היא רגש אמיתי, אבל "אף אחד לא אוהב אותי" — זו מחשבה שכדאי לבדוק.',insight:''},
+        {topic:'ציון',statement:'"קיבלתי ציון נמוך. אני מרגיש חסר ערך. אני לא מסוגל ללמוד." — מה עובדה? מה רגש? מה מחשבה?',regulation:'ציון הוא מספר, לא ערך. רגש של תסכול הוא טבעי — אבל המחשבה שאתם לא מסוגלים היא לא עובדה.',insight:''},
+        {topic:'ספורט',statement:'"לא בחרו אותי ראשון לקבוצה. אני מאוכזב. כנראה שאני פחות טוב מכולם." — מה עובדה? מה רגש? מה מחשבה?',regulation:'לא להיבחר ראשון זה מצב, לא זהות. אכזבה היא רגש טבעי — "פחות טוב מכולם" זו מחשבה שכדאי לבדוק.',insight:''},
+        {topic:'שני רגשות',statement:'אפשר לשמוח בשביל חבר וגם להרגיש חסר — נכון?',regulation:'להרגיש שני דברים ביחד זה נורמלי לגמרי. לא חייבים לבחור רגש אחד.',insight:''}
+      ]
+    },
+    {
+      id: 4, name: '💬 מה עוזר לי?',
+      answers: [{label:'כן, עוזר',color:'#22c55e'},{label:'לא עוזר',color:'#ef4444'},{label:'תלוי',color:'#3b82f6'}],
+      questions: [
+        {topic:'שיתוף',statement:'להרגיש משהו חזק ולא לספר לאף אחד',regulation:'אין טעם להישאר עם זה לבד. לדבר עם מישהו עוזר לסדר את המחשבות.',insight:''},
+        {topic:'כעס',statement:'כעס שלא יודעים מאיפה הוא בא',regulation:'כעס הוא סימן שמשהו חשוב לנו קרה. לפעמים כדאי לעצור ולבדוק מה מסתתר מתחתיו.',insight:''},
+        {topic:'געגוע',statement:'להתגעגע למישהו שכבר לא שם',regulation:'געגוע אומר שהקשר היה חשוב. אפשר לזכור, לדבר על זה, ולתת לגעגוע להיות שם.',insight:''},
+        {topic:'גבולות',statement:'חבר אומר שהוא רוצה להיות קצת לבד',regulation:'לכבד את הצורך של חבר במרחב זה חלק מקשר טוב. זה לא אומר שהקשר נגמר.',insight:''},
+        {topic:'מבוגר',statement:'לדבר עם מבוגר על משהו שמפריע לי',regulation:'מבוגרים יכולים להקשיב ולעזור, גם בלי לפתור. זוכרים את מעגלי הפרטיות? בוחרים עם מי.',insight:''},
+        {topic:'קשר טוב',statement:'איך יודעים שקשר הוא טוב בשבילי?',regulation:'קשר טוב הוא מקום שאפשר להיות בו עצמך, בלי להעמיד פנים ובלי פחד.',insight:''},
+        {topic:'שני רגשות',statement:'אתם עולים לכיתה חדשה. אילו שני רגשות שונים יכולים להופיע ביחד?',regulation:'להרגיש שני דברים ביחד זה נורמלי לגמרי. לא חייבים לבחור רגש אחד.',insight:''}
+      ]
+    }
+  ]));
+}
+
+const BUILTIN_SETS = {};
+BUILTIN_SETS[DEFAULT_SET_NAME] = getDefaultCategories;
+BUILTIN_SETS['גדלים מבפנים'] = getGrowingInsideSet;
+
 function getSavedSets() {
   try {
     const raw = localStorage.getItem(SETS_KEY);
@@ -1705,14 +1774,16 @@ function refreshSetsUI() {
 
   select.innerHTML = '';
 
-  // Default set option
-  const defOpt = document.createElement('option');
-  defOpt.value = DEFAULT_SET_NAME;
-  defOpt.textContent = '📋 ' + DEFAULT_SET_NAME;
-  if (activeName === DEFAULT_SET_NAME) defOpt.selected = true;
-  select.appendChild(defOpt);
+  // Built-in sets
+  Object.keys(BUILTIN_SETS).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = '📋 ' + name;
+    if (name === activeName) opt.selected = true;
+    select.appendChild(opt);
+  });
 
-  // Saved sets
+  // User-saved sets
   Object.keys(sets).forEach(name => {
     const opt = document.createElement('option');
     opt.value = name;
@@ -1723,17 +1794,17 @@ function refreshSetsUI() {
 
   const catCount = CATEGORIES.length;
   const qCount = CATEGORIES.reduce((s, c) => s + c.questions.length, 0);
-  current.innerHTML = `ערכה פעילה: <strong>${activeName}</strong> — ${catCount} קטגוריות, ${qCount} שאלות`;
+  current.innerHTML = `נושא פעיל: <strong>${activeName}</strong> — ${catCount} קטגוריות, ${qCount} שאלות`;
 }
 
 function loadSet() {
   const select = document.getElementById('sets-select');
   const name = select.value;
 
-  if (name === DEFAULT_SET_NAME) {
-    const defaultCats = getDefaultCategories();
+  if (BUILTIN_SETS[name]) {
+    const builtinCats = BUILTIN_SETS[name]();
     CATEGORIES.length = 0;
-    defaultCats.forEach(c => CATEGORIES.push(c));
+    builtinCats.forEach(c => CATEGORIES.push(c));
     nextCatId = Math.max(...CATEGORIES.map(c => c.id)) + 1;
   } else {
     const sets = getSavedSets();
@@ -1752,7 +1823,7 @@ function loadSet() {
 
 function saveCurrentSet() {
   const activeName = getActiveSetName();
-  if (activeName === DEFAULT_SET_NAME) {
+  if (BUILTIN_SETS[activeName]) {
     saveAsNewSet();
     return;
   }
@@ -1760,48 +1831,49 @@ function saveCurrentSet() {
   sets[activeName] = JSON.parse(JSON.stringify(CATEGORIES));
   saveSetsToStorage(sets);
   refreshSetsUI();
-  showSetToast('הערכה נשמרה ✓');
+  showSetToast('הנושא נשמר ✓');
 }
 
 function saveAsNewSet() {
-  const name = prompt('שם לערכה החדשה:');
+  const name = prompt('שם לנושא החדש:');
   if (!name || !name.trim()) return;
   const trimmed = name.trim();
-  if (trimmed === DEFAULT_SET_NAME) {
-    alert('לא ניתן להשתמש בשם "ברירת מחדל"');
+  if (BUILTIN_SETS[trimmed]) {
+    alert('שם זה שמור לנושא מובנה');
     return;
   }
   const sets = getSavedSets();
   if (sets[trimmed]) {
-    if (!confirm(`כבר קיימת ערכה בשם "${trimmed}". לדרוס?`)) return;
+    if (!confirm(`כבר קיים נושא בשם "${trimmed}". לדרוס?`)) return;
   }
   sets[trimmed] = JSON.parse(JSON.stringify(CATEGORIES));
   saveSetsToStorage(sets);
   setActiveSetName(trimmed);
   refreshSetsUI();
-  showSetToast('ערכה חדשה נשמרה ✓');
+  showSetToast('נושא חדש נשמר ✓');
 }
 
 function deleteCurrentSet() {
   const activeName = getActiveSetName();
-  if (activeName === DEFAULT_SET_NAME) {
-    alert('לא ניתן למחוק את ערכת ברירת המחדל');
+  if (BUILTIN_SETS[activeName]) {
+    alert('לא ניתן למחוק נושא מובנה');
     return;
   }
-  if (!confirm(`למחוק את הערכה "${activeName}"?`)) return;
+  if (!confirm(`למחוק את הנושא "${activeName}"?`)) return;
   const sets = getSavedSets();
   delete sets[activeName];
   saveSetsToStorage(sets);
 
-  // Load default
-  const defaultCats = getDefaultCategories();
+  // Load first built-in set
+  const firstName = Object.keys(BUILTIN_SETS)[0];
+  const fallbackCats = BUILTIN_SETS[firstName]();
   CATEGORIES.length = 0;
-  defaultCats.forEach(c => CATEGORIES.push(c));
+  fallbackCats.forEach(c => CATEGORIES.push(c));
   nextCatId = Math.max(...CATEGORIES.map(c => c.id)) + 1;
-  setActiveSetName(DEFAULT_SET_NAME);
+  setActiveSetName(firstName);
   renderAdmin();
   refreshSetsUI();
-  showSetToast('הערכה נמחקה');
+  showSetToast('הנושא נמחק');
 }
 
 function showSetToast(msg) {
