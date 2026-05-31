@@ -1030,6 +1030,188 @@ body {
   background: rgba(239, 68, 68, 0.25);
 }
 
+/* Summary Category Cards */
+.summary-cat-card {
+  background: rgba(255,255,255,0.06);
+  border-radius: 18px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.summary-cat-card:hover {
+  border-color: rgba(255,255,255,0.2);
+}
+
+.summary-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.summary-cat-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.summary-cat-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #e0e0ff;
+}
+
+.summary-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+}
+
+.summary-bar-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  transition: width 0.5s ease;
+  min-width: 0;
+}
+
+.summary-bar-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.summary-bar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #b8b8d4;
+}
+
+.summary-bar-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.summary-ai-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #d0d0e8;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  border-right: 3px solid;
+  min-height: 50px;
+}
+
+.summary-ai-loading {
+  color: #9b99bb;
+  font-style: italic;
+}
+
+/* API Key Section */
+.api-key-section {
+  width: 100%;
+  max-width: 800px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 18px;
+  padding: 18px 22px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.api-key-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #b8b8d4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.api-key-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.api-key-input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  font-family: monospace;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.api-key-input:focus {
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.api-key-hint {
+  font-size: 0.8rem;
+  color: #777799;
+}
+
+/* Admin icon/color inputs */
+.admin-cat-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.admin-icon-input {
+  width: 50px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  font-size: 1.3rem;
+  text-align: center;
+  outline: none;
+}
+
+.admin-color-input {
+  width: 42px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: none;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.admin-meta-label {
+  font-size: 0.75rem;
+  color: #9b99bb;
+  font-weight: 600;
+}
+
 @media (max-width: 600px) {
   .intro-title { font-size: 2.8rem; }
   .question-statement { font-size: 1.6rem; }
@@ -1072,6 +1254,14 @@ body {
   </div>
   <div class="admin-content" id="admin-content"></div>
   <button class="admin-add-cat" onclick="addCategory()">+ הוסף קטגוריה</button>
+  <div class="api-key-section">
+    <div class="api-key-title">🤖 סיכום חכם (Claude API)</div>
+    <div class="api-key-row">
+      <input class="api-key-input" id="api-key-input" type="password" placeholder="sk-ant-..." />
+      <button class="sets-btn save" onclick="saveApiKey()">שמור</button>
+    </div>
+    <div class="api-key-hint">אופציונלי — מפתח API של Anthropic ליצירת סיכום מותאם בסוף המשחק. נשמר רק בדפדפן שלך.</div>
+  </div>
 </div>
 
 <!-- Board Screen -->
@@ -1142,6 +1332,8 @@ const CATEGORIES = [
   {
     id: 1,
     name: 'מי חושב ככה על גיל ההתבגרות?',
+    icon: '🤔',
+    color: '#667eea',
     answers: [
       { label: 'כן', color: '#22c55e' },
       { label: 'לא', color: '#ef4444' },
@@ -1158,6 +1350,8 @@ const CATEGORIES = [
   {
     id: 2,
     name: 'מעגלי פרטיות',
+    icon: '🔒',
+    color: '#a855f7',
     answers: [
       { label: 'לשמור לעצמי', color: '#a855f7' },
       { label: 'לשתף מבוגר', color: '#22c55e' },
@@ -1174,6 +1368,8 @@ const CATEGORIES = [
   {
     id: 3,
     name: 'מה יעזור לי להרגיש בטוח במצגת?',
+    icon: '🛡️',
+    color: '#22c55e',
     answers: [
       { label: 'כן', color: '#22c55e' },
       { label: 'לא', color: '#ef4444' },
@@ -1302,9 +1498,12 @@ function renderBoard() {
   CATEGORIES.forEach((cat) => {
     const block = document.createElement('div');
     block.className = `category-block cat-${cat.id}`;
+    const catColor = cat.color || '#667eea';
     const title = document.createElement('div');
     title.className = 'category-title';
-    title.textContent = cat.name;
+    title.textContent = (cat.icon ? cat.icon + ' ' : '') + cat.name;
+    title.style.background = `linear-gradient(135deg, ${catColor}40, ${catColor}28)`;
+    title.style.color = `${catColor}cc`;
     block.appendChild(title);
 
     const grid = document.createElement('div');
@@ -1327,6 +1526,8 @@ function renderBoard() {
         }, 30);
       } else {
         btn.textContent = qi + 1;
+        btn.style.background = `linear-gradient(135deg, ${catColor}, ${catColor}bb)`;
+        btn.style.boxShadow = `0 4px 15px ${catColor}4d`;
         btn.onclick = () => openQuestion(cat, qi);
       }
       grid.appendChild(btn);
@@ -1547,37 +1748,137 @@ function showSummary() {
   const container = document.getElementById('summary-topics');
   container.innerHTML = '';
 
-  CATEGORIES.forEach(cat => {
-    cat.questions.forEach((q, qi) => {
-      const key = `${cat.id}-${qi}`;
-      if (!gameState.completed[key]) return;
-      const counts = gameState.results[key];
+  // Check if categories have icon/color (new format) or not (backward compat)
+  const hasNewFormat = CATEGORIES.some(c => c.icon || c.color);
 
+  if (hasNewFormat) {
+    // New category-based summary
+    CATEGORIES.forEach(cat => {
+      // Collect completed questions for this category
+      const completedQs = [];
+      cat.questions.forEach((q, qi) => {
+        const key = `${cat.id}-${qi}`;
+        if (gameState.completed[key]) {
+          completedQs.push({ q, counts: gameState.results[key] });
+        }
+      });
+      if (completedQs.length === 0) return;
+
+      const catColor = cat.color || '#667eea';
       const card = document.createElement('div');
-      card.className = 'summary-topic-card';
+      card.className = 'summary-cat-card';
+      card.style.borderColor = catColor + '40';
 
-      const chartWrap = document.createElement('div');
-      chartWrap.className = 'summary-topic-chart';
-      const canvas = document.createElement('canvas');
-      chartWrap.appendChild(canvas);
-      card.appendChild(chartWrap);
+      // Header: icon + name
+      const header = document.createElement('div');
+      header.className = 'summary-cat-header';
+      if (cat.icon) {
+        const iconEl = document.createElement('span');
+        iconEl.className = 'summary-cat-icon';
+        iconEl.textContent = cat.icon;
+        header.appendChild(iconEl);
+      }
+      const nameEl = document.createElement('div');
+      nameEl.className = 'summary-cat-name';
+      nameEl.textContent = cat.name;
+      nameEl.style.color = catColor;
+      header.appendChild(nameEl);
+      card.appendChild(header);
 
-      const info = document.createElement('div');
-      info.className = 'summary-topic-info';
-      const name = document.createElement('div');
-      name.className = 'summary-topic-name';
-      name.textContent = q.topic;
-      info.appendChild(name);
-      const insightEl = document.createElement('div');
-      insightEl.className = 'summary-topic-insight';
-      insightEl.textContent = generateInsight(cat, q, counts);
-      info.appendChild(insightEl);
-      card.appendChild(info);
+      // Aggregate votes across all completed questions
+      const totals = cat.answers.map(() => 0);
+      completedQs.forEach(({ counts }) => {
+        counts.forEach((c, i) => { if (i < totals.length) totals[i] += c; });
+      });
+      const grandTotal = totals.reduce((a, b) => a + b, 0);
+
+      // Distribution bar
+      const barContainer = document.createElement('div');
+      barContainer.className = 'summary-bar-container';
+      const bar = document.createElement('div');
+      bar.className = 'summary-bar';
+      cat.answers.forEach((ans, i) => {
+        if (totals[i] === 0) return;
+        const pct = Math.round((totals[i] / grandTotal) * 100);
+        const seg = document.createElement('div');
+        seg.className = 'summary-bar-segment';
+        seg.style.width = pct + '%';
+        seg.style.background = ans.color;
+        if (pct >= 12) seg.textContent = pct + '%';
+        bar.appendChild(seg);
+      });
+      barContainer.appendChild(bar);
+
+      // Legend with percentages
+      const legend = document.createElement('div');
+      legend.className = 'summary-bar-legend';
+      cat.answers.forEach((ans, i) => {
+        if (totals[i] === 0) return;
+        const pct = Math.round((totals[i] / grandTotal) * 100);
+        const item = document.createElement('span');
+        item.className = 'summary-bar-legend-item';
+        item.innerHTML = `<span class="summary-bar-legend-dot" style="background:${ans.color}"></span>${ans.label}: ${pct}%`;
+        legend.appendChild(item);
+      });
+      barContainer.appendChild(legend);
+      card.appendChild(barContainer);
+
+      // AI/Dynamic summary text
+      const textEl = document.createElement('div');
+      textEl.className = 'summary-ai-text';
+      textEl.style.borderColor = catColor;
+      textEl.id = `summary-ai-${cat.id}`;
+      // Start with fallback insight
+      const fallbackParts = completedQs.map(({ q, counts }) => generateInsight(cat, q, counts)).filter(t => t);
+      textEl.textContent = fallbackParts[0] || '';
+      card.appendChild(textEl);
 
       container.appendChild(card);
-      setTimeout(() => drawMiniDonut(canvas, cat.answers, counts, 80), 50);
+
+      // Try AI summary if API key exists
+      const apiKey = getApiKey();
+      if (apiKey) {
+        textEl.textContent = 'יוצר סיכום מותאם...';
+        textEl.classList.add('summary-ai-loading');
+        generateAISummary(apiKey, cat, completedQs).then(text => {
+          textEl.textContent = text;
+          textEl.classList.remove('summary-ai-loading');
+        }).catch(() => {
+          textEl.textContent = fallbackParts[0] || 'לא הצלחנו ליצור סיכום. נסו שוב.';
+          textEl.classList.remove('summary-ai-loading');
+        });
+      }
     });
-  });
+  } else {
+    // Backward compat: old per-question format
+    CATEGORIES.forEach(cat => {
+      cat.questions.forEach((q, qi) => {
+        const key = `${cat.id}-${qi}`;
+        if (!gameState.completed[key]) return;
+        const counts = gameState.results[key];
+        const card = document.createElement('div');
+        card.className = 'summary-topic-card';
+        const chartWrap = document.createElement('div');
+        chartWrap.className = 'summary-topic-chart';
+        const canvas = document.createElement('canvas');
+        chartWrap.appendChild(canvas);
+        card.appendChild(chartWrap);
+        const info = document.createElement('div');
+        info.className = 'summary-topic-info';
+        const name = document.createElement('div');
+        name.className = 'summary-topic-name';
+        name.textContent = q.topic;
+        info.appendChild(name);
+        const insightEl = document.createElement('div');
+        insightEl.className = 'summary-topic-insight';
+        insightEl.textContent = generateInsight(cat, q, counts);
+        info.appendChild(insightEl);
+        card.appendChild(info);
+        container.appendChild(card);
+        setTimeout(() => drawMiniDonut(canvas, cat.answers, counts, 80), 50);
+      });
+    });
+  }
 
   showScreen('summary-screen');
 }
@@ -1653,7 +1954,7 @@ const DEFAULT_SET_NAME = 'פרטיות ובטחון';
 function getDefaultCategories() {
   return JSON.parse(JSON.stringify([
     {
-      id: 1, name: 'מי חושב ככה על גיל ההתבגרות?',
+      id: 1, name: 'מי חושב ככה על גיל ההתבגרות?', icon: '🤔', color: '#667eea',
       answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'גם וגם',color:'#3b82f6'}],
       questions: [
         {topic:'התרגשות ולחץ',statement:'מי חושב שלהתבגר זה גם מרגש וגם קצת מלחיץ?',regulation:'לפעמים דברים חדשים יכולים להיות גם מסקרנים וגם מפחידים ביחד.',insight:''},
@@ -1664,7 +1965,7 @@ function getDefaultCategories() {
       ]
     },
     {
-      id: 2, name: 'מעגלי פרטיות',
+      id: 2, name: 'מעגלי פרטיות', icon: '🔒', color: '#a855f7',
       answers: [{label:'לשמור לעצמי',color:'#a855f7'},{label:'לשתף מבוגר',color:'#22c55e'},{label:'לשתף חבר קרוב',color:'#3b82f6'}],
       questions: [
         {topic:'פחד ודאגה',statement:'פחד או דאגה שיש לי',regulation:'לא חייבים להתמודד לבד עם דברים שמרגישים כבדים.',insight:''},
@@ -1675,7 +1976,7 @@ function getDefaultCategories() {
       ]
     },
     {
-      id: 3, name: 'מה יעזור לי להרגיש בטוח במצגת?',
+      id: 3, name: 'מה יעזור לי להרגיש בטוח במצגת?', icon: '🛡️', color: '#22c55e',
       answers: [{label:'כן',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'תלוי',color:'#3b82f6'}],
       questions: [
         {topic:'בחירה',statement:'שיהיה מותר לא לענות',regulation:'בחירה נותנת תחושת ביטחון ושליטה.',insight:''},
@@ -1691,7 +1992,7 @@ function getDefaultCategories() {
 function getGrowingInsideSet() {
   return JSON.parse(JSON.stringify([
     {
-      id: 1, name: '🧠 מוח על האש',
+      id: 1, name: '🧠 מוח על האש', icon: '🧠', color: '#667eea',
       answers: [{label:'נכון',color:'#22c55e'},{label:'לא נכון',color:'#ef4444'},{label:'לא בטוח/ת',color:'#3b82f6'}],
       questions: [
         {topic:'התפתחות',statement:'המוח מסיים להתפתח בגיל 18 — נכון?',regulation:'המוח ממשיך לגדול עד אחרי גיל 20. אתם עדיין בתהליך וזה בסדר.',insight:''},
@@ -1702,7 +2003,7 @@ function getGrowingInsideSet() {
       ]
     },
     {
-      id: 2, name: '💛 רגשות שפתאום מרגישים',
+      id: 2, name: '💛 רגשות שפתאום מרגישים', icon: '💛', color: '#a855f7',
       answers: [{label:'קרה לי',color:'#a855f7'},{label:'לא קרה לי',color:'#ef4444'},{label:'לא בטוח/ת',color:'#3b82f6'}],
       questions: [
         {topic:'הערכה',statement:'מישהו שה"כל הכבוד" שלו שווה לי יותר מכל השאר',regulation:'להעריך מישהו זה חלק מהגדילה. זה אומר שיש לכם אנשים חשובים בחיים.',insight:''},
@@ -1715,7 +2016,7 @@ function getGrowingInsideSet() {
       ]
     },
     {
-      id: 3, name: '🔍 עובדה, רגש או מחשבה?',
+      id: 3, name: '🔍 עובדה, רגש או מחשבה?', icon: '🔍', color: '#22c55e',
       answers: [{label:'מכיר/ה את זה',color:'#22c55e'},{label:'לא',color:'#ef4444'},{label:'קצת',color:'#f59e0b'}],
       questions: [
         {topic:'הודעה',statement:'"שלחתי הודעה לחבר והוא לא ענה. אני כועס. הוא בטח לא רוצה להיות חבר שלי." — מה עובדה? מה רגש? מה מחשבה?',regulation:'המחשבה לא תמיד אומרת אמת. כדאי לבדוק לפני שמגיבים.',insight:''},
@@ -1727,7 +2028,7 @@ function getGrowingInsideSet() {
       ]
     },
     {
-      id: 4, name: '💬 מה עוזר לי?',
+      id: 4, name: '💬 מה עוזר לי?', icon: '💬', color: '#f59e0b',
       answers: [{label:'כן, עוזר',color:'#22c55e'},{label:'לא עוזר',color:'#ef4444'},{label:'תלוי',color:'#3b82f6'}],
       questions: [
         {topic:'שיתוף',statement:'להרגיש משהו חזק ולא לספר לאף אחד',regulation:'אין טעם להישאר עם זה לבד. לדבר עם מישהו עוזר לסדר את המחשבות.',insight:''},
@@ -1897,6 +2198,7 @@ const CAT_COLORS = [
 function openAdmin() {
   renderAdmin();
   refreshSetsUI();
+  loadApiKeyToInput();
   showScreen('admin-screen');
 }
 
@@ -1926,6 +2228,30 @@ function renderAdmin() {
     removeBtn.onclick = () => { removeCategory(ci); };
     header.appendChild(removeBtn);
     catDiv.appendChild(header);
+
+    // Icon & Color row
+    const metaRow = document.createElement('div');
+    metaRow.className = 'admin-cat-meta';
+    const iconLabel = document.createElement('span');
+    iconLabel.className = 'admin-meta-label';
+    iconLabel.textContent = 'אייקון:';
+    metaRow.appendChild(iconLabel);
+    const iconInput = document.createElement('input');
+    iconInput.className = 'admin-icon-input';
+    iconInput.value = cat.icon || '📋';
+    iconInput.onchange = () => { cat.icon = iconInput.value; };
+    metaRow.appendChild(iconInput);
+    const colorLabel = document.createElement('span');
+    colorLabel.className = 'admin-meta-label';
+    colorLabel.textContent = 'צבע:';
+    metaRow.appendChild(colorLabel);
+    const colorInput = document.createElement('input');
+    colorInput.className = 'admin-color-input';
+    colorInput.type = 'color';
+    colorInput.value = cat.color || '#667eea';
+    colorInput.onchange = () => { cat.color = colorInput.value; };
+    metaRow.appendChild(colorInput);
+    catDiv.appendChild(metaRow);
 
     const answersDiv = document.createElement('div');
     answersDiv.className = 'admin-cat-answers';
@@ -2025,13 +2351,92 @@ function removeCategory(ci) {
 
 function addCategory() {
   const colorSet = CAT_COLORS[CATEGORIES.length % CAT_COLORS.length];
+  const defaultColors = ['#667eea','#a855f7','#22c55e','#f59e0b','#ec4899','#06b6d4'];
   CATEGORIES.push({
     id: nextCatId++,
     name: 'קטגוריה חדשה',
+    icon: '📋',
+    color: defaultColors[CATEGORIES.length % defaultColors.length],
     answers: colorSet.answers.map(a => ({...a})),
     questions: []
   });
   renderAdmin();
+}
+
+// ──── API Key Management ────
+const API_KEY_STORAGE = 'maNisgar_apiKey';
+
+function getApiKey() {
+  try { return localStorage.getItem(API_KEY_STORAGE) || ''; } catch(e) { return ''; }
+}
+
+function saveApiKey() {
+  const input = document.getElementById('api-key-input');
+  const key = input.value.trim();
+  if (key) {
+    localStorage.setItem(API_KEY_STORAGE, key);
+    showSetToast('מפתח API נשמר ✓');
+  } else {
+    localStorage.removeItem(API_KEY_STORAGE);
+    showSetToast('מפתח API הוסר');
+  }
+}
+
+function loadApiKeyToInput() {
+  const input = document.getElementById('api-key-input');
+  if (input) {
+    const key = getApiKey();
+    if (key) input.value = key;
+  }
+}
+
+async function generateAISummary(apiKey, cat, completedQs) {
+  const activeName = getActiveSetName();
+  let questionsText = '';
+  completedQs.forEach(({ q, counts }) => {
+    const total = counts.reduce((a, b) => a + b, 0);
+    if (total === 0) return;
+    let voteDesc = cat.answers.map((ans, i) => {
+      const pct = Math.round((counts[i] / total) * 100);
+      return `${ans.label}: ${pct}%`;
+    }).join(', ');
+    questionsText += `- "${q.statement}" — ${voteDesc}\n`;
+  });
+
+  const prompt = `אתה מנחה קבוצתי שעובד עם תלמידים בגילאי 11-13.
+שם ערכת השאלות: "${activeName}"
+הנה תוצאות ההצבעה של הקבוצה בקטגוריה "${cat.name}":
+${questionsText}
+כתוב משפט סיכום אחד (עד 2 שורות) שמשקף את מה שהקבוצה הראתה.
+המשפט צריך להיות:
+- בגוף שני רבים ("אתם")
+- חם ולא שיפוטי
+- מתייחס לתוצאות הספציפיות, לא גנרי
+- מתאים לגילאי 11-13
+- מסתיים עם מסר מעודד
+- בעברית
+- ללא גרשיים או סימני פיסוק מיוחדים
+
+תחזיר רק את המשפט, בלי הקדמה ובלי הסבר.`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 200,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) throw new Error('API error');
+  const data = await response.json();
+  return data.content[0].text;
 }
 
 addPlayerRow();
