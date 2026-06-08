@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מי חצה את הגבול שלי?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --red: #ef4444;
+    --green: #22c55e;
+    --orange: #f97316;
+    --purple: #8b5cf6;
+    --pink: #ec4899;
+    --teal: #14b8a6;
+    --bg: #faf5ef;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --shadow: 0 4px 24px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.15);
+    --radius: 16px;
+  }
+
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+    overflow-x: hidden;
+  }
+
+  .screen { display: none; min-height: 100vh; padding: 20px; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ===== SPLASH SCREEN ===== */
+  #splash-screen {
+    justify-content: center;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #fbbf24 100%);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #splash-screen::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 200px; height: 200px;
+    background: rgba(239,68,68,0.15);
+    border-radius: 50%;
+  }
+
+  #splash-screen::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -30px;
+    width: 250px; height: 250px;
+    background: rgba(37,99,235,0.1);
+    border-radius: 50%;
+  }
+
+  .splash-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .splash-logo {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 20px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+
+  .splash-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .splash-logo .logo-placeholder {
+    font-size: 5rem;
+  }
+
+  .splash-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #991b1b;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+  }
+
+  .splash-angry {
+    font-size: 3rem;
+    margin-bottom: 5px;
+  }
+
+  .splash-subtitle {
+    font-size: 1.1rem;
+    color: #92400e;
+    margin-bottom: 35px;
+    font-weight: 500;
+  }
+
+  .splash-btn {
+    padding: 16px 50px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: 'Rubik', sans-serif;
+    cursor: pointer;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    box-shadow: 0 6px 25px rgba(220,38,38,0.4);
+    transition: all 0.3s;
+  }
+
+  .splash-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(220,38,38,0.5); }
+
+  /* ===== INTRO SCREEN ===== */
+  #intro-screen {
+    justify-content: center;
+    background: #faf5ef;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .intro-image {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 30px;
+  }
+
+  .intro-btn {
+    padding: 16px 50px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Rubik', sans-serif;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--green), var(--teal));
+    color: white;
+    box-shadow: 0 6px 20px rgba(34,197,94,0.4);
+    transition: all 0.3s;
+  }
+
+  .intro-btn:hover { transform: translateY(-3px); }
+
+  /* ===== PLAYERS SCREEN ===== */
+  #players-screen {
+    padding-top: 40px;
+    background: var(--bg);
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .section-desc {
+    text-align: center;
+    color: var(--text-light);
+    margin-bottom: 30px;
+    font-size: 1rem;
+  }
+
+  .player-input-row {
+    display: flex;
+    gap: 10px;
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .player-input-row input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-family: 'Rubik', sans-serif;
+    outline: none;
+    transition: border 0.2s;
+    background: white;
+  }
+
+  .player-input-row input:focus { border-color: var(--primary); }
+
+  .players-list {
+    max-width: 400px;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+
+  .player-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
+  .player-chip .remove {
+    cursor: pointer;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    color: white;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem;
+    transition: background 0.2s;
+  }
+
+  .player-chip .remove:hover { background: rgba(255,255,255,0.5); }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding: 14px 36px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Rubik', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--purple));
+    color: white;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-green {
+    background: linear-gradient(135deg, var(--green), var(--teal));
+    color: white;
+    box-shadow: 0 4px 15px rgba(34,197,94,0.3);
+  }
+
+  .btn-green:hover { transform: translateY(-2px); }
+
+  .btn-orange {
+    background: linear-gradient(135deg, var(--orange), var(--pink));
+    color: white;
+    box-shadow: 0 4px 15px rgba(249,115,22,0.3);
+  }
+
+  .btn-orange:hover { transform: translateY(-2px); }
+
+  /* ===== GAME SCREEN ===== */
+  #game-screen {
+    padding-top: 20px;
+    position: relative;
+    background: var(--bg);
+  }
+
+  /* Floating decoration images */
+  .float-img {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+    object-fit: cover;
+    border: 3px solid rgba(0,0,0,0.1);
+  }
+
+  .float-img:nth-child(1) { top: 10%; left: 2%; }
+  .float-img:nth-child(2) { top: 30%; right: 2%; }
+  .float-img:nth-child(3) { bottom: 25%; left: 3%; }
+  .float-img:nth-child(4) { bottom: 10%; right: 3%; }
+
+  .game-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .game-header {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .round-info {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .category-badge {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .progress-bar {
+    width: 100%;
+    max-width: 600px;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--purple));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .block-label {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #991b1b;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .situation-card {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    margin-bottom: 25px;
+  }
+
+  .situation-card-header {
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .situation-number {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 5px;
+  }
+
+  .situation-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .situation-card-body {
+    padding: 20px;
+  }
+
+  .situation-card-body h3 {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 15px;
+    text-align: center;
+  }
+
+  /* ===== PLAYER SELECT WITH INTENSITY ===== */
+  .player-select-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .player-name-btn {
+    padding: 10px 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    background: white;
+    font-family: 'Rubik', sans-serif;
+    transition: all 0.2s;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .player-name-btn:hover { border-color: var(--primary); background: #f8fafc; }
+  .player-name-btn.selected { border-color: transparent; color: white; }
+
+  .intensity-bar {
+    display: none;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .intensity-bar.visible { display: flex; }
+
+  .intensity-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;
+    background: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: 'Rubik', sans-serif;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+  }
+
+  .intensity-btn:hover { transform: scale(1.15); }
+
+  .intensity-btn.i1 { border-color: #22c55e; }
+  .intensity-btn.i1.active, .intensity-btn.i1:hover { background: #22c55e; color: white; border-color: #22c55e; }
+  .intensity-btn.i2 { border-color: #84cc16; }
+  .intensity-btn.i2.active, .intensity-btn.i2:hover { background: #84cc16; color: white; border-color: #84cc16; }
+  .intensity-btn.i3 { border-color: #eab308; }
+  .intensity-btn.i3.active, .intensity-btn.i3:hover { background: #eab308; color: white; border-color: #eab308; }
+  .intensity-btn.i4 { border-color: #f97316; }
+  .intensity-btn.i4.active, .intensity-btn.i4:hover { background: #f97316; color: white; border-color: #f97316; }
+  .intensity-btn.i5 { border-color: #ef4444; }
+  .intensity-btn.i5.active, .intensity-btn.i5:hover { background: #ef4444; color: white; border-color: #ef4444; }
+
+  .selected-player-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 3px;
+  }
+
+  .selected-player-tag .tag-remove {
+    cursor: pointer;
+    background: rgba(255,255,255,0.3);
+    border: none;
+    color: white;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+
+  .intensity-colors { }
+  .ic1 { background: #22c55e; }
+  .ic2 { background: #84cc16; }
+  .ic3 { background: #eab308; }
+  .ic4 { background: #f97316; }
+  .ic5 { background: #ef4444; }
+
+  .selected-tags-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+    min-height: 10px;
+  }
+
+  /* ===== FLIP CARD ===== */
+  .flip-card-container {
+    width: 100%;
+    max-width: 600px;
+    perspective: 1000px;
+    margin-bottom: 25px;
+  }
+
+  .flip-card {
+    width: 100%;
+    min-height: 200px;
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    cursor: pointer;
+  }
+
+  .flip-card.flipped { transform: rotateY(180deg); }
+
+  .flip-card-front, .flip-card-back {
+    width: 100%;
+    min-height: 200px;
+    backface-visibility: hidden;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .flip-card-front {
+    position: absolute;
+    top: 0;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    gap: 15px;
+  }
+
+  .flip-card-front .card-icon { font-size: 4rem; }
+  .flip-card-front .tap-hint { font-size: 1.1rem; font-weight: 600; color: #92400e; }
+  .flip-card-front .tap-sub { font-size: 0.9rem; color: var(--text-light); }
+
+  .flip-card-back {
+    background: white;
+    transform: rotateY(180deg);
+    padding: 25px;
+  }
+
+  .flip-card-back h3 {
+    text-align: center;
+    color: #991b1b;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+
+  .option-card {
+    background: #fefce8;
+    border: 2px solid #fde68a;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: border-color 0.2s;
+  }
+
+  .option-card:hover { border-color: var(--orange); }
+
+  .option-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .option-text::before { content: '\1F539'; margin-left: 6px; }
+
+  .option-players {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .option-player-check { position: relative; }
+  .option-player-check input { display: none; }
+
+  .option-player-check label {
+    display: block;
+    padding: 6px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: white;
+  }
+
+  .option-player-check input:checked + label {
+    border-color: var(--green);
+    background: #f0fdf4;
+    color: #15803d;
+  }
+
+  .nav-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 40px;
+  }
+
+  /* ===== SUMMARY ===== */
+  #summary-screen { padding-top: 30px; padding-bottom: 60px; background: var(--bg); }
+
+  .summary-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 8px;
+    color: #991b1b;
+  }
+
+  .summary-subtitle {
+    text-align: center;
+    color: var(--text-light);
+    margin-bottom: 35px;
+    font-size: 1rem;
+  }
+
+  .player-summary-card {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .player-summary-header {
+    padding: 18px 20px;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .player-summary-body { padding: 20px; }
+
+  .summary-situation {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .summary-situation:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .summary-situation-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .summary-intensity-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+
+  .summary-sentence {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    padding: 8px 12px;
+    background: #fefce8;
+    border-radius: 8px;
+    margin-top: 4px;
+    line-height: 1.6;
+  }
+
+  .no-data-msg {
+    text-align: center;
+    color: var(--text-light);
+    padding: 20px;
+    font-style: italic;
+  }
+
+  /* Category colors */
+  .cat-football { background: linear-gradient(135deg, #22c55e, #16a34a); }
+  .cat-friends { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .cat-school { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+  .cat-home { background: linear-gradient(135deg, #f97316, #ea580c); }
+  .cat-frustration { background: linear-gradient(135deg, #64748b, #475569); }
+  .cat-siblings { background: linear-gradient(135deg, #ec4899, #db2777); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in { animation: fadeIn 0.4s ease forwards; }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .pulse { animation: pulse 2s infinite; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+  }
+
+  .float-anim { animation: float 6s ease-in-out infinite; }
+  .float-anim:nth-child(2) { animation-delay: 1.5s; }
+  .float-anim:nth-child(3) { animation-delay: 3s; }
+  .float-anim:nth-child(4) { animation-delay: 4.5s; }
+
+  @media (max-width: 480px) {
+    .splash-title { font-size: 2rem; }
+    .splash-logo { width: 160px; height: 160px; }
+    .situation-text { font-size: 1.1rem; }
+    .btn { padding: 12px 24px; font-size: 1rem; }
+    .screen { padding: 15px; }
+    .float-img { width: 60px; height: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splash-screen" class="screen active">
+  <div class="splash-content animate-in">
+    <div class="splash-angry">😠</div>
+    <div class="splash-logo">
+      <div class="logo-placeholder">🛡️😤</div>
+    </div>
+    <div class="splash-title">מי כועס כמוני?</div>
+    <div class="splash-subtitle">משחק להכרת רגשות וגבולות אישיים</div>
+    <button class="splash-btn" onclick="goToIntro()">🎮 בואו נתחיל!</button>
+  </div>
+</div>
+
+<!-- ===== INTRO SCREEN ===== -->
+<div id="intro-screen" class="screen">
+  <div class="animate-in" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+    <img src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='500' viewBox='0 0 700 500'%3E%3Crect fill='%23faf5ef' width='700' height='500'/%3E%3Ctext x='350' y='60' text-anchor='middle' font-family='Arial' font-size='36' font-weight='bold' fill='%23991b1b'%3E😠 מי כועס כמוני?%3C/text%3E%3Ctext x='350' y='120' text-anchor='middle' font-family='Arial' font-size='18' fill='%2392400e'%3Eבחיי היום-יום יש הרבה מצבים%3C/text%3E%3Ctext x='350' y='150' text-anchor='middle' font-family='Arial' font-size='18' fill='%2392400e'%3Eשאני יכול להיתקל בהם שבהם אני מרגיש%3C/text%3E%3Ctext x='350' y='180' text-anchor='middle' font-family='Arial' font-size='18' fill='%2392400e'%3Eשחצו את הגבול שלי או פגעו במשהו שהיה חשוב לי.%3C/text%3E%3Ctext x='350' y='230' text-anchor='middle' font-family='Arial' font-size='16' fill='%23b45309'%3E〰️ יכולים להיות לי כל מיני סימנים בגוף כשזה קורה 〰️%3C/text%3E%3Ccircle cx='100' cy='320' r='55' fill='%23dbeafe' stroke='%236366f1' stroke-width='3'/%3E%3Ctext x='100' y='325' text-anchor='middle' font-size='14' fill='%231e3a5f'%3E❤️ לב דופק%3C/text%3E%3Ccircle cx='270' cy='320' r='55' fill='%23fce7f3' stroke='%23a855f7' stroke-width='3'/%3E%3Ctext x='270' y='325' text-anchor='middle' font-size='14' fill='%235b21b6'%3E✊ ידיים קפוצות%3C/text%3E%3Ccircle cx='440' cy='320' r='55' fill='%23ffedd5' stroke='%23f97316' stroke-width='3'/%3E%3Ctext x='440' y='325' text-anchor='middle' font-size='14' fill='%23c2410c'%3E🔥 חם לי%3C/text%3E%3Ccircle cx='600' cy='320' r='55' fill='%23dcfce7' stroke='%2322c55e' stroke-width='3'/%3E%3Ctext x='600' y='325' text-anchor='middle' font-size='14' fill='%23166534'%3E😬 לסת קפוצה%3C/text%3E%3Ctext x='350' y='420' text-anchor='middle' font-family='Arial' font-size='17' fill='%2392400e'%3Eבמשחק הזה נפגוש מצבים שונים מהחיים.%3C/text%3E%3Ctext x='350' y='450' text-anchor='middle' font-family='Arial' font-size='17' fill='%2392400e'%3Eננסה להבין מה קרה לנו, מה הכעס בא לספר,%3C/text%3E%3Ctext x='350' y='478' text-anchor='middle' font-family='Arial' font-size='17' fill='%2392400e'%3E❤️ ואיך אפשר להגיד את זה לאחרים במילים.%3C/text%3E%3C/svg%3E" class="intro-image" alt="הסבר המשחק">
+    <button class="intro-btn" onclick="goToPlayers()">👥 בחירת שחקנים</button>
+  </div>
+</div>
+
+<!-- ===== PLAYERS SCREEN ===== -->
+<div id="players-screen" class="screen">
+  <div class="section-title">👥 מי משחק?</div>
+  <div class="section-desc">הוסיפו את שמות כל השחקנים</div>
+  <div class="player-input-row">
+    <input type="text" id="player-name-input" placeholder="שם השחקן..." onkeydown="if(event.key==='Enter')addPlayer()">
+    <button class="btn btn-primary" onclick="addPlayer()">➕</button>
+  </div>
+  <div class="players-list" id="players-list"></div>
+  <button class="btn btn-green" id="start-game-btn" onclick="startGame()" disabled>🎲 התחילו משחק!</button>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen" class="screen">
+  <!-- Floating decoration images -->
+  <div class="float-img float-anim" style="background: #dbeafe; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">❤️</div>
+  <div class="float-img float-anim" style="background: #ffedd5; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">🔥</div>
+  <div class="float-img float-anim" style="background: #fce7f3; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">✊</div>
+  <div class="float-img float-anim" style="background: #dcfce7; display:flex; align-items:center; justify-content:center; font-size:1.5rem;">😬</div>
+
+  <div class="game-content">
+    <div class="game-header">
+      <div class="round-info" id="round-info"></div>
+      <div class="category-badge" id="category-badge"></div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="block-label">🎴 מי כועס כמוני?</div>
+    <div class="situation-card animate-in" id="situation-card">
+      <div class="situation-card-header" id="situation-header">
+        <div class="situation-number" id="situation-number"></div>
+        <div class="situation-text" id="situation-text"></div>
+      </div>
+      <div class="situation-card-body">
+        <h3>מי מרגיש ככה? לחצו על השם ובחרו עוצמה:</h3>
+        <div class="player-select-list" id="block1-players"></div>
+        <div class="selected-tags-area" id="block1-tags"></div>
+      </div>
+    </div>
+
+    <div class="block-label">🔍 מה חשוב לי שנפגע?</div>
+    <div class="flip-card-container">
+      <div class="flip-card" id="flip-card" onclick="flipCard()">
+        <div class="flip-card-front">
+          <div class="card-icon pulse">🤔</div>
+          <div class="tap-hint">לחצו לגלות!</div>
+          <div class="tap-sub">על מה הכעס שומר?</div>
+        </div>
+        <div class="flip-card-back" id="flip-card-back">
+          <h3>🛡️ על מה הכעס שומר?</h3>
+          <div id="options-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-orange" id="next-btn" onclick="nextRound()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SUMMARY SCREEN ===== -->
+<div id="summary-screen" class="screen">
+  <div class="summary-title">🛡️ סיכום המשחק</div>
+  <div class="summary-subtitle">מה חשוב לכל אחד מאיתנו</div>
+  <div id="summary-container"></div>
+  <div class="nav-buttons" style="margin-top: 30px;">
+    <button class="btn btn-primary" onclick="restartGame()">🔄 משחק חדש</button>
+  </div>
+</div>
+
+<script>
+const allSituations=[{id:1,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"כל הילדים קיבלו מסירה ורק אני לא",options:["חשוב לי להיות חלק פעיל במשחק","חשוב לי שיתייחסו אליי כמו לכולם","חשוב לי לקבל הזדמנות להוכיח את עצמי"],summaries:["חשוב לי להיות שחקן אמיתי בקבוצה, לא רק לעמוד בצד.","חשוב לי שלא יתייחסו אליי אחרת מהשאר.","חשוב לי שיאמינו שאני מסוגל."]},{id:2,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"בחרו קבוצות ואני נשארתי אחרון",options:["חשוב לי שיבחרו בי כי רוצים אותי","חשוב לי להרגיש שאני שייך לקבוצה","חשוב לי שיראו שיש לי מה לתרום","חשוב לי שלא ארגיש דחוי מול כולם"],summaries:["חשוב לי שירצו אותי, לא רק כי חייבים.","חשוב לי להרגיש שיש לי מקום בקבוצה.","חשוב לי שיראו שגם לי יש מה לתת.","חשוב לי לא להרגיש דחוי מול אחרים."]},{id:3,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"אמרו שאני לא מספיק טוב כדי לשחק",options:["חשוב לי שידברו אליי בכבוד","חשוב לי שיראו את המאמץ שלי, לא רק את התוצאה","חשוב לי שיתנו לי לנסות לפני שפוסקים"],summaries:["חשוב לי שיתייחסו אליי בכבוד גם כשאני טועה.","חשוב לי שיראו שאני משקיע ומתאמץ.","חשוב לי שלא יחליטו עליי לפני שנתנו לי הזדמנות."]},{id:4,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"לא ספרו את הגול שהבקעתי",options:["חשוב לי שיהיה הוגן","חשוב לי שיכירו במה שעשיתי","חשוב לי שיקשיבו כשאני אומר שמשהו לא בסדר"],summaries:["חשוב לי שהכללים יהיו אותו דבר לכולם.","חשוב לי שיראו ויעריכו את מה שעשיתי.","חשוב לי שיקשיבו לי כשאני חושב שמשהו לא הוגן."]},{id:5,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"הוציאו אותי מהמשחק בלי להסביר למה",options:["חשוב לי להבין מה קרה ולמה","חשוב לי שיתייחסו אליי בהוגנות","חשוב לי שלא יחליטו עליי בלי לשמוע אותי"],summaries:["חשוב לי להבין מה קרה, ולא רק לקבל החלטה.","חשוב לי שיתנהגו אליי כמו אל כולם.","חשוב לי שישמעו אותי לפני שמחליטים בשבילי."]},{id:6,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"הפסיקו את התור שלי באמצע המשחק",options:["חשוב לי לסיים מה שהתחלתי","חשוב לי שיחכו לי כמו שאני מחכה לאחרים","חשוב לי שיודיעו לי מראש"],summaries:["חשוב לי שיתנו לי לסיים.","חשוב לי שיתייחסו אליי בהוגנות כמו לאחרים.","חשוב לי לדעת מראש כשמשהו עומד להשתנות."]},{id:7,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"האשימו אותי שהפסדנו",options:["חשוב לי שיסתכלו על כל התמונה, לא רק עליי","חשוב לי שיאמינו לי כשאני מסביר","חשוב לי שלא יגרמו לי להתבייש מול כולם"],summaries:["חשוב לי שיבדקו מה קרה לפני שמאשימים.","חשוב לי שיקשיבו להסבר שלי לפני שפוסקים.","חשוב לי שלא יביישו אותי בפני כולם."]},{id:8,category:"football",catLabel:"⚽ כדורגל והפסקה",text:"לקחו לי את הכדור ולא החזירו",options:["חשוב לי שיבקשו רשות לפני שלוקחים","חשוב לי שישמרו על הדברים שלי","חשוב לי שיעמדו במה שסיכמנו"],summaries:["חשוב לי שלא ייקחו את הדברים שלי בלי לשאול.","חשוב לי שיחזירו את מה שלקחו.","חשוב לי שאפשר יהיה לסמוך על מה שסוכם."]},{id:9,category:"friends",catLabel:"👫 חברים",text:"החברים נפגשו ולא הזמינו אותי",options:["חשוב לי שיזכרו אותי ויחשבו עליי","חשוב לי להרגיש שייך לקבוצה","חשוב לי שיהיה לי מישהו שבוחר להיות איתי","חשוב לי להבין למה לא הזמינו אותי"],summaries:["חשוב לי שיחשבו עליי גם כשאני לא שם.","חשוב לי שיש לי מקום בקבוצה.","חשוב לי שיהיה לי מישהו שרוצה להיות איתי.","חשוב לי להבין מה קרה."]},{id:10,category:"friends",catLabel:"👫 חברים",text:"חבר סיפר לאחרים סוד שסיפרתי לו",options:["חשוב לי שאפשר לסמוך על חברים","חשוב לי שמה שאני בוחר לשתף נשאר בינינו","חשוב לי שיכבדו את הסיפור שלי","חשוב לי להרגיש בטוח כשאני מספר משהו אישי"],summaries:["חשוב לי שחבר יהיה מישהו שאפשר לבטוח בו.","חשוב לי שאני זה שמחליט מה מספרים עליי.","חשוב לי שיתייחסו למה שאני משתף ברצינות.","חשוב לי להרגיש בטוח כשאני נפתח."]},{id:11,category:"friends",catLabel:"👫 חברים",text:"חבר צחק על משהו אישי שסיפרתי",options:["חשוב לי שיקשיבו לי ברצינות","חשוב לי להרגיש בטוח לשתף דברים","חשוב לי שיכבדו אותי גם כשאני פגיע"],summaries:["חשוב לי שכשאני מדבר – מקשיבים ברצינות.","חשוב לי שאוכל לשתף בלי לפחד שיצחקו.","חשוב לי שיכבדו אותי גם ברגעים קשים."]},{id:12,category:"friends",catLabel:"👫 חברים",text:"חבר הפסיק לדבר איתי בלי להסביר",options:["חשוב לי להבין מה השתבש בינינו","חשוב לי שידברו איתי בכנות גם כשקשה","חשוב לי שלא ישאירו אותי בלי תשובה"],summaries:["חשוב לי לדעת מה קרה, לא רק לנחש.","חשוב לי שיגידו לי את האמת גם כשהיא לא נעימה.","חשוב לי שלא ישאירו אותי באוויר."]},{id:13,category:"friends",catLabel:"👫 חברים",text:"חבר לקח ממני משהו ולא החזיר",options:["חשוב לי שישאלו אותי לפני שלוקחים","חשוב לי שאפשר לסמוך על מה שמבטיחים","חשוב לי שהדברים שלי חשובים גם לאחרים"],summaries:["חשוב לי שלא ייקחו את הדברים שלי בלי לשאול.","חשוב לי שמילה היא מילה.","חשוב לי שמה ששייך לי יישאר שלי."]},{id:14,category:"friends",catLabel:"👫 חברים",text:"צחקו על טעות שעשיתי",options:["חשוב לי שלא ישתמשו בטעויות שלי נגדי","חשוב לי שיתייחסו אליי בכבוד גם כשאני טועה","חשוב לי שלא יביישו אותי מול אחרים"],summaries:["חשוב לי שטעות לא הופכת אותי לבדיחה.","חשוב לי שיתייחסו אליי בכבוד תמיד, גם כשאני לא מצליח.","חשוב לי שלא יביישו אותי בפני כולם."]},{id:15,category:"school",catLabel:"🏫 בית ספר ומורה",text:"הרמתי יד הרבה זמן ולא בחרו בי",options:["חשוב לי שישמעו את מה שיש לי להגיד","חשוב לי לקבל הזדמנות להשתתף","חשוב לי שישימו לב שאני שם"],summaries:["חשוב לי שמה שיש לי להגיד שווה להישמע.","חשוב לי שאקבל הזדמנות להשתתף כמו כולם.","חשוב לי שיראו אותי."]},{id:16,category:"school",catLabel:"🏫 בית ספר ומורה",text:"המורה חשבה שאני עשיתי משהו שלא עשיתי",options:["חשוב לי שיאמינו לי","חשוב לי שיתנו לי להסביר את עצמי לפני שמחליטים","חשוב לי שיבדקו את האמת לפני שמאשימים","חשוב לי שלא ישפטו אותי מהר מדי"],summaries:["חשוב לי שיאמינו לי כשאני אומר את האמת.","חשוב לי שיקשיבו לי לפני שמחליטים.","חשוב לי שלא יאשימו בלי לבדוק.","חשוב לי שיכירו אותי לפני ששופטים אותי."]},{id:17,category:"school",catLabel:"🏫 בית ספר ומורה",text:"קיבלתי הערה מול כל הכיתה",options:["חשוב לי שיכבדו אותי גם כשאני טועה","חשוב לי שלא כולם ישמעו כשמעירים לי","חשוב לי שיגידו לי דברים קשים בצנעה"],summaries:["חשוב לי שיכבדו אותי גם ברגעים קשים.","חשוב לי שלא כולם ישמעו כשמעירים לי.","חשוב לי שדברים אישיים יישארו בינינו."]},{id:18,category:"school",catLabel:"🏫 בית ספר ומורה",text:"ילדים דיברו בזמן שהצגתי משהו",options:["חשוב לי שיקשיבו כשאני מדבר","חשוב לי שיכבדו אותי כמו שאני מכבד אחרים","חשוב לי לסיים את מה שרציתי להגיד בלי הפרעות"],summaries:["חשוב לי שכשאני מדבר – מקשיבים.","חשוב לי לקבל את אותו כבוד שאני נותן.","חשוב לי לסיים את מה שרציתי להגיד."]},{id:19,category:"school",catLabel:"🏫 בית ספר ומורה",text:"המורה מחקה את מה שכתבתי בלי לשאול",options:["חשוב לי שיכבדו את העבודה שלי","חשוב לי שיתייעצו איתי לפני שמשנים משהו שלי","חשוב לי שיראו את המאמץ שהשקעתי"],summaries:["חשוב לי שמה שאני יוצר יקבל כבוד.","חשוב לי שישאלו אותי לפני שמשנים משהו שלי.","חשוב לי שיראו כמה התאמצתי."]},{id:20,category:"school",catLabel:"🏫 בית ספר ומורה",text:"לא נתנו לי להסביר את עצמי",options:["חשוב לי שישמעו את הצד שלי","חשוב לי שיבינו אותי לפני שפוסקים","חשוב לי שיתנו לי לדבר גם כשזה לא נוח"],summaries:["חשוב לי שהצד שלי יישמע.","חשוב לי שיבינו אותי לפני שמחליטים.","חשוב לי שיתנו לי לדבר גם כשקשה לשמוע."]},{id:21,category:"home",catLabel:"🏠 בית והורים",text:"נכנסו לחדר שלי בלי לדפוק",options:["חשוב לי שיהיה לי זמן להיות לבד","חשוב לי שיבקשו רשות לפני שנכנסים","חשוב לי שיהיה לי מקום שהוא שלי"],summaries:["חשוב לי שיהיה לי זמן עם עצמי.","חשוב לי שידפקו לפני שנכנסים.","חשוב לי שיהיה לי מקום שהוא רק שלי."]},{id:22,category:"home",catLabel:"🏠 בית והורים",text:"אמא או אבא הבטיחו משהו וזה לא קרה",options:["חשוב לי שהבטחה תהיה הבטחה","חשוב לי שאוכל לסמוך על מה שאומרים לי","חשוב לי שיזכרו מה חשוב לי"],summaries:["חשוב לי שהבטחות יקוימו.","חשוב לי שאוכל לסמוך על מה שאומרים לי.","חשוב לי שיזכרו את הדברים שחשובים לי."]},{id:23,category:"home",catLabel:"🏠 בית והורים",text:"כיבו לי משחק באמצע בלי להודיע",options:["חשוב לי שיודיעו לי מראש","חשוב לי לסיים מה שהתחלתי","חשוב לי שיתחשבו גם בי כשמחליטים"],summaries:["חשוב לי לדעת מראש כשמשהו עומד להשתנות.","חשוב לי לסיים את מה שהתחלתי.","חשוב לי שיחשבו גם עליי לפני שמחליטים."]},{id:24,category:"home",catLabel:"🏠 בית והורים",text:"החליטו בשבילי בלי לשאול אותי",options:["חשוב לי שישמעו את דעתי לפני שמחליטים","חשוב לי לבחור בדברים שנוגעים אליי","חשוב לי שיתייחסו אליי כמי שיש לו מה להגיד"],summaries:["חשוב לי שישאלו אותי לפני שמחליטים בשבילי.","חשוב לי שאוכל לבחור בדברים שנוגעים לחיים שלי.","חשוב לי שיראו שהדעה שלי חשובה."]},{id:25,category:"home",catLabel:"🏠 בית והורים",text:"זרקו משהו שהיה חשוב לי",options:["חשוב לי שישאלו אותי לפני שזורקים דברים שלי","חשוב לי שיכבדו את מה שחשוב לי גם אם לא מבינים למה","חשוב לי שיראו שלדברים שלי יש ערך"],summaries:["חשוב לי שלא יחליטו בשבילי מה שווה ומה לא.","חשוב לי שלא יצטרכו להבין כדי לכבד.","חשוב לי שיראו שלדברים שלי יש ערך."]},{id:26,category:"frustration",catLabel:"🌧️ אכזבות ותסכולים",text:"התאמצתי מאוד ובכל זאת נכשלתי",options:["חשוב לי שיראו כמה התאמצתי","חשוב לי להצליח כשאני משקיע","חשוב לי לקבל עוד הזדמנות"],summaries:["חשוב לי שיראו את המאמץ שלי, לא רק את התוצאה.","חשוב לי להרגיש שההשקעה שלי משתלמת.","חשוב לי לקבל הזדמנות לנסות שוב."]},{id:27,category:"frustration",catLabel:"🌧️ אכזבות ותסכולים",text:"התאמנתי הרבה ובכל זאת הפסדתי",options:["חשוב לי לראות שאני מתקדם","חשוב לי שהמאמץ שלי ישתלם","חשוב לי לא לוותר לעצמי"],summaries:["חשוב לי לראות שאני משתפר.","חשוב לי להרגיש שהמאמץ שלי שווה משהו.","חשוב לי להמשיך גם כשלא הולך."]},{id:28,category:"frustration",catLabel:"🌧️ אכזבות ותסכולים",text:"בניתי משהו והוא נהרס בטעות",options:["חשוב לי לשמור על מה שיצרתי","חשוב לי שיראו כמה עבדתי עליו","חשוב לי שתהיה אפשרות לתקן"],summaries:["חשוב לי לשמור על הדברים שאני יוצר.","חשוב לי שיראו כמה השקעתי.","חשוב לי שתהיה לי אפשרות לתקן."]},{id:29,category:"frustration",catLabel:"🌧️ אכזבות ותסכולים",text:"חיכיתי למשהו הרבה זמן ובסוף הוא התבטל",options:["חשוב לי שיתחשבו במה שחיכיתי לו","חשוב לי לדעת על שינויים בזמן","חשוב לי שיבינו כמה זה היה חשוב לי"],summaries:["חשוב לי שיתחשבו גם באכזבה שלי.","חשוב לי לדעת מראש כשמשהו משתנה.","חשוב לי שיבינו כמה זה היה חשוב לי."]},{id:30,category:"frustration",catLabel:"🌧️ אכזבות ותסכולים",text:"שכחתי משהו חשוב בבית",options:["חשוב לי להיות אחראי","חשוב לי שלא ישפטו אותי על טעות אחת","חשוב לי לקבל הזדמנות לתקן"],summaries:["חשוב לי שטעות אחת לא תגדיר אותי.","חשוב לי שיבינו שטעיתי ולא התכוונתי.","חשוב לי לקבל הזדמנות לתקן."]},{id:31,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"אח שלי נכנס לחדר שלי בלי רשות",options:["חשוב לי שגם אח יבקש רשות","חשוב לי שיכבדו את הגבולות שלי בבית","חשוב לי שיהיה לי מקום שהוא שלי גם בתוך המשפחה"],summaries:["חשוב לי שגם בבית יכבדו את הגבולות שלי.","חשוב לי שגם אח לא ייכנס בלי רשות.","חשוב לי שיהיה לי מקום שהוא שלי גם בתוך המשפחה."]},{id:32,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"אחותי לקחה משהו שלי בלי לשאול",options:["חשוב לי שישאלו לפני שלוקחים","חשוב לי שהדברים שלי יישארו שלי","חשוב לי שיכבדו את הרכוש שלי"],summaries:["חשוב לי שישאלו לפני שלוקחים דברים שלי.","חשוב לי שמה ששייך לי יישאר שלי.","חשוב לי שיכבדו את הדברים שלי."]},{id:33,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"אח שלי קיבל משהו שאני לא קיבלתי",options:["חשוב לי שיתייחסו אליי בהוגנות","חשוב לי שיראו גם את הצרכים שלי","חשוב לי להבין למה החליטו ככה"],summaries:["חשוב לי שיתייחסו אליי בצורה הוגנת.","חשוב לי שיראו שגם לי יש צרכים ורצונות.","חשוב לי להבין את הסיבה להחלטה."]},{id:34,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"תמיד מבקשים ממני לוותר כי אני הגדול",options:["חשוב לי שגם בי יתחשבו, לא רק באח הקטן","חשוב לי שלא תמיד אני אהיה זה שמוותר","חשוב לי שיראו שגם לי יש צרכים, לא רק אחריות"],summaries:["חשוב לי שיתחשבו גם בי, לא רק באח הקטן.","חשוב לי שלא תמיד אני אהיה זה שנותן.","חשוב לי שיראו שגם לי יש צרכים ולא רק חובות."]},{id:35,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"האשימו אותי במשהו שאחי עשה",options:["חשוב לי שיאמינו לי","חשוב לי שיבדקו לפני שמאשימים","חשוב לי שאוכל להסביר את עצמי"],summaries:["חשוב לי שיאמינו לי כשאני אומר את האמת.","חשוב לי שיבדקו מה קרה לפני שמאשימים.","חשוב לי שייתנו לי להסביר את הצד שלי."]},{id:36,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"אחותי הרסה משהו שבניתי",options:["חשוב לי לשמור על מה שיצרתי","חשוב לי שיראו כמה השקעתי","חשוב לי שיכבדו את העבודה שלי"],summaries:["חשוב לי לשמור על הדברים שאני יוצר.","חשוב לי שיראו כמה התאמצתי והשקעתי.","חשוב לי שיכבדו את מה שאני מכין."]},{id:37,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"ההורים הקשיבו לאחי ולא לי",options:["חשוב לי שיקשיבו גם לי","חשוב לי שיראו אותי","חשוב לי שיתנו מקום לדעה שלי"],summaries:["חשוב לי שיקשיבו גם למה שיש לי לומר.","חשוב לי שיראו אותי.","חשוב לי שגם לדעה שלי יהיה מקום."]},{id:38,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"אח שלי הציק לי ואף אחד לא ראה",options:["חשוב לי שיאמינו לי","חשוב לי שיראו מה עבר עליי","חשוב לי שלא אשאר לבד עם זה"],summaries:["חשוב לי שיאמינו לי גם אם לא ראו.","חשוב לי שיבינו מה עבר עליי.","חשוב לי שלא אצטרך להתמודד עם זה לבד."]},{id:39,category:"siblings",catLabel:"👦👧 אחים ומשפחה",text:"אח שלי סיפר לאחרים משהו אישי עליי",options:["חשוב לי לשמור דברים אישיים לעצמי","חשוב לי שיכבדו את הפרטיות שלי","חשוב לי שאוכל לסמוך על בני המשפחה שלי"],summaries:["חשוב לי שאני אחליט מה מספרים עליי.","חשוב לי שיכבדו את הפרטיות שלי.","חשוב לי שאוכל לסמוך על בני המשפחה שלי."]}];
+
+const categoryColors={football:"cat-football",friends:"cat-friends",school:"cat-school",home:"cat-home",frustration:"cat-frustration",siblings:"cat-siblings"};
+const categoryBgColors={football:"#22c55e",friends:"#3b82f6",school:"#8b5cf6",home:"#f97316",frustration:"#64748b",siblings:"#ec4899"};
+const playerColors=["linear-gradient(135deg, #2563eb, #7c3aed)","linear-gradient(135deg, #22c55e, #14b8a6)","linear-gradient(135deg, #f97316, #ea580c)","linear-gradient(135deg, #ec4899, #db2777)","linear-gradient(135deg, #8b5cf6, #6d28d9)","linear-gradient(135deg, #ef4444, #dc2626)","linear-gradient(135deg, #eab308, #ca8a04)","linear-gradient(135deg, #06b6d4, #0891b2)"];
+const intensityColors=["","#22c55e","#84cc16","#eab308","#f97316","#ef4444"];
+const intensityLabels=["","קצת מכעיס","","מכעיס","","מאוד מכעיס"];
+const intensityEmojis=["","🟢","🟢","🟡","🟠","🔴"];
+
+let players=[];
+let gameRounds=[];
+let currentRound=0;
+// block1Data[round] = { playerName: intensity(1-5) }
+let block1Data=[];
+// block2Data[round][optionIndex] = [playerName, ...]
+let block2Data=[];
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goToIntro(){ showScreen('intro-screen'); }
+function goToPlayers(){
+  showScreen('players-screen');
+  document.getElementById('player-name-input').focus();
+}
+
+function addPlayer(){
+  const input=document.getElementById('player-name-input');
+  const name=input.value.trim();
+  if(!name||players.includes(name)){input.value='';return;}
+  players.push(name);
+  input.value='';
+  renderPlayers();
+  input.focus();
+}
+
+function removePlayer(name){
+  players=players.filter(p=>p!==name);
+  renderPlayers();
+}
+
+function renderPlayers(){
+  const list=document.getElementById('players-list');
+  list.innerHTML=players.map((p,i)=>
+    '<span class="player-chip" style="background:'+playerColors[i%playerColors.length]+'">'+p+
+    '<button class="remove" onclick="removePlayer(\''+p+'\')">&times;</button></span>'
+  ).join('');
+  document.getElementById('start-game-btn').disabled=players.length<1;
+}
+
+function startGame(){
+  const shuffled=[...allSituations].sort(()=>Math.random()-0.5);
+  gameRounds=shuffled.slice(0,10);
+  currentRound=0;
+  block1Data=gameRounds.map(()=>({}));
+  block2Data=gameRounds.map(s=>s.options.map(()=>[]));
+  showScreen('game-screen');
+  renderRound();
+}
+
+function renderRound(){
+  const sit=gameRounds[currentRound];
+  document.getElementById('round-info').textContent='קלף '+(currentRound+1)+' מתוך 10';
+  const badge=document.getElementById('category-badge');
+  badge.textContent=sit.catLabel;
+  badge.className='category-badge '+categoryColors[sit.category];
+  badge.style.color='white';
+  document.getElementById('progress-fill').style.width=(currentRound/10*100)+'%';
+  document.getElementById('situation-number').textContent='מצב מספר '+sit.id;
+  document.getElementById('situation-text').textContent=sit.text;
+  document.getElementById('situation-header').style.background='linear-gradient(135deg, '+categoryBgColors[sit.category]+', '+categoryBgColors[sit.category]+'dd)';
+
+  // Block 1 players with intensity
+  let ph='';
+  players.forEach((p,i)=>{
+    const hasIntensity=block1Data[currentRound][p];
+    ph+='<div class="player-row" id="prow_'+currentRound+'_'+i+'">';
+    ph+='<button class="player-name-btn'+(hasIntensity?' selected':'')+'" ';
+    if(hasIntensity) ph+='style="background:'+intensityColors[hasIntensity]+'" ';
+    ph+='onclick="togglePlayerSelect('+i+',\''+p+'\')">'+p+'</button>';
+    ph+='<div class="intensity-bar'+(hasIntensity&&!block1Data[currentRound][p]?' visible':'')+'" id="ibar_'+currentRound+'_'+i+'">';
+    for(let lv=1;lv<=5;lv++){
+      ph+='<button class="intensity-btn i'+lv+(hasIntensity===lv?' active':'')+'" onclick="setIntensity('+i+',\''+p+'\','+lv+')" title="'+(intensityLabels[lv]||lv)+'">'+lv+'</button>';
+    }
+    ph+='</div></div>';
+  });
+  document.getElementById('block1-players').innerHTML=ph;
+  renderBlock1Tags();
+
+  // Flip card reset
+  document.getElementById('flip-card').classList.remove('flipped');
+
+  // Block 2 options
+  let oh='';
+  sit.options.forEach((opt,oi)=>{
+    oh+='<div class="option-card"><div class="option-text">'+opt+'</div><div class="option-players">';
+    players.forEach((p,pi)=>{
+      const chk=block2Data[currentRound][oi].includes(p)?' checked':'';
+      oh+='<div class="option-player-check"><input type="checkbox" id="b2_'+currentRound+'_'+oi+'_'+pi+'"'+chk+' onchange="toggleBlock2Player('+oi+',\''+p+'\')"><label for="b2_'+currentRound+'_'+oi+'_'+pi+'">'+p+'</label></div>';
+    });
+    oh+='</div></div>';
+  });
+  document.getElementById('options-container').innerHTML=oh;
+  document.getElementById('next-btn').textContent=currentRound<9?'הקלף הבא ➡️':'🛡️ לסיכום!';
+  window.scrollTo(0,0);
+}
+
+function togglePlayerSelect(idx,name){
+  if(block1Data[currentRound][name]){
+    // Remove
+    delete block1Data[currentRound][name];
+    renderRound();
+  } else {
+    // Show intensity bar
+    const bar=document.getElementById('ibar_'+currentRound+'_'+idx);
+    if(bar) bar.classList.add('visible');
+  }
+}
+
+function setIntensity(idx,name,level){
+  block1Data[currentRound][name]=level;
+  renderRound();
+}
+
+function renderBlock1Tags(){
+  const tags=document.getElementById('block1-tags');
+  const data=block1Data[currentRound];
+  let html='';
+  Object.keys(data).forEach(name=>{
+    const lv=data[name];
+    html+='<span class="selected-player-tag ic'+lv+'">'+intensityEmojis[lv]+' '+name+' ('+lv+') <button class="tag-remove" onclick="removeBlock1(\''+name+'\')">&times;</button></span>';
+  });
+  tags.innerHTML=html;
+}
+
+function removeBlock1(name){
+  delete block1Data[currentRound][name];
+  renderRound();
+}
+
+function flipCard(){
+  document.getElementById('flip-card').classList.toggle('flipped');
+}
+
+function toggleBlock2Player(oi,name){
+  const arr=block2Data[currentRound][oi];
+  const idx=arr.indexOf(name);
+  if(idx>=0) arr.splice(idx,1); else arr.push(name);
+}
+
+function nextRound(){
+  if(currentRound<9){currentRound++;renderRound();}
+  else showSummary();
+}
+
+function showSummary(){
+  showScreen('summary-screen');
+  const container=document.getElementById('summary-container');
+  const ps={};
+  players.forEach(p=>{ps[p]=[];});
+
+  gameRounds.forEach((sit,ri)=>{
+    // Add intensity info
+    Object.keys(block1Data[ri]).forEach(pn=>{
+      if(!ps[pn]) return;
+      const intensity=block1Data[ri][pn];
+      // Check block2 selections
+      sit.options.forEach((opt,oi)=>{
+        if(block2Data[ri][oi].includes(pn)){
+          ps[pn].push({text:sit.text,cat:sit.catLabel,summary:sit.summaries[oi],intensity:intensity});
+        }
+      });
+      // If no block2 selection but was in block1
+      const hasBlock2=sit.options.some((o,oi)=>block2Data[ri][oi].includes(pn));
+      if(!hasBlock2){
+        ps[pn].push({text:sit.text,cat:sit.catLabel,summary:null,intensity:intensity});
+      }
+    });
+
+    // Also check block2 without block1
+    sit.options.forEach((opt,oi)=>{
+      block2Data[ri][oi].forEach(pn=>{
+        if(!block1Data[ri][pn] && ps[pn]){
+          ps[pn].push({text:sit.text,cat:sit.catLabel,summary:sit.summaries[oi],intensity:null});
+        }
+      });
+    });
+  });
+
+  let html='';
+  players.forEach((p,pi)=>{
+    const items=ps[p];
+    html+='<div class="player-summary-card animate-in"><div class="player-summary-header" style="background:'+playerColors[pi%playerColors.length]+'">👤 '+p+'</div><div class="player-summary-body">';
+    if(!items.length){
+      html+='<div class="no-data-msg">לא נבחרו אפשרויות עבור '+p+'</div>';
+    } else {
+      items.forEach(it=>{
+        html+='<div class="summary-situation"><div class="summary-situation-title">'+it.cat+' – '+it.text;
+        if(it.intensity) html+=' <span class="summary-intensity-badge ic'+it.intensity+'">'+intensityEmojis[it.intensity]+' '+it.intensity+'/5</span>';
+        html+='</div>';
+        if(it.summary) html+='<div class="summary-sentence">🛡️ '+p+' – '+it.summary+'</div>';
+        html+='</div>';
+      });
+    }
+    html+='</div></div>';
+  });
+  container.innerHTML=html;
+}
+
+function restartGame(){
+  players=[];
+  gameRounds=[];
+  currentRound=0;
+  block1Data=[];
+  block2Data=[];
+  showScreen('splash-screen');
+}
+</script>
+</body>
+</html>
