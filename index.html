@@ -48,6 +48,17 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 .rmbtn:hover{color:#FF6B6B;}
 .add-p-btn{width:100%;padding:11px;background:none;border:1.5px dashed rgba(108,99,255,.28);color:#9b99bb;border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:.95em;transition:all .2s;margin-bottom:24px;}
 .add-p-btn:hover{border-color:#a89fff;color:#a89fff;}
+
+/* manager settings */
+.mgr-section{margin-bottom:24px;padding:18px;background:#252438;border:1px solid rgba(108,99,255,.18);border-radius:14px;}
+.mgr-title{font-size:.95em;font-weight:900;color:#a89fff;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.mgr-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.mgr-label{font-size:.88em;font-weight:700;color:#9b99bb;min-width:120px;}
+.mgr-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.mgr-opt{padding:8px 16px;border-radius:10px;border:2px solid rgba(108,99,255,.22);background:transparent;color:#9b99bb;font-family:'Heebo',sans-serif;font-size:.9em;font-weight:700;cursor:pointer;transition:all .2s;}
+.mgr-opt:hover{border-color:#a89fff;color:#a89fff;}
+.mgr-opt.on{background:#6C63FF;color:#fff;border-color:#6C63FF;}
+
 .go-btn{width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,#6C63FF,#9b59f5);color:#fff;font-family:'Heebo',sans-serif;font-size:1.2em;font-weight:900;cursor:pointer;box-shadow:0 8px 28px rgba(108,99,255,.4);transition:all .3s;}
 .go-btn:hover{transform:translateY(-2px);}
 
@@ -104,6 +115,10 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
 /* Emotion card (col0) expands to span both columns and 3 rows */
 .card.open-img[data-col="0"]{grid-column:1/-1;grid-row:span 3;padding:10px;}
 .card.open-full[data-col="0"]{grid-column:1/-1;grid-row:span 3;padding:10px;}
+
+/* Signal card (col1) expands to span both columns and 3 rows */
+.card.open-full[data-col="1"]{grid-column:1/-1;grid-row:span 3;padding:10px;}
+.card.open-full[data-col="1"] .c-text{font-size:1.1em;}
 
 .card.open-full .c-num{display:none;}
 .card.open-full .c-lbl{display:block;font-size:.7em;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:2px;}
@@ -180,6 +195,21 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
     <div class="s-lbl">שחקנים</div>
     <div class="plist" id="plist"></div>
     <button class="add-p-btn" id="addBtn" onclick="addRow()">+ הוסף שחקן</button>
+
+    <div class="mgr-section">
+      <div class="mgr-title">🎛 הגדרות מנהל משחק</div>
+      <div class="mgr-row">
+        <span class="mgr-label">קלפים לפתוח בכל בלוק:</span>
+        <div class="mgr-opts" id="mgrOpts">
+          <button class="mgr-opt" data-val="2" onclick="setMgrCards(2)">2</button>
+          <button class="mgr-opt" data-val="3" onclick="setMgrCards(3)">3</button>
+          <button class="mgr-opt" data-val="4" onclick="setMgrCards(4)">4</button>
+          <button class="mgr-opt" data-val="6" onclick="setMgrCards(6)">6</button>
+          <button class="mgr-opt on" data-val="0" onclick="setMgrCards(0)">כל הקלפים</button>
+        </div>
+      </div>
+    </div>
+
     <button class="go-btn" onclick="startGame()">▶ התחל משחק</button>
   </div>
 </div>
@@ -258,6 +288,17 @@ let categories = [
 ];
 let catVisible = [];
 
+/* ══ MANAGER SETTINGS ══ */
+let mgrCardsPerBlock = 0; // 0 = all cards
+let revealedEmotions = []; // emotions currently visible on board
+
+function setMgrCards(val){
+  mgrCardsPerBlock = val;
+  document.querySelectorAll('#mgrOpts .mgr-opt').forEach(b=>{
+    b.classList.toggle('on', parseInt(b.dataset.val)===val);
+  });
+}
+
 /* ══ STATE ══ */
 let players   = [];
 let curIdx    = 0;
@@ -334,7 +375,20 @@ function goSetup(){
 /* ══ BUILD BOARD (only on new game / restart) ══ */
 function shuf(a){return[...a].sort(()=>Math.random()-.5);}
 
+// Single shuffled order used for ALL categories (matching sets)
+let boardOrder = [];
+
 function buildBoard(){
+  // Create one shared shuffle order for matching sets across all categories
+  boardOrder = shuf(ENAMES);
+
+  // Determine which emotions to reveal
+  if(mgrCardsPerBlock === 0 || mgrCardsPerBlock >= TOTAL){
+    revealedEmotions = [...boardOrder];
+  } else {
+    revealedEmotions = boardOrder.slice(0, mgrCardsPerBlock);
+  }
+
   const container=document.getElementById('boardBlocks');
   container.innerHTML='';
   categories.forEach((cat,ci)=>{
@@ -351,7 +405,12 @@ function buildBoard(){
     const grid=document.createElement('div');
     grid.className='cat-block-grid';
     grid.id='catGrid'+ci;
-    shuf(ENAMES).forEach((ename,i)=>grid.appendChild(makeCard(ename,ci,i+1)));
+    // Use same order for all categories (matching sets)
+    boardOrder.forEach((ename,i)=>{
+      if(revealedEmotions.includes(ename)){
+        grid.appendChild(makeCard(ename,ci,i+1));
+      }
+    });
     block.appendChild(grid);
     container.appendChild(block);
   });
@@ -362,7 +421,7 @@ function buildBoard(){
   renderToggles();
   renderHeader();
   renderMatchedArea();
-  document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
+  document.getElementById('progTxt').textContent=`${totalDone} / ${revealedEmotions.length} סדרות`;
 }
 
 function makeCard(ename,col,num){
@@ -636,9 +695,9 @@ function checkMatch(){
     totalDone++;
     players[curIdx].score+=10;
     renderHeader();
-    document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
+    document.getElementById('progTxt').textContent=`${totalDone} / ${revealedEmotions.length} סדרות`;
     confetti(player.color);
-    if(totalDone===TOTAL){ setTimeout(showWin,2600); return; }
+    if(totalDone===revealedEmotions.length){ setTimeout(showWin,2600); return; }
   }
 
   // Update matched area to show new counts
