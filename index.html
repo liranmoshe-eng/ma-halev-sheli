@@ -192,24 +192,21 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#0
     <div class="s-logo">💭</div>
     <div class="s-title">מה הלב שלי אומר לי</div>
     <div class="s-sub">משחק לימודי-חווייתי של רגשות</div>
-    <div class="s-lbl">שחקנים</div>
-    <div class="plist" id="plist"></div>
-    <button class="add-p-btn" id="addBtn" onclick="addRow()">+ הוסף שחקן</button>
 
     <div class="mgr-section">
-      <div class="mgr-title">🎛 הגדרות מנהל משחק</div>
-      <div class="mgr-row">
-        <span class="mgr-label">קלפים לפתוח בכל בלוק:</span>
-        <div class="mgr-opts" id="mgrOpts">
-          <button class="mgr-opt" data-val="2" onclick="setMgrCards(2)">2</button>
-          <button class="mgr-opt" data-val="3" onclick="setMgrCards(3)">3</button>
-          <button class="mgr-opt" data-val="4" onclick="setMgrCards(4)">4</button>
-          <button class="mgr-opt" data-val="6" onclick="setMgrCards(6)">6</button>
-          <button class="mgr-opt on" data-val="0" onclick="setMgrCards(0)">כל הקלפים</button>
-        </div>
+      <div class="mgr-title">🎛 מנהל משחק — כמה קלפים בכל בלוק?</div>
+      <div class="mgr-opts" id="mgrOpts" style="justify-content:center;">
+        <button class="mgr-opt" data-val="2" onclick="setMgrCards(2)">2</button>
+        <button class="mgr-opt" data-val="3" onclick="setMgrCards(3)">3</button>
+        <button class="mgr-opt" data-val="4" onclick="setMgrCards(4)">4</button>
+        <button class="mgr-opt" data-val="6" onclick="setMgrCards(6)">6</button>
+        <button class="mgr-opt on" data-val="0" onclick="setMgrCards(0)">כל הקלפים</button>
       </div>
     </div>
 
+    <div class="s-lbl">שחקנים</div>
+    <div class="plist" id="plist"></div>
+    <button class="add-p-btn" id="addBtn" onclick="addRow()">+ הוסף שחקן</button>
     <button class="go-btn" onclick="startGame()">▶ התחל משחק</button>
   </div>
 </div>
