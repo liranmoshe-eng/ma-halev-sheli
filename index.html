@@ -376,15 +376,8 @@ function shuf(a){return[...a].sort(()=>Math.random()-.5);}
 let boardOrder = [];
 
 function buildBoard(){
-  // Create one shared shuffle order for matching sets across all categories
   boardOrder = shuf(ENAMES);
-
-  // Determine which emotions to reveal
-  if(mgrCardsPerBlock === 0 || mgrCardsPerBlock >= TOTAL){
-    revealedEmotions = [...boardOrder];
-  } else {
-    revealedEmotions = boardOrder.slice(0, mgrCardsPerBlock);
-  }
+  revealedEmotions = [...boardOrder]; // all emotions are in play
 
   const container=document.getElementById('boardBlocks');
   container.innerHTML='';
@@ -402,12 +395,12 @@ function buildBoard(){
     const grid=document.createElement('div');
     grid.className='cat-block-grid';
     grid.id='catGrid'+ci;
-    // Use same order for all categories (matching sets)
-    boardOrder.forEach((ename,i)=>{
-      if(revealedEmotions.includes(ename)){
-        grid.appendChild(makeCard(ename,ci,i+1));
-      }
-    });
+
+    if(ci===0 || mgrCardsPerBlock===0){
+      // Block 1: always all cards. Also all cards if manager chose "all"
+      shuf(ENAMES).forEach((ename,i)=>grid.appendChild(makeCard(ename,ci,i+1)));
+    }
+    // Blocks 2-4 with limit: start empty, filled dynamically when emotion is selected
     block.appendChild(grid);
     container.appendChild(block);
   });
@@ -418,7 +411,42 @@ function buildBoard(){
   renderToggles();
   renderHeader();
   renderMatchedArea();
-  document.getElementById('progTxt').textContent=`${totalDone} / ${revealedEmotions.length} סדרות`;
+  document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
+}
+
+/* ══ FILL BLOCKS 2-4 DYNAMICALLY (manager mode) ══ */
+function fillCatGridsForEmotion(targetEname){
+  if(mgrCardsPerBlock===0) return; // all cards already shown
+  for(let ci=1; ci<categories.length; ci++){
+    const grid=document.getElementById('catGrid'+ci);
+    if(!grid) continue;
+    // Keep any locked/perm cards, remove the rest
+    const permCards=[];
+    grid.querySelectorAll('.card[data-perm="1"]').forEach(c=>permCards.push(c));
+    grid.innerHTML='';
+    permCards.forEach(c=>grid.appendChild(c));
+    // If this category already matched for this emotion, skip
+    const permEnames=permCards.map(c=>c.dataset.ename);
+    if(permEnames.includes(targetEname)) continue;
+    // Pick N cards: always include the correct match + random others
+    const others=ENAMES.filter(e=>e!==targetEname && !permEnames.includes(e));
+    const distractors=shuf(others).slice(0, mgrCardsPerBlock-1);
+    const subset=shuf([targetEname, ...distractors]);
+    subset.forEach((ename,i)=>grid.appendChild(makeCard(ename,ci,i+1)));
+  }
+}
+
+/* Clear blocks 2-4 (when emotion deselected in manager mode) */
+function clearCatGrids(){
+  if(mgrCardsPerBlock===0) return;
+  for(let ci=1; ci<categories.length; ci++){
+    const grid=document.getElementById('catGrid'+ci);
+    if(!grid) continue;
+    const permCards=[];
+    grid.querySelectorAll('.card[data-perm="1"]').forEach(c=>permCards.push(c));
+    grid.innerHTML='';
+    permCards.forEach(c=>grid.appendChild(c));
+  }
 }
 
 function makeCard(ename,col,num){
@@ -547,11 +575,14 @@ function onCardClick(el){
       // Deselect
       pp.emotion=null;
       pp.matchedCats=new Set();
+      if(mgrCardsPerBlock>0) clearCatGrids();
     } else {
       // Select this emotion
       el.classList.add('selected');
       pp.emotion=ename;
       pp.matchedCats=new Set([0]);
+      // Manager mode: fill blocks 2-4 with subset including this emotion
+      fillCatGridsForEmotion(ename);
     }
     return;
   }
@@ -574,12 +605,16 @@ function onCardClick(el){
       // Set emotion
       pp.emotion=ename;
       pp.matchedCats=new Set([0]);
+      // Manager mode: fill blocks 2-4 with subset including this emotion
+      fillCatGridsForEmotion(ename);
     } else if(state===1){
       el.dataset.state='2';
       el.className='card open-full';
     } else if(state===2){
       closeCard(el);
       if(pp.emotion===ename){pp.emotion=null;pp.matchedCats=new Set();}
+      // Manager mode: clear blocks 2-4 when emotion deselected
+      if(mgrCardsPerBlock>0) clearCatGrids();
     }
     return;
   }
@@ -692,9 +727,9 @@ function checkMatch(){
     totalDone++;
     players[curIdx].score+=10;
     renderHeader();
-    document.getElementById('progTxt').textContent=`${totalDone} / ${revealedEmotions.length} סדרות`;
+    document.getElementById('progTxt').textContent=`${totalDone} / ${TOTAL} סדרות`;
     confetti(player.color);
-    if(totalDone===revealedEmotions.length){ setTimeout(showWin,2600); return; }
+    if(totalDone===TOTAL){ setTimeout(showWin,2600); return; }
   }
 
   // Update matched area to show new counts
