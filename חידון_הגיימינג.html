@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="he" dir="rtl" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חידון הגיימינג של מיכאל</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Rubik', sans-serif; }
+    .card {
+      perspective: 1000px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .card:hover { transform: scale(1.05); }
+    .card-inner {
+      transition: transform 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    .card.flipped .card-inner { transform: rotateY(180deg); }
+    .card-front, .card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .card-back { transform: rotateY(180deg); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.3s ease-in-out; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .pulse { animation: pulse 0.3s ease-in-out; }
+    .color-btn { transition: all 0.2s ease; }
+    .color-btn:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+  </style>
+ </head>
+ <body class="h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
+
+  <!-- Setup Screen -->
+  <div id="setupScreen" class="fixed inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 flex items-center justify-center z-50 p-4">
+   <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-7 border border-purple-500/30">
+    <div class="text-center mb-6">
+     <div class="text-5xl mb-2">🎮</div>
+     <h2 class="text-2xl font-bold text-purple-300">חידון הגיימינג של מיכאל</h2>
+     <p class="text-purple-400 text-sm mt-1">הוסיפו את השחקנים</p>
+    </div>
+    <div class="flex gap-2 mb-4">
+     <button onclick="addPlayer()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex-shrink-0">+ הוסף</button>
+     <input id="newPlayerName" type="text" placeholder="שם השחקן..." maxlength="14" onkeydown="if(event.key==='Enter') addPlayer()"
+       class="flex-1 border-2 border-purple-500/30 bg-slate-700 text-white rounded-xl px-3 py-2 text-right focus:outline-none focus:border-purple-400 text-base placeholder-slate-400" />
+    </div>
+    <div id="playersList" class="space-y-2 mb-5 min-h-[2rem]"></div>
+    <button id="startBtn" onclick="startGame()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl text-lg transition-all shadow-md hidden">🎮 התחילו לשחק!</button>
+   </div>
+  </div>
+
+  <div id="app" class="h-full w-full overflow-auto p-4">
+   <div class="text-center mb-3 relative">
+    <h1 id="gameTitle" class="text-3xl font-bold text-purple-300 mb-1">🎮 חידון הגיימינג של מיכאל 🎮</h1>
+    <button id="midGameRestartBtn" onclick="confirmRestart()" class="hidden absolute left-0 top-0 bg-slate-700 hover:bg-slate-600 text-purple-300 font-bold px-3 py-1.5 rounded-xl text-sm border-2 border-purple-500/30 transition-all">🔄 התחל מחדש</button>
+   </div>
+   <div id="turnBar" class="max-w-2xl mx-auto mb-3 rounded-xl p-3 text-center font-bold text-white text-lg shadow-md hidden"></div>
+   <div id="scoreboard" class="max-w-2xl mx-auto mb-3 flex gap-2 justify-center flex-wrap hidden"></div>
+   <div id="gameGrid" class="grid grid-cols-7 gap-2 max-w-2xl mx-auto mb-4"></div>
+
+   <!-- Question Modal -->
+   <div id="questionModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 relative border border-purple-500/30">
+     <div id="questionPlayerBadge" class="text-center mb-3"></div>
+     <div class="text-center mb-4">
+      <span class="text-4xl mb-2 block" id="questionEmoji">🎮</span>
+      <p id="questionText" class="text-lg font-medium text-gray-200 leading-relaxed"></p>
+     </div>
+     <div id="answersContainer" class="space-y-2"></div>
+     <button id="closeModal" class="absolute top-3 left-3 text-gray-400 hover:text-gray-200 text-2xl">&times;</button>
+    </div>
+   </div>
+
+   <!-- Correct Answer Modal -->
+   <div id="correctModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 text-center max-w-sm w-full border border-green-500/30">
+     <div class="text-6xl mb-3">🎉</div>
+     <h3 class="text-xl font-bold text-gray-200 mb-1">תשובה נכונה!</h3>
+     <p id="correctPlayerName" class="text-lg font-bold mb-1"></p>
+     <p class="text-gray-400 text-sm">זכה בקלף!</p>
+    </div>
+   </div>
+
+   <!-- Wrong Answer Feedback -->
+   <div id="wrongFeedback" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 text-center border border-red-500/30">
+     <div class="text-6xl mb-3">❌</div>
+     <h3 class="text-xl font-bold text-red-400">תשובה שגויה</h3>
+     <p id="nextPlayerMsg" class="text-gray-400 mt-2 font-medium"></p>
+    </div>
+   </div>
+
+   <!-- Win Modal -->
+   <div id="winModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 text-center max-w-sm w-full border border-yellow-500/30">
+     <div class="text-6xl mb-3">🏆</div>
+     <h3 id="winTitle" class="text-3xl font-bold mb-2"></h3>
+     <p id="winName" class="text-xl font-bold mb-1"></p>
+     <p class="text-gray-400 text-sm mb-6">יצרת רצף מקצה לקצה!</p>
+     <button onclick="doRestart()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl text-lg transition-all hover:scale-105 shadow-md">🎮 משחק חדש!</button>
+    </div>
+   </div>
+
+   <!-- Confirm Restart Modal -->
+   <div id="confirmRestartModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl p-7 text-center max-w-sm w-full border border-purple-500/30">
+     <div class="text-5xl mb-3">🔄</div>
+     <h3 class="text-xl font-bold text-gray-200 mb-2">להתחיל מחדש?</h3>
+     <p class="text-gray-400 mb-5 text-sm">ההתקדמות הנוכחית תימחק</p>
+     <div class="flex gap-3 justify-center">
+      <button onclick="doRestart()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-xl transition-all">כן, התחל מחדש</button>
+      <button onclick="document.getElementById('confirmRestartModal').classList.add('hidden')" class="bg-slate-600 hover:bg-slate-500 text-gray-200 font-bold py-2 px-6 rounded-xl transition-all">ביטול</button>
+     </div>
+    </div>
+   </div>
+
+   <!-- Game End Modal -->
+   <div id="gameEndModal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden p-4">
+    <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 text-center max-w-sm w-full border border-yellow-500/30">
+     <div class="text-6xl mb-3">🏆</div>
+     <h3 class="text-2xl font-bold text-purple-300 mb-2">כל הכבוד!</h3>
+     <div id="finalScores" class="mb-4 space-y-1"></div>
+     <button id="restartBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl text-lg transition-all hover:scale-105 shadow-md">🎮 משחק חדש!</button>
+    </div>
+   </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════════
+    // 29 שאלות מקוריות + 6 שאלות חדשות = 35
+    // ══════════════════════════════════════════
+    const allQuestions = [
+      // ── שאלות מקוריות (1-29) ──
+      { q: "באיזו שנה יצא המשחק Minecraft?", a: ["2005", "2009", "2013", "2018"], correct: 1 },
+      { q: "מה עושים ב־FIFA?", a: ["נלחמים במפלצות", "משחקים כדורגל", "מטפלים בחיות", "בונים בתים"], correct: 1 },
+      { q: "מה עושים ב־Subway Surfers?", a: ["בורחים משומר ורצים על פסי רכבת", "בונים רכבות", "יורים בחייזרים", "משחקים שחמט"], correct: 0 },
+      { q: "מי יצר את Pokémon?", a: ["Nintendo / Game Freak", "Mojang", "Ubisoft", "EA"], correct: 0 },
+      { q: "נחשו את המשחק: תופסים יצורים קטנים בתוך פוכדורים.", a: ["Zelda", "Pokémon", "Minecraft", "Terraria"], correct: 1 },
+      { q: "באיזו שנה יצא המשחק Pokémon GO?", a: ["2016", "2011", "2020", "2008"], correct: 0 },
+      { q: "באיזו שנה יצא GTA V?", a: ["2008", "2010", "2013", "2018"], correct: 2 },
+      { q: "מה עושים במשחק GTA?", a: ["בונים פארק", "מטיילים בטבע", "מבצעים משימות בעולם פתוח", "מגדלים חיות"], correct: 2 },
+      { q: "מי החברה שיצרה את GTA?", a: ["Ubisoft", "Rockstar Games", "EA", "Nintendo"], correct: 1 },
+      { q: "נחשו את המשחק: עולם פתוח, מכוניות, משימות ופשע.", a: ["Fortnite", "Hitman", "GTA", "Roblox"], correct: 2 },
+      { q: "באיזו שנה יצא Mortal Kombat הראשון?", a: ["1992", "2001", "1985", "2010"], correct: 0 },
+      { q: "מה מיוחד במשחק Mortal Kombat?", a: ["משחק כדורגל", "קרבות ואפקטים מוגזמים במיוחד", "בניית ערים", "מרוצי מכוניות"], correct: 1 },
+      { q: "מי יצר את Mortal Kombat?", a: ["Midway Games", "Mojang", "Valve", "Epic Games"], correct: 0 },
+      { q: "נחשו את המשחק: Finish Him!", a: ["Tekken", "Street Fighter", "Mortal Kombat", "Smash Bros"], correct: 2 },
+      { q: "באיזו שנה יצא Hitman הראשון?", a: ["2000", "2010", "1992", "2022"], correct: 0 },
+      { q: "מה התפקיד של השחקן ב־Hitman?", a: ["בלש", "מתנקש מקצועי", "נהג מרוצים", "לוחם חלל"], correct: 1 },
+      { q: "איך קוראים לדמות הראשית ב־Hitman?", a: ["Agent 47", "John Wick", "Max Payne", "Trevor"], correct: 0 },
+      { q: "נחשו את המשחק: איש קירח עם ברקוד על הראש.", a: ["GTA", "Hitman", "Call of Duty", "Assassin's Creed"], correct: 1 },
+      { q: "באיזו עיר דמיונית מתרחש GTA V?", a: ["Vice City", "Liberty City", "Los Santos", "San Fierro"], correct: 2 },
+      { q: "מה עושים ב־Mortal Kombat חוץ מקרבות?", a: ["אוספים קלפים", "מבצעים מהלכי סיום מיוחדים", "בונים בתים", "משחקים כדורסל"], correct: 1 },
+      { q: "מי היריב המפורסם עם המסכה והקרח ב־Mortal Kombat?", a: ["Scorpion", "Raiden", "Sub-Zero", "Liu Kang"], correct: 2 },
+      { q: "נחשו את המשחק: משחק שבו אפשר להחליף תחפושות ולהסתנן.", a: ["Roblox", "Hitman", "FIFA", "Sonic"], correct: 1 },
+      { q: "באיזו שנה יצא GTA San Andreas?", a: ["2004", "1999", "2012", "2018"], correct: 0 },
+      { q: "מי הדמות הראשית ב־GTA San Andreas?", a: ["Tommy", "CJ", "Franklin", "Nico"], correct: 1 },
+      { q: "נחשו את המשחק: גניבות רכבים ובריחה מהמשטרה.", a: ["GTA", "Minecraft", "Roblox", "Pokémon"], correct: 0 },
+      { q: "באיזו שנה יצא Mortal Kombat 11?", a: ["2011", "2019", "2005", "2023"], correct: 1 },
+      { q: "נחשו את המשחק: משחק שבו כל טעות יכולה להרוס את המשימה.", a: ["Hitman", "Subway Surfers", "FIFA", "Rocket League"], correct: 0 },
+      { q: "מי מהבאים הוא דמות ב־GTA V?", a: ["Trevor", "Kratos", "Sonic", "Kirby"], correct: 0 },
+      { q: "נחשו את המשחק: קרבות אחד נגד השני עם Fatality מפורסם.", a: ["Tekken", "Street Fighter", "Mortal Kombat", "Brawlhalla"], correct: 2 },
+      // ── 6 שאלות חדשות (30-35) ──
+      { q: "באיזו שנה יצא Red Dead Redemption 2?", a: ["2014", "2016", "2018", "2020"], correct: 2 },
+      { q: "מי החברה שפיתחה את Red Dead Redemption 2?", a: ["Ubisoft", "Epic Games", "Rockstar Games", "Valve"], correct: 2 },
+      { q: "מה תפקידו של ארתור מורגן ב־Red Dead Redemption 2?", a: ["שוטר", "בוקר וחבר בכנופיה", "צייד מפלצות", "נהג מרוצים"], correct: 1 },
+      { q: "נחשו את המשחק: אתם רוכבים על סוס במערב הפרוע, מבצעים שודים וחיים כחלק מכנופיה.", a: ["GTA V", "Hitman", "Red Dead Redemption 2", "Minecraft"], correct: 2 },
+      { q: "מהו הסמל המפורסם של Agent 47?", a: ["כובע אדום", "קעקוע דרקון", "ברקוד על העורף", "מסכת זהב"], correct: 2 },
+      { q: "נחשו את המשחק: משחק עולם פתוח שבו אפשר להחליף בין שלוש דמויות ראשיות שונות.", a: ["Red Dead Redemption 2", "GTA V", "Hitman", "Mortal Kombat"], correct: 1 }
+    ];
+
+    const TOTAL_CARDS = 35;
+    const COLS = 7;
+    const ROWS = 5;
+
+    const PLAYER_COLORS = ['red','blue','green','yellow','purple','orange'];
+    const PLAYER_BG = { red:'bg-red-500', blue:'bg-blue-500', green:'bg-green-500', yellow:'bg-yellow-400', purple:'bg-purple-500', orange:'bg-orange-500' };
+    const PLAYER_HEX = { red:'#ef4444', blue:'#3b82f6', green:'#22c55e', yellow:'#facc15', purple:'#a855f7', orange:'#f97316' };
+
+    const gameEmojis = ["🎮","🕹️","👾","🎯","⚔️","🏆","💎","🔥","⭐","🚀","🎲","🃏","🎪","💥","🌟","⚡","🛡️","🗡️","🎖️","🏅","💰","🎁","🔮","🧩","❤️","🎵","🌀","💫","🎭","✨","🤖","👑","🦸","🐉","🧙"];
+
+    let players = [];
+    let currentPlayerIndex = 0;
+    let currentCardIndex = null;
+    let cardColors = new Array(TOTAL_CARDS).fill(null);
+    let answeredCards = new Array(TOTAL_CARDS).fill(false);
+    const extendedQuestions = [];
+    let pendingPlayers = [];
+
+    function addPlayer() {
+      const input = document.getElementById('newPlayerName');
+      const name = input.value.trim();
+      if (!name) { input.focus(); return; }
+      if (pendingPlayers.length >= 6) return;
+      const color = PLAYER_COLORS[pendingPlayers.length];
+      pendingPlayers.push({ name, color, score: 0 });
+      input.value = '';
+      input.focus();
+      renderPendingPlayers();
+    }
+
+    function removePendingPlayer(i) {
+      pendingPlayers.splice(i, 1);
+      pendingPlayers = pendingPlayers.map((p, idx) => ({ ...p, color: PLAYER_COLORS[idx] }));
+      renderPendingPlayers();
+    }
+
+    function renderPendingPlayers() {
+      const list = document.getElementById('playersList');
+      list.innerHTML = pendingPlayers.map((p, i) => `
+        <div class="flex items-center gap-2 px-3 py-2 rounded-xl text-white font-bold" style="background:${PLAYER_HEX[p.color]}">
+          <span class="flex-1">${p.name}</span>
+          <button onclick="removePendingPlayer(${i})" class="text-white/70 hover:text-white text-lg leading-none">✕</button>
+        </div>`).join('');
+      document.getElementById('startBtn').classList.toggle('hidden', pendingPlayers.length === 0);
+    }
+
+    function startGame() {
+      if (!pendingPlayers.length) return;
+      players = pendingPlayers.map(p => ({ ...p }));
+      pendingPlayers = [];
+      currentPlayerIndex = 0;
+      document.getElementById('setupScreen').classList.add('hidden');
+      document.getElementById('turnBar').classList.remove('hidden');
+      document.getElementById('scoreboard').classList.remove('hidden');
+      initGame();
+      updateTurnBar();
+      updateScoreboard();
+    }
+
+    function pickRotatingQuestions() {
+      let usedIndices = [];
+      try { usedIndices = JSON.parse(localStorage.getItem('gamingQuizUsed') || '[]'); } catch(e) {}
+      const total = allQuestions.length;
+      const unused = shuffleArray([...Array(total).keys()].filter(i => !usedIndices.includes(i)));
+      const fallback = shuffleArray(usedIndices);
+      const pool = [...unused, ...fallback];
+      const chosen = pool.slice(0, TOTAL_CARDS);
+      const newUsed = [...usedIndices, ...chosen].slice(-Math.min(total - TOTAL_CARDS, total));
+      try { localStorage.setItem('gamingQuizUsed', JSON.stringify(newUsed)); } catch(e) {}
+      return chosen.map(i => allQuestions[i]);
+    }
+
+    function initGame() {
+      if (!loadGame()) {
+        extendedQuestions.length = 0;
+        pickRotatingQuestions().forEach(q => extendedQuestions.push(q));
+      }
+      document.getElementById('midGameRestartBtn').classList.remove('hidden');
+      createCards();
+    }
+
+    function confirmRestart() { document.getElementById('confirmRestartModal').classList.remove('hidden'); }
+
+    function doRestart() {
+      document.getElementById('confirmRestartModal').classList.add('hidden');
+      document.getElementById('gameEndModal').classList.add('hidden');
+      document.getElementById('winModal').classList.add('hidden');
+      document.getElementById('turnBar').classList.add('hidden');
+      document.getElementById('scoreboard').classList.add('hidden');
+      document.getElementById('midGameRestartBtn').classList.add('hidden');
+      cardColors = new Array(TOTAL_CARDS).fill(null);
+      answeredCards = new Array(TOTAL_CARDS).fill(false);
+      players = []; pendingPlayers = []; currentPlayerIndex = 0;
+      localStorage.removeItem('gamingQuizSave');
+      document.getElementById('playersList').innerHTML = '';
+      document.getElementById('startBtn').classList.add('hidden');
+      document.getElementById('newPlayerName').value = '';
+      document.getElementById('setupScreen').classList.remove('hidden');
+    }
+
+    function shuffleArray(array) {
+      const s = [...array];
+      for (let i = s.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [s[i], s[j]] = [s[j], s[i]];
+      }
+      return s;
+    }
+
+    function updateTurnBar() {
+      if (!players.length) return;
+      const p = players[currentPlayerIndex];
+      const bar = document.getElementById('turnBar');
+      bar.style.background = PLAYER_HEX[p.color];
+      bar.textContent = `🎯 תור ${p.name}`;
+    }
+
+    function updateScoreboard() {
+      if (!players.length) return;
+      const sb = document.getElementById('scoreboard');
+      sb.innerHTML = players.map((p,i) => `
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-sm font-bold shadow ${i===currentPlayerIndex?'ring-4 ring-white/70 scale-105':''}" style="background:${PLAYER_HEX[p.color]}">
+          <span>${p.name}</span>
+          <span class="bg-white/30 rounded-full px-2">${p.score}</span>
+        </div>`).join('');
+    }
+
+    function createCards() {
+      const grid = document.getElementById('gameGrid');
+      grid.innerHTML = '';
+      for (let i = 0; i < TOTAL_CARDS; i++) {
+        const card = document.createElement('div');
+        card.className = 'card aspect-square';
+        card.dataset.index = i;
+        const bgColor = cardColors[i] ? PLAYER_BG[cardColors[i]] : 'bg-slate-700';
+        const emoji = gameEmojis[i % gameEmojis.length];
+        card.innerHTML = `
+          <div class="card-inner w-full h-full relative">
+            <div class="card-front absolute inset-0 ${bgColor} rounded-lg shadow-md border-2 border-purple-500/30 flex flex-col items-center justify-center gap-0.5">
+              <span class="${cardColors[i]?'text-xs':'text-base'} font-bold ${cardColors[i]?'text-white':'text-purple-300'} leading-none">${i+1}</span>
+              <span class="text-xl">${cardColors[i] ? emoji : ''}</span>
+            </div>
+            <div class="card-back absolute inset-0 bg-slate-600 rounded-lg shadow-md border-2 border-purple-400/30 flex flex-col items-center justify-center gap-0.5">
+              <span class="text-xs font-bold text-purple-300 leading-none">${i+1}</span>
+              <span class="text-xl">${emoji}</span>
+            </div>
+          </div>`;
+        if (!answeredCards[i]) card.addEventListener('click', () => openQuestion(i));
+        else card.style.cursor = 'default';
+        grid.appendChild(card);
+      }
+    }
+
+    function openQuestion(index) {
+      if (answeredCards[index]) return;
+      currentCardIndex = index;
+      const question = extendedQuestions[index];
+      const p = players[currentPlayerIndex];
+      document.getElementById('questionPlayerBadge').innerHTML = `<span class="inline-block px-4 py-1 rounded-full text-white text-sm font-bold" style="background:${PLAYER_HEX[p.color]}">🎯 ${p.name}</span>`;
+      document.getElementById('questionEmoji').textContent = gameEmojis[index % gameEmojis.length];
+      document.getElementById('questionText').textContent = question.q;
+      const answersContainer = document.getElementById('answersContainer');
+      answersContainer.innerHTML = '';
+      const labels = ['א','ב','ג','ד'];
+      question.a.forEach((answer, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full p-3 text-right rounded-xl border-2 border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/20 transition-all flex items-center gap-3 text-gray-200';
+        btn.innerHTML = `<span class="w-8 h-8 rounded-full bg-purple-500/30 flex items-center justify-center font-bold text-purple-300">${labels[i]}</span><span>${answer}</span>`;
+        btn.addEventListener('click', () => checkAnswer(i));
+        answersContainer.appendChild(btn);
+      });
+      document.getElementById('questionModal').classList.remove('hidden');
+    }
+
+    function checkAnswer(answerIndex) {
+      const question = extendedQuestions[currentCardIndex];
+      document.getElementById('questionModal').classList.add('hidden');
+      if (answerIndex === question.correct) showCorrectFeedback();
+      else showWrongFeedback();
+    }
+
+    function showCorrectFeedback() {
+      const p = players[currentPlayerIndex];
+      cardColors[currentCardIndex] = p.color;
+      answeredCards[currentCardIndex] = true;
+      p.score++;
+      const modal = document.getElementById('correctModal');
+      document.getElementById('correctPlayerName').style.color = PLAYER_HEX[p.color];
+      document.getElementById('correctPlayerName').textContent = `🏅 ${p.name}`;
+      modal.classList.remove('hidden');
+      const card = document.querySelector(`[data-index="${currentCardIndex}"]`);
+      if (card) card.classList.add('pulse');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        saveGame();
+        const justPlayed = players[currentPlayerIndex];
+        advanceTurn();
+        createCards();
+        updateTurnBar();
+        updateScoreboard();
+        checkGameEnd(justPlayed);
+        currentCardIndex = null;
+      }, 1800);
+    }
+
+    function showWrongFeedback() {
+      const feedback = document.getElementById('wrongFeedback');
+      feedback.classList.remove('hidden');
+      const card = document.querySelector(`[data-index="${currentCardIndex}"]`);
+      if (card) card.classList.add('shake');
+      const nextIdx = (currentPlayerIndex + 1) % players.length;
+      document.getElementById('nextPlayerMsg').textContent = `עכשיו תור ${players[nextIdx].name}`;
+      setTimeout(() => {
+        feedback.classList.add('hidden');
+        if (card) card.classList.remove('shake');
+        advanceTurn();
+        updateTurnBar();
+        updateScoreboard();
+        currentCardIndex = null;
+      }, 1800);
+    }
+
+    function advanceTurn() { currentPlayerIndex = (currentPlayerIndex + 1) % players.length; }
+
+    function checkWin(color) {
+      const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+      function idx(r,c) { return r*COLS+c; }
+      function owned(r,c) { return r>=0&&r<ROWS&&c>=0&&c<COLS&&cardColors[idx(r,c)]===color; }
+
+      // top to bottom
+      const visitedV = new Set();
+      const queueV = [];
+      for (let c=0;c<COLS;c++) if (owned(0,c)) { queueV.push([0,c]); visitedV.add(idx(0,c)); }
+      while (queueV.length) {
+        const [r,c] = queueV.shift();
+        if (r===ROWS-1) return { win:true, path:[...visitedV] };
+        for (const [dr,dc] of dirs) {
+          const nr=r+dr, nc=c+dc;
+          if (owned(nr,nc)&&!visitedV.has(idx(nr,nc))) { visitedV.add(idx(nr,nc)); queueV.push([nr,nc]); }
+        }
+      }
+      // left to right
+      const visitedH = new Set();
+      const queueH = [];
+      for (let r=0;r<ROWS;r++) if (owned(r,0)) { queueH.push([r,0]); visitedH.add(idx(r,0)); }
+      while (queueH.length) {
+        const [r,c] = queueH.shift();
+        if (c===COLS-1) return { win:true, path:[...visitedH] };
+        for (const [dr,dc] of dirs) {
+          const nr=r+dr, nc=c+dc;
+          if (owned(nr,nc)&&!visitedH.has(idx(nr,nc))) { visitedH.add(idx(nr,nc)); queueH.push([nr,nc]); }
+        }
+      }
+      return { win:false };
+    }
+
+    function highlightWinPath(indices, color) {
+      indices.forEach(i => {
+        const card = document.querySelector(`[data-index="${i}"]`);
+        if (card) {
+          card.style.transform = 'scale(1.15)';
+          card.style.zIndex = '10';
+          card.style.boxShadow = `0 0 18px 6px ${PLAYER_HEX[color]}`;
+          card.style.transition = 'all 0.4s ease';
+        }
+      });
+    }
+
+    function checkGameEnd(winnerPlayer) {
+      if (winnerPlayer) {
+        const result = checkWin(winnerPlayer.color);
+        if (result.win) {
+          setTimeout(() => {
+            highlightWinPath(result.path, winnerPlayer.color);
+            setTimeout(() => showWinModal(winnerPlayer), 700);
+          }, 200);
+          return;
+        }
+      }
+      if (answeredCards.every(Boolean)) {
+        setTimeout(() => {
+          const sorted = [...players].sort((a,b) => b.score - a.score);
+          document.getElementById('finalScores').innerHTML =
+            sorted.map((p,i) => `<div class="flex items-center justify-between px-4 py-2 rounded-xl text-white font-bold" style="background:${PLAYER_HEX[p.color]}">
+              <span>${i===0?'🥇':i===1?'🥈':'🥉'} ${p.name}</span>
+              <span>${p.score} קלפים</span>
+            </div>`).join('');
+          document.getElementById('gameEndModal').classList.remove('hidden');
+        }, 400);
+      }
+    }
+
+    function showWinModal(p) {
+      document.getElementById('winTitle').textContent = 'אלוף! 🎉';
+      document.getElementById('winTitle').style.color = PLAYER_HEX[p.color];
+      document.getElementById('winName').textContent = `🏆 ${p.name} ניצח!`;
+      document.getElementById('winName').style.color = PLAYER_HEX[p.color];
+      document.getElementById('winModal').classList.remove('hidden');
+    }
+
+    function saveGame() {
+      try {
+        localStorage.setItem('gamingQuizSave', JSON.stringify({
+          cardColors, answeredCards,
+          questionOrder: extendedQuestions.map(q => allQuestions.indexOf(q)),
+          players, currentPlayerIndex
+        }));
+      } catch(e) {}
+    }
+
+    function loadGame() {
+      try {
+        const saved = localStorage.getItem('gamingQuizSave');
+        if (!saved) return false;
+        const data = JSON.parse(saved);
+        if (data.cardColors && data.answeredCards && data.questionOrder) {
+          cardColors = data.cardColors;
+          answeredCards = data.answeredCards;
+          extendedQuestions.length = 0;
+          data.questionOrder.forEach(idx => extendedQuestions.push(allQuestions[idx] || allQuestions[0]));
+          if (data.players) { players = data.players; currentPlayerIndex = data.currentPlayerIndex || 0; }
+          return true;
+        }
+      } catch(e) {}
+      return false;
+    }
+
+    document.getElementById('restartBtn').addEventListener('click', doRestart);
+    document.getElementById('closeModal').addEventListener('click', () => {
+      document.getElementById('questionModal').classList.add('hidden');
+      currentCardIndex = null;
+    });
+
+    // Check for saved game on load
+    (function() {
+      try {
+        const saved = localStorage.getItem('gamingQuizSave');
+        if (saved) {
+          const data = JSON.parse(saved);
+          if (data.players && data.players.length) {
+            players = data.players;
+            currentPlayerIndex = data.currentPlayerIndex || 0;
+            cardColors = data.cardColors;
+            answeredCards = data.answeredCards;
+            extendedQuestions.length = 0;
+            data.questionOrder.forEach(idx => extendedQuestions.push(allQuestions[idx] || allQuestions[0]));
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('turnBar').classList.remove('hidden');
+            document.getElementById('scoreboard').classList.remove('hidden');
+            document.getElementById('midGameRestartBtn').classList.remove('hidden');
+            createCards();
+            updateTurnBar();
+            updateScoreboard();
+            return;
+          }
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <footer style="text-align:center;padding:12px;font-size:13px;color:#888;direction:rtl;">פותח ע"י לירן משה, מטפלת באומנות &copy;</footer>
+</body>
+</html>
