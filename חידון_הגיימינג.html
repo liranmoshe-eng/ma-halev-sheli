@@ -8,38 +8,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Rubik', sans-serif; }
-    .card {
-      perspective: 1000px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
+    .card { perspective: 1000px; cursor: pointer; transition: transform 0.2s ease; }
     .card:hover { transform: scale(1.05); }
-    .card-inner {
-      transition: transform 0.3s ease;
-      transform-style: preserve-3d;
-    }
+    .card-inner { transition: transform 0.3s ease; transform-style: preserve-3d; }
     .card.flipped .card-inner { transform: rotateY(180deg); }
-    .card-front, .card-back {
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
+    .card-front, .card-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
     .card-back { transform: rotateY(180deg); }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     .shake { animation: shake 0.3s ease-in-out; }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
     .pulse { animation: pulse 0.3s ease-in-out; }
     .color-btn { transition: all 0.2s ease; }
-    .color-btn:hover {
-      transform: scale(1.15);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
+    .color-btn:hover { transform: scale(1.15); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
   </style>
  </head>
  <body class="h-full bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
@@ -69,7 +49,7 @@
    </div>
    <div id="turnBar" class="max-w-2xl mx-auto mb-3 rounded-xl p-3 text-center font-bold text-white text-lg shadow-md hidden"></div>
    <div id="scoreboard" class="max-w-2xl mx-auto mb-3 flex gap-2 justify-center flex-wrap hidden"></div>
-   <div id="gameGrid" class="grid grid-cols-7 gap-2 max-w-2xl mx-auto mb-4"></div>
+   <div id="gameGrid" class="grid grid-cols-6 gap-2 max-w-2xl mx-auto mb-4"></div>
 
    <!-- Question Modal -->
    <div id="questionModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden p-4">
@@ -139,58 +119,66 @@
   </div>
 
   <script>
-    // ══════════════════════════════════════════
-    // 29 שאלות מקוריות + 6 שאלות חדשות = 35
-    // ══════════════════════════════════════════
+    // ══════════════════════════════════════════════════
+    //  40 שאלות: GTA / Hitman / RDR / Mortal Kombat
+    // ══════════════════════════════════════════════════
     const allQuestions = [
-      // ── שאלות מקוריות (1-29) ──
-      { q: "באיזו שנה יצא המשחק Minecraft?", a: ["2005", "2009", "2013", "2018"], correct: 1 },
-      { q: "מה עושים ב־FIFA?", a: ["נלחמים במפלצות", "משחקים כדורגל", "מטפלים בחיות", "בונים בתים"], correct: 1 },
-      { q: "מה עושים ב־Subway Surfers?", a: ["בורחים משומר ורצים על פסי רכבת", "בונים רכבות", "יורים בחייזרים", "משחקים שחמט"], correct: 0 },
-      { q: "מי יצר את Pokémon?", a: ["Nintendo / Game Freak", "Mojang", "Ubisoft", "EA"], correct: 0 },
-      { q: "נחשו את המשחק: תופסים יצורים קטנים בתוך פוכדורים.", a: ["Zelda", "Pokémon", "Minecraft", "Terraria"], correct: 1 },
-      { q: "באיזו שנה יצא המשחק Pokémon GO?", a: ["2016", "2011", "2020", "2008"], correct: 0 },
+      // ── GTA (שאלות מקוריות) ──
       { q: "באיזו שנה יצא GTA V?", a: ["2008", "2010", "2013", "2018"], correct: 2 },
       { q: "מה עושים במשחק GTA?", a: ["בונים פארק", "מטיילים בטבע", "מבצעים משימות בעולם פתוח", "מגדלים חיות"], correct: 2 },
       { q: "מי החברה שיצרה את GTA?", a: ["Ubisoft", "Rockstar Games", "EA", "Nintendo"], correct: 1 },
       { q: "נחשו את המשחק: עולם פתוח, מכוניות, משימות ופשע.", a: ["Fortnite", "Hitman", "GTA", "Roblox"], correct: 2 },
+      { q: "באיזו עיר דמיונית מתרחש GTA V?", a: ["Vice City", "Liberty City", "Los Santos", "San Fierro"], correct: 2 },
+      { q: "באיזו שנה יצא GTA San Andreas?", a: ["2004", "1999", "2012", "2018"], correct: 0 },
+      { q: "מי הדמות הראשית ב־GTA San Andreas?", a: ["Tommy", "CJ", "Franklin", "Nico"], correct: 1 },
+      { q: "נחשו את המשחק: גניבות רכבים ובריחה מהמשטרה.", a: ["GTA", "Red Dead Redemption 2", "Roblox", "Hitman"], correct: 0 },
+      { q: "מי מהבאים הוא דמות ב־GTA V?", a: ["Trevor", "Kratos", "Arthur Morgan", "Agent 47"], correct: 0 },
+      // ── Mortal Kombat (שאלות מקוריות) ──
       { q: "באיזו שנה יצא Mortal Kombat הראשון?", a: ["1992", "2001", "1985", "2010"], correct: 0 },
       { q: "מה מיוחד במשחק Mortal Kombat?", a: ["משחק כדורגל", "קרבות ואפקטים מוגזמים במיוחד", "בניית ערים", "מרוצי מכוניות"], correct: 1 },
       { q: "מי יצר את Mortal Kombat?", a: ["Midway Games", "Mojang", "Valve", "Epic Games"], correct: 0 },
       { q: "נחשו את המשחק: Finish Him!", a: ["Tekken", "Street Fighter", "Mortal Kombat", "Smash Bros"], correct: 2 },
+      { q: "מה עושים ב־Mortal Kombat חוץ מקרבות?", a: ["אוספים קלפים", "מבצעים מהלכי סיום מיוחדים", "בונים בתים", "משחקים כדורסל"], correct: 1 },
+      { q: "מי היריב המפורסם עם המסכה והקרח ב־Mortal Kombat?", a: ["Scorpion", "Raiden", "Sub-Zero", "Liu Kang"], correct: 2 },
+      { q: "באיזו שנה יצא Mortal Kombat 11?", a: ["2011", "2019", "2005", "2023"], correct: 1 },
+      { q: "נחשו את המשחק: קרבות אחד נגד השני עם Fatality מפורסם.", a: ["Tekken", "Street Fighter", "Mortal Kombat", "Brawlhalla"], correct: 2 },
+      // ── Hitman (שאלות מקוריות) ──
       { q: "באיזו שנה יצא Hitman הראשון?", a: ["2000", "2010", "1992", "2022"], correct: 0 },
       { q: "מה התפקיד של השחקן ב־Hitman?", a: ["בלש", "מתנקש מקצועי", "נהג מרוצים", "לוחם חלל"], correct: 1 },
       { q: "איך קוראים לדמות הראשית ב־Hitman?", a: ["Agent 47", "John Wick", "Max Payne", "Trevor"], correct: 0 },
       { q: "נחשו את המשחק: איש קירח עם ברקוד על הראש.", a: ["GTA", "Hitman", "Call of Duty", "Assassin's Creed"], correct: 1 },
-      { q: "באיזו עיר דמיונית מתרחש GTA V?", a: ["Vice City", "Liberty City", "Los Santos", "San Fierro"], correct: 2 },
-      { q: "מה עושים ב־Mortal Kombat חוץ מקרבות?", a: ["אוספים קלפים", "מבצעים מהלכי סיום מיוחדים", "בונים בתים", "משחקים כדורסל"], correct: 1 },
-      { q: "מי היריב המפורסם עם המסכה והקרח ב־Mortal Kombat?", a: ["Scorpion", "Raiden", "Sub-Zero", "Liu Kang"], correct: 2 },
-      { q: "נחשו את המשחק: משחק שבו אפשר להחליף תחפושות ולהסתנן.", a: ["Roblox", "Hitman", "FIFA", "Sonic"], correct: 1 },
-      { q: "באיזו שנה יצא GTA San Andreas?", a: ["2004", "1999", "2012", "2018"], correct: 0 },
-      { q: "מי הדמות הראשית ב־GTA San Andreas?", a: ["Tommy", "CJ", "Franklin", "Nico"], correct: 1 },
-      { q: "נחשו את המשחק: גניבות רכבים ובריחה מהמשטרה.", a: ["GTA", "Minecraft", "Roblox", "Pokémon"], correct: 0 },
-      { q: "באיזו שנה יצא Mortal Kombat 11?", a: ["2011", "2019", "2005", "2023"], correct: 1 },
-      { q: "נחשו את המשחק: משחק שבו כל טעות יכולה להרוס את המשימה.", a: ["Hitman", "Subway Surfers", "FIFA", "Rocket League"], correct: 0 },
-      { q: "מי מהבאים הוא דמות ב־GTA V?", a: ["Trevor", "Kratos", "Sonic", "Kirby"], correct: 0 },
-      { q: "נחשו את המשחק: קרבות אחד נגד השני עם Fatality מפורסם.", a: ["Tekken", "Street Fighter", "Mortal Kombat", "Brawlhalla"], correct: 2 },
-      // ── 6 שאלות חדשות (30-35) ──
+      { q: "נחשו את המשחק: משחק שבו אפשר להחליף תחפושות ולהסתנן.", a: ["Red Dead Redemption 2", "Hitman", "GTA V", "Mortal Kombat"], correct: 1 },
+      { q: "נחשו את המשחק: משחק שבו כל טעות יכולה להרוס את המשימה.", a: ["Hitman", "Red Dead Redemption 2", "GTA V", "Mortal Kombat"], correct: 0 },
+      { q: "מהו הסמל המפורסם של Agent 47?", a: ["כובע אדום", "קעקוע דרקון", "ברקוד על העורף", "מסכת זהב"], correct: 2 },
+      // ── Red Dead Redemption (שאלות קודמות) ──
       { q: "באיזו שנה יצא Red Dead Redemption 2?", a: ["2014", "2016", "2018", "2020"], correct: 2 },
       { q: "מי החברה שפיתחה את Red Dead Redemption 2?", a: ["Ubisoft", "Epic Games", "Rockstar Games", "Valve"], correct: 2 },
       { q: "מה תפקידו של ארתור מורגן ב־Red Dead Redemption 2?", a: ["שוטר", "בוקר וחבר בכנופיה", "צייד מפלצות", "נהג מרוצים"], correct: 1 },
-      { q: "נחשו את המשחק: אתם רוכבים על סוס במערב הפרוע, מבצעים שודים וחיים כחלק מכנופיה.", a: ["GTA V", "Hitman", "Red Dead Redemption 2", "Minecraft"], correct: 2 },
-      { q: "מהו הסמל המפורסם של Agent 47?", a: ["כובע אדום", "קעקוע דרקון", "ברקוד על העורף", "מסכת זהב"], correct: 2 },
-      { q: "נחשו את המשחק: משחק עולם פתוח שבו אפשר להחליף בין שלוש דמויות ראשיות שונות.", a: ["Red Dead Redemption 2", "GTA V", "Hitman", "Mortal Kombat"], correct: 1 }
+      { q: "נחשו את המשחק: אתם רוכבים על סוס במערב הפרוע, מבצעים שודים וחיים כחלק מכנופיה.", a: ["GTA V", "Hitman", "Red Dead Redemption 2", "Mortal Kombat"], correct: 2 },
+      { q: "נחשו את המשחק: משחק עולם פתוח שבו אפשר להחליף בין שלוש דמויות ראשיות שונות.", a: ["Red Dead Redemption 2", "GTA V", "Hitman", "Mortal Kombat"], correct: 1 },
+      // ── שאלות חדשות (42-52) ──
+      { q: "מי הדמות הראשית ב־Red Dead Redemption הראשון?", a: ["Arthur Morgan", "John Marston", "Trevor Philips", "Agent 47"], correct: 1 },
+      { q: "באיזו מדינה מתרחש רוב המשחק Hitman: World of Assassination?", a: ["רק בארצות הברית", "רק ביפן", "במדינות רבות ברחבי העולם", "רק בצרפת"], correct: 2 },
+      { q: "מהו כלי התחבורה העיקרי ב־Red Dead Redemption 2?", a: ["מטוס", "אופנוע", "סוס", "מסוק"], correct: 2 },
+      { q: "נחשו את המשחק: אתם יכולים לשחק טניס, גולף, לצנוח ממטוסים ולבצע שודים.", a: ["Hitman", "GTA V", "Red Dead Redemption 2", "Mortal Kombat"], correct: 1 },
+      { q: "מה חשוב במיוחד כדי להצליח במשימות רבות ב־Hitman?", a: ["לרוץ הכי מהר", "להשתמש בכוח בלבד", "תכנון והתגנבות", "לקנות כלי רכב"], correct: 2 },
+      { q: "נחשו את המשחק: משחק שבו אפשר לקשור אנשים עם לאסו ולרכוב איתם על סוס.", a: ["GTA V", "Red Dead Redemption 2", "Skyrim", "Hitman"], correct: 1 },
+      { q: "באיזה משחק אפשר לשדוד בנקים כחלק מהעלילה?", a: ["GTA V", "Subway Surfers", "Mortal Kombat", "Brawl Stars"], correct: 0 },
+      { q: "מי מהדמויות הבאות היא אחת משלוש הדמויות הראשיות ב־GTA V?", a: ["Arthur Morgan", "Michael De Santa", "John Marston", "Agent 47"], correct: 1 },
+      { q: "נחשו את המשחק: אתם מתנקשים במטרות שונות תוך שימוש בתחפושות יצירתיות.", a: ["Hitman", "GTA V", "Red Dead Redemption 2", "Mortal Kombat"], correct: 0 },
+      { q: "באיזה משחק אפשר להשתמש ב־Dead Eye כדי להאט את הזמן ולכוון טוב יותר?", a: ["Mortal Kombat", "Hitman", "Red Dead Redemption 2", "GTA V"], correct: 2 },
+      { q: "נחשו את המשחק: טרבור, מייקל ופרנקלין הם הדמויות הראשיות שלו.", a: ["GTA V", "Red Dead Redemption 2", "Hitman", "Mortal Kombat"], correct: 0 }
     ];
 
-    const TOTAL_CARDS = 35;
-    const COLS = 7;
-    const ROWS = 5;
+    const TOTAL_CARDS = 36;
+    const COLS = 6;
+    const ROWS = 6;
 
     const PLAYER_COLORS = ['red','blue','green','yellow','purple','orange'];
     const PLAYER_BG = { red:'bg-red-500', blue:'bg-blue-500', green:'bg-green-500', yellow:'bg-yellow-400', purple:'bg-purple-500', orange:'bg-orange-500' };
     const PLAYER_HEX = { red:'#ef4444', blue:'#3b82f6', green:'#22c55e', yellow:'#facc15', purple:'#a855f7', orange:'#f97316' };
 
-    const gameEmojis = ["🎮","🕹️","👾","🎯","⚔️","🏆","💎","🔥","⭐","🚀","🎲","🃏","🎪","💥","🌟","⚡","🛡️","🗡️","🎖️","🏅","💰","🎁","🔮","🧩","❤️","🎵","🌀","💫","🎭","✨","🤖","👑","🦸","🐉","🧙"];
+    const gameEmojis = ["🎮","🕹️","👾","🎯","⚔️","🏆","💎","🔥","⭐","🚀","🎲","🃏","🎪","💥","🌟","⚡","🛡️","🗡️","🎖️","🏅","💰","🎁","🔮","🧩","❤️","🎵","🌀","💫","🎭","✨","🤖","👑","🦸","🐉","🧙","🎮"];
 
     let players = [];
     let currentPlayerIndex = 0;
@@ -205,8 +193,7 @@
       const name = input.value.trim();
       if (!name) { input.focus(); return; }
       if (pendingPlayers.length >= 6) return;
-      const color = PLAYER_COLORS[pendingPlayers.length];
-      pendingPlayers.push({ name, color, score: 0 });
+      pendingPlayers.push({ name, color: PLAYER_COLORS[pendingPlayers.length], score: 0 });
       input.value = '';
       input.focus();
       renderPendingPlayers();
@@ -301,8 +288,7 @@
 
     function updateScoreboard() {
       if (!players.length) return;
-      const sb = document.getElementById('scoreboard');
-      sb.innerHTML = players.map((p,i) => `
+      document.getElementById('scoreboard').innerHTML = players.map((p,i) => `
         <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-sm font-bold shadow ${i===currentPlayerIndex?'ring-4 ring-white/70 scale-105':''}" style="background:${PLAYER_HEX[p.color]}">
           <span>${p.name}</span>
           <span class="bg-white/30 rounded-full px-2">${p.score}</span>
@@ -343,23 +329,21 @@
       document.getElementById('questionPlayerBadge').innerHTML = `<span class="inline-block px-4 py-1 rounded-full text-white text-sm font-bold" style="background:${PLAYER_HEX[p.color]}">🎯 ${p.name}</span>`;
       document.getElementById('questionEmoji').textContent = gameEmojis[index % gameEmojis.length];
       document.getElementById('questionText').textContent = question.q;
-      const answersContainer = document.getElementById('answersContainer');
-      answersContainer.innerHTML = '';
-      const labels = ['א','ב','ג','ד'];
-      question.a.forEach((answer, i) => {
+      const ac = document.getElementById('answersContainer');
+      ac.innerHTML = '';
+      ['א','ב','ג','ד'].forEach((label, i) => {
         const btn = document.createElement('button');
         btn.className = 'w-full p-3 text-right rounded-xl border-2 border-purple-500/30 hover:border-purple-400 hover:bg-purple-500/20 transition-all flex items-center gap-3 text-gray-200';
-        btn.innerHTML = `<span class="w-8 h-8 rounded-full bg-purple-500/30 flex items-center justify-center font-bold text-purple-300">${labels[i]}</span><span>${answer}</span>`;
+        btn.innerHTML = `<span class="w-8 h-8 rounded-full bg-purple-500/30 flex items-center justify-center font-bold text-purple-300">${label}</span><span>${question.a[i]}</span>`;
         btn.addEventListener('click', () => checkAnswer(i));
-        answersContainer.appendChild(btn);
+        ac.appendChild(btn);
       });
       document.getElementById('questionModal').classList.remove('hidden');
     }
 
     function checkAnswer(answerIndex) {
-      const question = extendedQuestions[currentCardIndex];
       document.getElementById('questionModal').classList.add('hidden');
-      if (answerIndex === question.correct) showCorrectFeedback();
+      if (answerIndex === extendedQuestions[currentCardIndex].correct) showCorrectFeedback();
       else showWrongFeedback();
     }
 
@@ -368,38 +352,31 @@
       cardColors[currentCardIndex] = p.color;
       answeredCards[currentCardIndex] = true;
       p.score++;
-      const modal = document.getElementById('correctModal');
       document.getElementById('correctPlayerName').style.color = PLAYER_HEX[p.color];
       document.getElementById('correctPlayerName').textContent = `🏅 ${p.name}`;
-      modal.classList.remove('hidden');
+      document.getElementById('correctModal').classList.remove('hidden');
       const card = document.querySelector(`[data-index="${currentCardIndex}"]`);
       if (card) card.classList.add('pulse');
       setTimeout(() => {
-        modal.classList.add('hidden');
+        document.getElementById('correctModal').classList.add('hidden');
         saveGame();
         const justPlayed = players[currentPlayerIndex];
-        advanceTurn();
-        createCards();
-        updateTurnBar();
-        updateScoreboard();
+        advanceTurn(); createCards(); updateTurnBar(); updateScoreboard();
         checkGameEnd(justPlayed);
         currentCardIndex = null;
       }, 1800);
     }
 
     function showWrongFeedback() {
-      const feedback = document.getElementById('wrongFeedback');
-      feedback.classList.remove('hidden');
+      document.getElementById('wrongFeedback').classList.remove('hidden');
       const card = document.querySelector(`[data-index="${currentCardIndex}"]`);
       if (card) card.classList.add('shake');
       const nextIdx = (currentPlayerIndex + 1) % players.length;
       document.getElementById('nextPlayerMsg').textContent = `עכשיו תור ${players[nextIdx].name}`;
       setTimeout(() => {
-        feedback.classList.add('hidden');
+        document.getElementById('wrongFeedback').classList.add('hidden');
         if (card) card.classList.remove('shake');
-        advanceTurn();
-        updateTurnBar();
-        updateScoreboard();
+        advanceTurn(); updateTurnBar(); updateScoreboard();
         currentCardIndex = null;
       }, 1800);
     }
@@ -410,30 +387,19 @@
       const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
       function idx(r,c) { return r*COLS+c; }
       function owned(r,c) { return r>=0&&r<ROWS&&c>=0&&c<COLS&&cardColors[idx(r,c)]===color; }
-
-      // top to bottom
-      const visitedV = new Set();
-      const queueV = [];
+      const visitedV = new Set(), queueV = [];
       for (let c=0;c<COLS;c++) if (owned(0,c)) { queueV.push([0,c]); visitedV.add(idx(0,c)); }
       while (queueV.length) {
         const [r,c] = queueV.shift();
         if (r===ROWS-1) return { win:true, path:[...visitedV] };
-        for (const [dr,dc] of dirs) {
-          const nr=r+dr, nc=c+dc;
-          if (owned(nr,nc)&&!visitedV.has(idx(nr,nc))) { visitedV.add(idx(nr,nc)); queueV.push([nr,nc]); }
-        }
+        for (const [dr,dc] of dirs) { const nr=r+dr, nc=c+dc; if (owned(nr,nc)&&!visitedV.has(idx(nr,nc))) { visitedV.add(idx(nr,nc)); queueV.push([nr,nc]); } }
       }
-      // left to right
-      const visitedH = new Set();
-      const queueH = [];
+      const visitedH = new Set(), queueH = [];
       for (let r=0;r<ROWS;r++) if (owned(r,0)) { queueH.push([r,0]); visitedH.add(idx(r,0)); }
       while (queueH.length) {
         const [r,c] = queueH.shift();
         if (c===COLS-1) return { win:true, path:[...visitedH] };
-        for (const [dr,dc] of dirs) {
-          const nr=r+dr, nc=c+dc;
-          if (owned(nr,nc)&&!visitedH.has(idx(nr,nc))) { visitedH.add(idx(nr,nc)); queueH.push([nr,nc]); }
-        }
+        for (const [dr,dc] of dirs) { const nr=r+dr, nc=c+dc; if (owned(nr,nc)&&!visitedH.has(idx(nr,nc))) { visitedH.add(idx(nr,nc)); queueH.push([nr,nc]); } }
       }
       return { win:false };
     }
@@ -441,34 +407,19 @@
     function highlightWinPath(indices, color) {
       indices.forEach(i => {
         const card = document.querySelector(`[data-index="${i}"]`);
-        if (card) {
-          card.style.transform = 'scale(1.15)';
-          card.style.zIndex = '10';
-          card.style.boxShadow = `0 0 18px 6px ${PLAYER_HEX[color]}`;
-          card.style.transition = 'all 0.4s ease';
-        }
+        if (card) { card.style.transform='scale(1.15)'; card.style.zIndex='10'; card.style.boxShadow=`0 0 18px 6px ${PLAYER_HEX[color]}`; card.style.transition='all 0.4s ease'; }
       });
     }
 
     function checkGameEnd(winnerPlayer) {
       if (winnerPlayer) {
         const result = checkWin(winnerPlayer.color);
-        if (result.win) {
-          setTimeout(() => {
-            highlightWinPath(result.path, winnerPlayer.color);
-            setTimeout(() => showWinModal(winnerPlayer), 700);
-          }, 200);
-          return;
-        }
+        if (result.win) { setTimeout(() => { highlightWinPath(result.path, winnerPlayer.color); setTimeout(() => showWinModal(winnerPlayer), 700); }, 200); return; }
       }
       if (answeredCards.every(Boolean)) {
         setTimeout(() => {
           const sorted = [...players].sort((a,b) => b.score - a.score);
-          document.getElementById('finalScores').innerHTML =
-            sorted.map((p,i) => `<div class="flex items-center justify-between px-4 py-2 rounded-xl text-white font-bold" style="background:${PLAYER_HEX[p.color]}">
-              <span>${i===0?'🥇':i===1?'🥈':'🥉'} ${p.name}</span>
-              <span>${p.score} קלפים</span>
-            </div>`).join('');
+          document.getElementById('finalScores').innerHTML = sorted.map((p,i) => `<div class="flex items-center justify-between px-4 py-2 rounded-xl text-white font-bold" style="background:${PLAYER_HEX[p.color]}"><span>${i===0?'🥇':i===1?'🥈':'🥉'} ${p.name}</span><span>${p.score} קלפים</span></div>`).join('');
           document.getElementById('gameEndModal').classList.remove('hidden');
         }, 400);
       }
@@ -483,13 +434,7 @@
     }
 
     function saveGame() {
-      try {
-        localStorage.setItem('gamingQuizSave', JSON.stringify({
-          cardColors, answeredCards,
-          questionOrder: extendedQuestions.map(q => allQuestions.indexOf(q)),
-          players, currentPlayerIndex
-        }));
-      } catch(e) {}
+      try { localStorage.setItem('gamingQuizSave', JSON.stringify({ cardColors, answeredCards, questionOrder: extendedQuestions.map(q => allQuestions.indexOf(q)), players, currentPlayerIndex })); } catch(e) {}
     }
 
     function loadGame() {
@@ -498,8 +443,7 @@
         if (!saved) return false;
         const data = JSON.parse(saved);
         if (data.cardColors && data.answeredCards && data.questionOrder) {
-          cardColors = data.cardColors;
-          answeredCards = data.answeredCards;
+          cardColors = data.cardColors; answeredCards = data.answeredCards;
           extendedQuestions.length = 0;
           data.questionOrder.forEach(idx => extendedQuestions.push(allQuestions[idx] || allQuestions[0]));
           if (data.players) { players = data.players; currentPlayerIndex = data.currentPlayerIndex || 0; }
@@ -510,31 +454,23 @@
     }
 
     document.getElementById('restartBtn').addEventListener('click', doRestart);
-    document.getElementById('closeModal').addEventListener('click', () => {
-      document.getElementById('questionModal').classList.add('hidden');
-      currentCardIndex = null;
-    });
+    document.getElementById('closeModal').addEventListener('click', () => { document.getElementById('questionModal').classList.add('hidden'); currentCardIndex = null; });
 
-    // Check for saved game on load
     (function() {
       try {
         const saved = localStorage.getItem('gamingQuizSave');
         if (saved) {
           const data = JSON.parse(saved);
           if (data.players && data.players.length) {
-            players = data.players;
-            currentPlayerIndex = data.currentPlayerIndex || 0;
-            cardColors = data.cardColors;
-            answeredCards = data.answeredCards;
+            players = data.players; currentPlayerIndex = data.currentPlayerIndex || 0;
+            cardColors = data.cardColors; answeredCards = data.answeredCards;
             extendedQuestions.length = 0;
             data.questionOrder.forEach(idx => extendedQuestions.push(allQuestions[idx] || allQuestions[0]));
             document.getElementById('setupScreen').classList.add('hidden');
             document.getElementById('turnBar').classList.remove('hidden');
             document.getElementById('scoreboard').classList.remove('hidden');
             document.getElementById('midGameRestartBtn').classList.remove('hidden');
-            createCards();
-            updateTurnBar();
-            updateScoreboard();
+            createCards(); updateTurnBar(); updateScoreboard();
             return;
           }
         }
