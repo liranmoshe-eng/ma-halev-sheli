@@ -689,19 +689,11 @@ function movePlayer(steps){
   var finalPos=newPos;
   var ladder=null;
   for(var li=0;li<config.ladders.length;li++){if(config.ladders[li].from===newPos){ladder=config.ladders[li];break;}}
-  if(ladder){
-    finalPos=ladder.to;
-    setTimeout(function(){player.position=finalPos;renderGameUI();setTokenPosition(pidx,finalPos,true);setTimeout(function(){checkSpecialSquare(player,finalPos);},500);},600);
-    return;
-  }
+  if(ladder){finalPos=ladder.to;player.position=finalPos;renderGameUI();setTokenPosition(pidx,finalPos,true);}
   var snake=null;
-  for(var si=0;si<config.snakes.length;si++){if(config.snakes[si].from===newPos){snake=config.snakes[si];break;}}
-  if(snake){
-    finalPos=snake.to;
-    setTimeout(function(){player.position=finalPos;renderGameUI();setTokenPosition(pidx,finalPos,true);setTimeout(function(){checkSpecialSquare(player,finalPos);},500);},600);
-    return;
-  }
-  setTimeout(function(){checkSpecialSquare(player,finalPos);},500);
+  if(!ladder){for(var si=0;si<config.snakes.length;si++){if(config.snakes[si].from===newPos){snake=config.snakes[si];break;}}}
+  if(snake){finalPos=snake.to;player.position=finalPos;renderGameUI();setTokenPosition(pidx,finalPos,true);}
+  checkSpecialSquare(player,finalPos);
 }
 
 function checkSpecialSquare(player,pos){
@@ -751,7 +743,8 @@ function showCardModal(card,catId){
     var inner=document.getElementById('cardModalInner');
     inner.style.borderColor=color;
     inner.style.boxShadow='0 24px 80px rgba(0,0,0,.3), 0 0 40px '+color+'44';
-    document.getElementById('cardModalCat').textContent=catObj?catObj.name:'';
+    var showCatName=(catObj && catObj.showName)?catObj.name:'';
+    document.getElementById('cardModalCat').textContent=showCatName;
     document.getElementById('cardModalCat').style.color=color;
     document.getElementById('cardModalTitle').textContent=card.title||'';
     document.getElementById('cardModalContent').textContent=card.body||'';
