@@ -276,7 +276,7 @@ html,body{height:100%;font-family:'Heebo',sans-serif;direction:rtl;background:#f
         </div>
       </div>
     </div>
-    <div class="game-btns"><button class="g-btn" onclick="endGame()">סיום</button><div style="font-size:.5em;color:rgba(255,255,255,.5);text-align:center;margin-top:2px;">v4</div></div>
+    <div class="game-btns"><button class="g-btn" onclick="endGame()">סיום</button><div style="font-size:.5em;color:rgba(255,255,255,.5);text-align:center;margin-top:2px;">v5</div></div>
   </div>
   <div class="board-area">
     <div class="board-container" id="boardContainer">
@@ -333,10 +333,30 @@ const CATEGORY_COLORS = [
 const CELL_COLORS = ['c0','c1','c2','c3','c4','c5','c6','c7','c8','c9'];
 
 const DEFAULT_CONFIG = {
-  categories: [],
-  cards: [],
-  specialSquares: [],
-  squareCatMap: {},
+  categories: [
+    {id:1, name:'רפלקציה', color:'#6c5ce7', showName:true},
+    {id:2, name:'משימה', color:'#e17055', showName:true}
+  ],
+  cards: [
+    {id:1, catId:1, title:'רפלקציה', body:'ספר/י על רגע שבו הרגשת גאווה בעצמך'},
+    {id:2, catId:1, title:'רפלקציה', body:'מה הדבר שהכי גורם לך לשמוח?'},
+    {id:3, catId:1, title:'רפלקציה', body:'אם היית יכול/ה לשנות דבר אחד בעולם, מה היית משנה?'},
+    {id:4, catId:1, title:'רפלקציה', body:'מי האדם שהכי משפיע עליך ולמה?'},
+    {id:5, catId:1, title:'רפלקציה', body:'תאר/י רגע שבו עזרת למישהו ואיך זה גרם לך להרגיש'},
+    {id:6, catId:1, title:'רפלקציה', body:'מה עושה אותך מיוחד/ת?'},
+    {id:7, catId:1, title:'רפלקציה', body:'מה הדבר שהכי מפחיד אותך ולמה?'},
+    {id:8, catId:1, title:'רפלקציה', body:'ספר/י על חבר/ה טוב/ה שלך - מה מיוחד בו/בה?'},
+    {id:9, catId:2, title:'משימה', body:'חקה בפנטומימה חיה שאתה אוהב - השאר צריכים לנחש'},
+    {id:10, catId:2, title:'משימה', body:'אמור/י 3 מחמאות לשחקן שלידך'},
+    {id:11, catId:2, title:'משימה', body:'שתף/י את כולם בבדיחה או סיפור מצחיק'},
+    {id:12, catId:2, title:'משימה', body:'עשה/י תנועת ריקוד מצחיקה - כולם מחקים אותך'},
+    {id:13, catId:2, title:'משימה', body:'ספר/י על חלום שהיית רוצה להגשים'},
+    {id:14, catId:2, title:'משימה', body:'תאר/י את עצמך ב-3 מילים בלבד'},
+    {id:15, catId:2, title:'משימה', body:'עשה/י פרצוף מצחיק - מי שצוחק ראשון מפסיד'},
+    {id:16, catId:2, title:'משימה', body:'ספר/י על הישג שלך שאתה הכי גאה בו'}
+  ],
+  specialSquares: [5,11,17,23,30,36,42,48,55,61,67,73,80,86,92,97],
+  squareCatMap: {5:1,11:2,17:1,23:2,30:1,36:2,42:1,48:2,55:1,61:2,67:1,73:2,80:1,86:2,92:1,97:2},
   ladders: [{from:4,to:25},{from:21,to:39},{from:33,to:52},{from:50,to:69},{from:62,to:81},{from:74,to:92}],
   snakes: [{from:27,to:8},{from:44,to:26},{from:56,to:37},{from:70,to:51},{from:82,to:64},{from:95,to:76},{from:98,to:79}],
 };
@@ -493,7 +513,13 @@ function saveConfig(){ try{localStorage.setItem('snl_config',JSON.stringify(conf
 function loadConfig(){
   try{
     const saved=localStorage.getItem('snl_config');
-    if(saved){config=JSON.parse(saved);nextCatId=Math.max(...config.categories.map(c=>c.id),0)+1;nextCardId=Math.max(...config.cards.map(c=>c.id),0)+1;}
+    if(saved){
+      config=JSON.parse(saved);
+      if(!config.categories||config.categories.length===0){config.categories=DEFAULT_CONFIG.categories;}
+      if(!config.cards||config.cards.length===0){config.cards=DEFAULT_CONFIG.cards;}
+      if(!config.specialSquares||config.specialSquares.length===0){config.specialSquares=DEFAULT_CONFIG.specialSquares;config.squareCatMap=DEFAULT_CONFIG.squareCatMap;}
+      nextCatId=Math.max(...config.categories.map(c=>c.id),0)+1;nextCardId=Math.max(...config.cards.map(c=>c.id),0)+1;
+    }
   }catch(e){}
 }
 
